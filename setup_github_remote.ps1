@@ -3,13 +3,28 @@ $ErrorActionPreference = "Stop"
 $RepoPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $RepoPath
 
-$git = "C:\Program Files\Git\cmd\git.exe"
-$gh = "C:\Program Files\GitHub CLI\gh.exe"
+$gitCmd = Get-Command git -ErrorAction SilentlyContinue
+if ($gitCmd) {
+  $git = $gitCmd.Source
+} elseif (Test-Path "C:\Program Files\Git\cmd\git.exe") {
+  $git = "C:\Program Files\Git\cmd\git.exe"
+} else {
+  $git = $null
+}
 
-if (-not (Test-Path $git)) {
+$ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+if ($ghCmd) {
+  $gh = $ghCmd.Source
+} elseif (Test-Path "C:\Program Files\GitHub CLI\gh.exe") {
+  $gh = "C:\Program Files\GitHub CLI\gh.exe"
+} else {
+  $gh = $null
+}
+
+if (-not $git -or -not (Test-Path $git)) {
   throw "Git not found: $git"
 }
-if (-not (Test-Path $gh)) {
+if (-not $gh -or -not (Test-Path $gh)) {
   throw "GitHub CLI not found: $gh"
 }
 

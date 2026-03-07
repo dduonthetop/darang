@@ -3,10 +3,25 @@ $ErrorActionPreference = "Stop"
 $RepoPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $RepoPath
 
-$git = "C:\Program Files\Git\cmd\git.exe"
-$gh = "C:\Program Files\GitHub CLI\gh.exe"
+$gitCmd = Get-Command git -ErrorAction SilentlyContinue
+if ($gitCmd) {
+  $git = $gitCmd.Source
+} elseif (Test-Path "C:\Program Files\Git\cmd\git.exe") {
+  $git = "C:\Program Files\Git\cmd\git.exe"
+} else {
+  $git = $null
+}
+
+$ghCmd = Get-Command gh -ErrorAction SilentlyContinue
+if ($ghCmd) {
+  $gh = $ghCmd.Source
+} elseif (Test-Path "C:\Program Files\GitHub CLI\gh.exe") {
+  $gh = "C:\Program Files\GitHub CLI\gh.exe"
+} else {
+  $gh = $null
+}
 $setupScript = Join-Path $RepoPath "setup_github_remote.ps1"
-if (-not (Test-Path $git)) {
+if (-not $git -or -not (Test-Path $git)) {
   Write-Output "[AUTO-SYNC] Git not found at $git"
   exit 1
 }
