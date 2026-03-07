@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPark FAQ 챗봇 데모</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main class="app">
+      <header class="topbar">
+        <h1>iPark FAQ 챗봇 데모</h1>
+        <p>브랜드 입점/운영 문의 응답 데모</p>
+      </header>
+
+      <section class="panel">
+        <div class="section-title">질문 단계 빠른 선택</div>
+        <div class="stage-buttons">
+          <button class="stage-btn active" data-stage="입점문의">입점문의</button>
+          <button class="stage-btn" data-stage="입점진행">입점진행</button>
+          <button class="stage-btn" data-stage="매장운영">매장운영</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="section-title">예시 질문</div>
+        <div class="example-buttons">
+          <button class="example-btn">입점은 어떻게 진행하나요?</button>
+          <button class="example-btn">입점 문의는 어디로 하면 되나요?</button>
+          <button class="example-btn">팝업스토어도 가능한가요?</button>
+          <button class="example-btn">POS는 기본 제공되나요?</button>
+          <button class="example-btn">POS에 바코드 스캔 기능이 있나요?</button>
+          <button class="example-btn">쇼핑백은 어디서 받나요?</button>
+        </div>
+      </section>
+
+      <section id="chatWindow" class="chat-window" aria-live="polite"></section>
+
+      <section class="composer">
+        <input
+          id="questionInput"
+          type="text"
+          placeholder="예: 입점은 어떻게 진행하나요?"
+          maxlength="300"
+        />
+        <button id="sendBtn">전송</button>
+      </section>
+    </main>
+
+    <template id="loadingTemplate">
+      <div class="bubble bot loading">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </template>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
