@@ -14,12 +14,24 @@ if (-not (Test-Path $gh)) {
 }
 
 try {
-  & $gh auth status | Out-Null
+  & $gh auth status *> $null
 } catch {
   throw "GitHub CLI is not authenticated. Run: `"$gh auth login --web --git-protocol https`""
 }
+if ($LASTEXITCODE -ne 0) {
+  throw "GitHub CLI is not authenticated. Run: `"$gh auth login --web --git-protocol https`""
+}
 
-$owner = (& $gh api user --jq .login).Trim()
+try {
+  $ownerRaw = & $gh api user --jq .login 2>$null
+} catch {
+  throw "Unable to read authenticated GitHub user. Complete gh auth login first."
+}
+if ($LASTEXITCODE -ne 0 -or -not $ownerRaw) {
+  throw "Unable to read authenticated GitHub user. Complete gh auth login first."
+}
+
+$owner = $ownerRaw.Trim()
 if (-not $owner) {
   throw "Unable to read authenticated GitHub user."
 }
