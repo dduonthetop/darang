@@ -4,6 +4,8 @@ $RepoPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $RepoPath
 
 $git = "C:\Program Files\Git\cmd\git.exe"
+$gh = "C:\Program Files\GitHub CLI\gh.exe"
+$setupScript = Join-Path $RepoPath "setup_github_remote.ps1"
 if (-not (Test-Path $git)) {
   Write-Output "[AUTO-SYNC] Git not found at $git"
   exit 1
@@ -56,10 +58,35 @@ function Log-OncePerMinute {
 
 Write-Output "[AUTO-SYNC] started at $(Get-TimeStamp)"
 
+function Try-BootstrapRemote {
+  if (-not (Test-Path $gh)) { return $false }
+  if (-not (Test-Path $setupScript)) { return $false }
+
+  try {
+    & $gh auth status *> $null
+    if ($LASTEXITCODE -ne 0) { return $false }
+  } catch {
+    return $false
+  }
+
+  try {
+    & powershell -ExecutionPolicy Bypass -File $setupScript *> $null
+    if ($LASTEXITCODE -eq 0) {
+      Write-Output "[AUTO-SYNC] bootstrap remote completed at $(Get-TimeStamp)"
+      return $true
+    }
+  } catch {
+    return $false
+  }
+
+  return $false
+}
+
 while ($true) {
   try {
     $origin = (& $git remote get-url origin 2>$null)
     if (-not $origin) {
+      Try-BootstrapRemote | Out-Null
       Log-OncePerMinute -Key "noremote" -Message "[AUTO-SYNC] origin remote is not configured. Waiting..."
       Start-Sleep -Seconds 10
       continue
@@ -70,8 +97,34 @@ while ($true) {
       & $git add -A | Out-Null
       $msg = "auto-sync: $(Get-TimeStamp)"
       & $git commit -m $msg | Out-Null
-      & $git push origin main | Out-Null
-      Write-Output "[AUTO-SYNC] pushed at $(Get-TimeStamp)"
+      try {
+        & $git push origin main | Out-Null
+        if ($LASTEXITCODE -eq 0) {
+          Write-Output "[AUTO-SYNC] pushed at $(Get-TimeStamp)"
+        } else {
+          if (Try-BootstrapRemote) {
+            & $git push origin main | Out-Null
+            if ($LASTEXITCODE -eq 0) {
+              Write-Output "[AUTO-SYNC] pushed at $(Get-TimeStamp) after bootstrap"
+            } else {
+              Log-OncePerMinute -Key "pusherror" -Message "[AUTO-SYNC] push failed after bootstrap at $(Get-TimeStamp)"
+            }
+          } else {
+            Log-OncePerMinute -Key "pusherror" -Message "[AUTO-SYNC] push failed at $(Get-TimeStamp)"
+          }
+        }
+      } catch {
+        if (Try-BootstrapRemote) {
+          & $git push origin main | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Output "[AUTO-SYNC] pushed at $(Get-TimeStamp) after bootstrap"
+          } else {
+            Log-OncePerMinute -Key "pusherror" -Message "[AUTO-SYNC] push failed after bootstrap at $(Get-TimeStamp)"
+          }
+        } else {
+          Log-OncePerMinute -Key "pusherror" -Message "[AUTO-SYNC] push failed at $(Get-TimeStamp): $($_.Exception.Message)"
+        }
+      }
     }
   } catch {
     Log-OncePerMinute -Key "pusherror" -Message "[AUTO-SYNC] push failed at $(Get-TimeStamp): $($_.Exception.Message)"
