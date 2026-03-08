@@ -192,7 +192,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
     "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.3 차량, 주차, 하역, 동선"
+    "category": "8.3 차량, 주차, 하역, 동선",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-013",
@@ -208,7 +211,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
     "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.3 차량, 주차, 하역, 동선"
+    "category": "8.3 차량, 주차, 하역, 동선",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-014",
@@ -224,7 +230,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
     "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.3 차량, 주차, 하역, 동선"
+    "category": "8.3 차량, 주차, 하역, 동선",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-015",
@@ -240,7 +249,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
     "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.3 차량, 주차, 하역, 동선"
+    "category": "8.3 차량, 주차, 하역, 동선",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-016",
@@ -256,7 +268,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
     "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.3 차량, 주차, 하역, 동선"
+    "category": "8.3 차량, 주차, 하역, 동선",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-017",
@@ -272,7 +287,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
     "contact_channel": "담당 바이어; 하역장 운영 채널",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.4 반입/반출 및 보관"
+    "category": "8.4 반입/반출 및 보관",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-018",
@@ -288,7 +306,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
     "contact_channel": "담당 바이어; 하역장 운영 채널",
     "confidence_type": "확인 필요형 답변",
-    "category": "8.4 반입/반출 및 보관"
+    "category": "8.4 반입/반출 및 보관",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-019",
@@ -304,7 +325,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
     "contact_channel": "담당 바이어; 하역장 운영 채널",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.4 반입/반출 및 보관"
+    "category": "8.4 반입/반출 및 보관",
+    "manual_files": [
+      "./manual/입점 상품이동 경로 안내.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-020",
@@ -403,7 +427,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
     "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.6 매장 운영 및 서비스 기준"
+    "category": "8.6 매장 운영 및 서비스 기준",
+    "manual_files": [
+      "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-026",
@@ -532,7 +560,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "manual_files": [
+      "./manual/내선 전화 신청 방법.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-034",
@@ -548,7 +579,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "manual_files": [
+      "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-035",
@@ -564,7 +599,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "manual_files": [
+      "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
+    ]
   },
   {
     "faq_id": "FAQ-036",
@@ -581,7 +620,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
     "contact_channel": "담당 바이어; 보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.8 인력 운영 및 교육"
+    "category": "8.8 인력 운영 및 교육",
+    "manual_files": [
+      "./manual/아이파크몰 단기 · 팝업 CS 매뉴얼 (25.09).pdf",
+      "./manual/아이파크몰 용산점 신규입점교육 유인물 (25.09).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-037",
@@ -597,7 +640,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
     "contact_channel": "담당 바이어; 보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.8 인력 운영 및 교육"
+    "category": "8.8 인력 운영 및 교육",
+    "manual_files": [
+      "./manual/아이파크몰 단기 · 팝업 CS 매뉴얼 (25.09).pdf",
+      "./manual/아이파크몰 용산점 신규입점교육 유인물 (25.09).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-038",
@@ -613,7 +660,11 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
     "contact_channel": "담당 바이어; 보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.8 인력 운영 및 교육"
+    "category": "8.8 인력 운영 및 교육",
+    "manual_files": [
+      "./manual/아이파크몰 단기 · 팝업 CS 매뉴얼 (25.09).pdf",
+      "./manual/아이파크몰 용산점 신규입점교육 유인물 (25.09).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-039",
@@ -629,7 +680,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.9 정산 및 행정"
+    "category": "8.9 정산 및 행정",
+    "manual_files": [
+      "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-040",
@@ -645,7 +699,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.9 정산 및 행정"
+    "category": "8.9 정산 및 행정",
+    "manual_files": [
+      "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-041",
@@ -661,7 +718,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.9 정산 및 행정"
+    "category": "8.9 정산 및 행정",
+    "manual_files": [
+      "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ]
   },
   {
     "faq_id": "FAQ-042",

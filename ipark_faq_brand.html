@@ -498,23 +498,9 @@
         return encodeURI(path || "");
       }
 
-      function inferManualFiles(data) {
-        const q = `${data.question || ""} ${data.core_answer || ""}`.toLowerCase();
-        const files = [];
-        if (q.includes("내선전화")) {
-          files.push("./manual/내선 전화 신청 방법.pdf");
-        }
-        if (q.includes("pos") && (q.includes("매뉴얼") || q.includes("교육"))) {
-          files.push("./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf");
-          files.push("./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf");
-        }
-        return files;
-      }
-
       function renderManualAttachments(data) {
         const fromData = Array.isArray(data.manual_files) ? data.manual_files : [];
-        const inferred = inferManualFiles(data);
-        const files = [...new Set([...fromData, ...inferred])].filter(Boolean);
+        const files = [...new Set(fromData)].filter(Boolean);
         if (!files.length) return;
 
         const box = document.createElement("div");
@@ -522,7 +508,7 @@
 
         const title = document.createElement("p");
         title.className = "attachment-title";
-        title.textContent = "첨부 가능한 매뉴얼";
+        title.textContent = "다운로드 가능한 매뉴얼";
         box.appendChild(title);
 
         const list = document.createElement("ul");
@@ -533,6 +519,7 @@
           a.href = safeHref(filePath);
           a.target = "_blank";
           a.rel = "noopener noreferrer";
+          a.download = filePath.split("/").pop() || "manual.pdf";
           a.textContent = filePath.replace("./manual/", "");
           li.appendChild(a);
           list.appendChild(li);
