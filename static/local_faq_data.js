@@ -534,7 +534,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.7 비품/쇼핑백",
     "keywords": [
       "paid shopping bag",
       "resale allowed",
@@ -555,7 +555,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 비품/쇼핑백"
   },
   {
     "faq_id": "FAQ-032",
@@ -571,7 +571,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 비품/쇼핑백"
   },
   {
     "faq_id": "FAQ-033",
@@ -587,7 +587,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "KT 02-2012-2200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 내선전화/POS",
     "manual_files": [
       "./manual/내선 전화 신청 방법.pdf"
     ]
@@ -606,7 +606,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산(POS) 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 내선전화/POS",
     "manual_files": [
       "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
       "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
@@ -626,7 +626,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산(POS) 02-2012-0200",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 내선전화/POS",
     "manual_files": [
       "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
       "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
