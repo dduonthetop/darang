@@ -414,8 +414,61 @@
         return null;
       }
 
+      function getIntentScopedData(question, dataPool) {
+        const qTags = detectIntentTags(question);
+        const strongTags = [
+          "pos", "shoppingbag", "phone", "entry", "parking", "loading",
+          "electric", "facility", "safety", "settlement", "tax", "ads_app", "ads_did", "cs"
+        ];
+        const activeStrongTags = strongTags.filter((t) => qTags.has(t));
+        if (!activeStrongTags.length) return dataPool;
+
+        const filtered = dataPool.filter((item) => {
+          const full = [item.question, ...(item.paraphrases || []), ...(item.keywords || []), item.category, item.stage].join(" ");
+          const itemTags = detectIntentTags(full);
+          return activeStrongTags.some((tag) => itemTags.has(tag));
+        });
+
+        return filtered.length ? filtered : dataPool;
+      }
+
       function localAnswer(question, categoryPrefix) {
         const qn = normalize(question);
+        const intentScopedData = getIntentScopedData(question, DATA);
+        const intentScopedByCategory = categoryPrefix
+          ? intentScopedData.filter((item) => (item.category || "").startsWith(categoryPrefix))
+          : intentScopedData;
+
+        const exactPool = intentScopedByCategory.length ? intentScopedByCategory : intentScopedData;
+        for (const item of exactPool) {
+          if (normalize(item.question || "") === qn) {
+            return {
+              faq_id: item.faq_id || "",
+              question: item.question || question,
+              category: item.category || "",
+              stage: item.stage || classifyStage(question),
+              core_answer: item.answer || "확인 가능한 답변 데이터가 없습니다.",
+              next_action: item.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
+              contact_channel: item.contact_channel || "",
+              confidence_type: item.confidence_type || "운영 사례형 답변",
+              manual_files: Array.isArray(item.manual_files) ? item.manual_files : []
+            };
+          }
+          const paras = (item.paraphrases || []).map((p) => normalize(p));
+          if (paras.includes(qn)) {
+            return {
+              faq_id: item.faq_id || "",
+              question: item.question || question,
+              category: item.category || "",
+              stage: item.stage || classifyStage(question),
+              core_answer: item.answer || "확인 가능한 답변 데이터가 없습니다.",
+              next_action: item.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
+              contact_channel: item.contact_channel || "",
+              confidence_type: item.confidence_type || "운영 사례형 답변",
+              manual_files: Array.isArray(item.manual_files) ? item.manual_files : []
+            };
+          }
+        }
 
         const exact = findExactInScope(qn, categoryPrefix);
         if (exact) {
@@ -432,14 +485,18 @@
           };
         }
 
-        const scored = DATA
+        const scorePool = (categoryPrefix && intentScopedByCategory.length)
+          ? intentScopedByCategory
+          : intentScopedData;
+
+        const scored = scorePool
           .map((item) => ({ item, score: scoreItem(question, item, categoryPrefix) }))
           .sort((a, b) => b.score - a.score);
 
         let top = scored[0];
 
         if (!top || top.score < 0.14) {
-          const rescored = DATA
+          const rescored = intentScopedData
             .map((item) => ({ item, score: scoreItem(question, item, "") }))
             .sort((a, b) => b.score - a.score);
           top = rescored[0];
