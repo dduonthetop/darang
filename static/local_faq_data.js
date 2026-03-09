@@ -434,7 +434,8 @@ window.LOCAL_FAQ_DATA = [
       "POS 연동 또는 매출 보고 방식은 무엇인가 알려주세요",
       "POS 연동 또는 매출 보고 방식은 무엇인가 문의드립니다",
       "POS 연동 또는 매출 보고 방식은 무엇인가요",
-      "POS 연동 또는 매출 보고 방식은 무엇인가 확인 부탁드립니다"
+      "POS 연동 또는 매출 보고 방식은 무엇인가 확인 부탁드립니다",
+      "POS? ?? ??????"
     ],
     "answer": "현장 POS는 상품 스캔형이 아닌 최종 결제금액(합계) 입력 방식 운영 사례 확인 합니다. 연동 불가하므로 재고관리 위한 브랜드 개별 POS 지참하거나 노트북 지참하여 재고 관리를 진행해 주세요.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
@@ -448,7 +449,9 @@ window.LOCAL_FAQ_DATA = [
     "keywords": [
       "barcode scan",
       "not scan-based",
+      "pos basic provided",
       "pos integration",
+      "pos provided",
       "scan POS"
     ]
   },

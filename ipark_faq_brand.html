@@ -350,9 +350,10 @@
         const full = [item.question, ...(item.paraphrases || []), ...(item.keywords || []), item.category, item.stage].join(" ");
         const ft = tokenize(full);
         const flags = intentFlags(question);
-        const itemNorm = normalize(full);
+        const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
+        const itemNorm = normalize(intentText);
         const qTags = detectIntentTags(question);
-        const itemTags = detectIntentTags(full);
+        const itemTags = detectIntentTags(intentText);
 
         let score = overlap(qt, ft) * 0.72;
         const questionNorm = normalize(item.question || "");
@@ -424,8 +425,8 @@
         if (!activeStrongTags.length) return dataPool;
 
         const filtered = dataPool.filter((item) => {
-          const full = [item.question, ...(item.paraphrases || []), ...(item.keywords || []), item.category, item.stage].join(" ");
-          const itemTags = detectIntentTags(full);
+          const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
+          const itemTags = detectIntentTags(intentText);
           return activeStrongTags.some((tag) => itemTags.has(tag));
         });
 
