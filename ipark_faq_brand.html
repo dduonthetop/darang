@@ -267,48 +267,9 @@
         "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"]
       };
 
-      const PRESET_RULES = [
-        {
-          test: (q) => q.includes("입점") && (q.includes("진행") || q.includes("문의") || q.includes("팝업")),
-          answer: {
-            stage: "입점문의",
-            core_answer: "입점 문의는 담당 바이어 채널로 접수 후 브랜드 검토, 조건 협의, 계약 순서로 진행됩니다. 팝업스토어도 운영 기준에 따라 검토 가능합니다.",
-            next_action: "브랜드 소개자료와 희망 일정(기간/카테고리)을 정리해 담당 바이어에게 전달해 주세요.",
-            contact_channel: "담당 바이어",
-            confidence_type: "운영 사례형 답변"
-          }
-        },
-        {
-          test: (q) => (q.includes("pos") || q.includes("포스")) && (q.includes("바코드") || q.includes("스캔")),
-          answer: {
-            stage: "매장운영",
-            core_answer: "현장 POS는 일반 상품 바코드 스캔 판매 방식이 아니라 결제금액(합계) 입력 방식으로 운영됩니다.",
-            next_action: "POS 사용 방식은 전산/POS와 담당 바이어에게 최종 확인해 주세요.",
-            contact_channel: "전산/POS 02-2012-0200",
-            confidence_type: "운영 사례형 답변"
-          }
-        },
-        {
-          test: (q) => q.includes("쇼핑백") && (q.includes("어디") || q.includes("받")),
-          answer: {
-            stage: "매장운영",
-            core_answer: "쇼핑백은 불출 일정에 맞춰 지정 장소(보통 주차동 3층)에서 수령합니다.",
-            next_action: "필요 수량을 먼저 정리하고 불출 일정에 맞춰 방문해 주세요.",
-            contact_channel: "담당 바이어",
-            confidence_type: "운영 사례형 답변"
-          }
-        },
-        {
-          test: (q) => (q.includes("pos") || q.includes("포스")) && q.includes("고장"),
-          answer: {
-            stage: "매장운영",
-            core_answer: "POS 장애 발생 시 전산/POS로 즉시 접수해 주세요.",
-            next_action: "장애 시점, 증상, 단말 위치를 함께 전달하면 처리 속도가 빨라집니다.",
-            contact_channel: "전산/POS 02-2012-0200",
-            confidence_type: "확정 정책형 답변"
-          }
-        }
-      ];
+      // Hardcoded preset answers can drift from dataset and cause factual mismatch.
+      // Keep answers dataset-driven.
+      const PRESET_RULES = [];
 
       const STAGE_KEYWORDS = {
         "입점문의": ["입점", "제안", "브랜드", "팝업", "문의"],
@@ -400,16 +361,6 @@
       function localAnswer(question, categoryPrefix) {
         const qn = normalize(question);
 
-        for (const rule of PRESET_RULES) {
-          if (rule.test(qn)) {
-            return {
-              ...rule.answer,
-              question,
-              category: categoryPrefix || ""
-            };
-          }
-        }
-
         const exact = findExactInScope(qn, categoryPrefix);
         if (exact) {
           return {
@@ -439,6 +390,16 @@
         }
 
         if (!top || top.score < 0.12) return localFallback(question);
+
+        for (const rule of PRESET_RULES) {
+          if (rule.test(qn)) {
+            return {
+              ...rule.answer,
+              question,
+              category: categoryPrefix || ""
+            };
+          }
+        }
 
         return {
           faq_id: top.item.faq_id || "",
