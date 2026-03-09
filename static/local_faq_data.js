@@ -12,7 +12,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "기본 운영시간은 일~목 10:30~20:30, 금~토 및 공휴일 10:30~21:00 기준. 1~3F, 패션파크 4F 은 10:30~22:00. 식당가 영업시간은 매장별로 상이할 수 있으며 정확한 영업시간은 아이파크몰 APP-쇼핑정보-매장검색에서 확인 가능",
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
-    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.1 입점 형태 및 기본 운영"
   },
@@ -29,7 +29,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "공휴일은 21:00 종료 기준이 확인됩니다(예: 12/25, 1/1).",
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
-    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.1 입점 형태 및 기본 운영",
     "keywords": [
@@ -52,7 +52,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "영업외시간 출입은 출입신청 기반으로 가능하며, 야간 작업 무료주차 시간대는 19:00~익일 10:00.",
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
-    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.1 입점 형태 및 기본 운영"
   },
@@ -68,7 +68,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "아이파크몰은 연중 무휴로 운영됩니다. (설/추석 당일 정상영업)",
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
-    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
     "category": "8.1 입점 형태 및 기본 운영"
   },
@@ -171,7 +171,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "출입계 등록 차량에 한해 야간 작업 차량(19:00~익일 10:00)은 무료 지원 가능. 행사 당일 바이어 문의 후 일부 차량 최대 5시간 지원 가능.",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "주차 02-2012-0069(운영); 주차 02-2012-0074(관제)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선"
   },
@@ -187,7 +187,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "영업시간 중 주차는 주차권 구매 기준. 지하 1층 방재실 구매 가능(12시간권 21,600원)",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "주차 02-2012-0069(운영); 주차 02-2012-0074(관제)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선"
   },
@@ -203,7 +203,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "해주차장은 차량 높이 2.9m 이하 차량 출입 가능. 톤수 제한 특별히 없으나 길이가 너무 길면 회전차로에서 사고 발생 위험 있습니다. 화물 7,8,9호기 사용",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "보안 02-2012-4112; 주차 02-2012-0069(운영)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선",
     "manual_files": [
@@ -222,7 +222,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "달주차장은 차량 높이 3.3m 이하 차량 출입 가능. 톤수 제한 특별히 없으나 길이가 너무 길면 회전차로에서 사고 발생 위험 있습니다. 화물 7,8,9호기 사용",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "보안 02-2012-4112; 주차 02-2012-0069(운영)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선",
     "manual_files": [
@@ -241,7 +241,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "별주차장은 차량 높이 2.8m 이하 차량 출입 가능. 톤수 제한 특별히 없으나 길이가 너무 길면 회전차로에서 사고 발생 위험 있습니다. 화물 46호기 사용",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "보안 02-2012-4112; 주차 02-2012-0069(운영)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선",
     "manual_files": [
@@ -260,7 +260,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "서울특별시 용산구 한강대로 23길 55 (한강로 3가) 해주차장 3층 하역장' 주소로 낮 시간 택배/화물 수령은 가능, 매장 세팅은 통상 오픈 전일 폐점 후(통상 20:30 이후) 기준.",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "보안 02-2012-4112; 주차 02-2012-0069(운영)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선",
     "manual_files": [
@@ -279,7 +279,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "설치/철수는 3층 해주차장 하역장 보안데크 또는 달주차장 3층 하역장 보안데크에서 출입증 수령 후 이동 기준.",
     "next_action": "차량번호/입차시간을 사전 공유하고 하역장·주차 기준에 맞춰 출입신청을 완료합니다.",
-    "contact_channel": "주차 02-2012-0074; 방재 02-2012-0119",
+    "contact_channel": "보안 02-2012-4112; 주차 02-2012-0069(운영)",
     "confidence_type": "운영 사례형 답변",
     "category": "8.3 차량, 주차, 하역, 동선",
     "manual_files": [
@@ -298,7 +298,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "서울특별시 용산구 한강대로 23길 55 (한강로 3가) 해주차장 3층 하역장' 주소로 택배 수령 가능. 택배 발송은 현장 택배사 직원 만나서 직접 처리해야 하며 불가할 수 있으므로 근방 우체국 방문을 권장합니다.",
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
-    "contact_channel": "담당 바이어; 하역장 운영 채널",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
     "category": "8.4 반입/반출 및 보관",
     "manual_files": [
@@ -317,7 +317,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "현장 상황에 따라 제한적 보관 가능하나 바이어와 사전 장소 및 기간 협의가 필수입니다.",
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
-    "contact_channel": "담당 바이어; 하역장 운영 채널",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확인 필요형 답변",
     "category": "8.4 반입/반출 및 보관",
     "manual_files": [
@@ -336,7 +336,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "설치/철수 출입은 출입신청 + 보안데크 출입증 수령 절차 확인 합니다.",
     "next_action": "택배 수령/보관 일정을 담당 바이어와 협의하고 반입·반출 동선을 확정합니다.",
-    "contact_channel": "담당 바이어; 하역장 운영 채널",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확정 정책형 답변",
     "category": "8.4 반입/반출 및 보관",
     "manual_files": [
@@ -355,7 +355,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "행사 장소에 따라 설비 제약 있으므로 바이어 사전 문의 필수입니다. 특정매입 계약 체결 브랜드는 전기 및 수도 사용료가 입점 수수료에 포함돼 있으므로 별도 관리비 부과 없음",
     "next_action": "작업 전 시설·전기 담당과 사전 확인 후 공사/설치 가능 시간에 맞춰 진행합니다.",
-    "contact_channel": "시설 02-2012-0070; 전기 02-2012-0087; 방재 02-2012-0119",
+    "contact_channel": "설비 02-2012-0054; 전기 02-2012-0088",
     "confidence_type": "확인 필요형 답변",
     "category": "8.5 매장 시설 및 공사"
   },
@@ -371,7 +371,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "전기 추가 사용은 가능하나 과부하 방지를 위해 저용량 우선, 전기팀(02-2012-0087) 확인 후 진행.",
     "next_action": "작업 전 시설·전기 담당과 사전 확인 후 공사/설치 가능 시간에 맞춰 진행합니다.",
-    "contact_channel": "시설 02-2012-0070; 전기 02-2012-0087; 방재 02-2012-0119",
+    "contact_channel": "전기 02-2012-0088",
     "confidence_type": "운영 사례형 답변",
     "category": "8.5 매장 시설 및 공사"
   },
@@ -387,7 +387,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "설치/세팅은 통상 폐점 후(20:30 이후). 영업시간 내 진열 및 준비 진행하지 않는 것을 권장합니다.",
     "next_action": "작업 전 시설·전기 담당과 사전 확인 후 공사/설치 가능 시간에 맞춰 진행합니다.",
-    "contact_channel": "시설 02-2012-0070; 전기 02-2012-0087; 방재 02-2012-0119",
+    "contact_channel": "방재 02-2012-0055; 설비 02-2012-0054",
     "confidence_type": "운영 사례형 답변",
     "category": "8.5 매장 시설 및 공사"
   },
@@ -404,7 +404,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "해주차장 3층 하역장에 폐기장 존재. 대형 폐기물은 현장에서 비용 지불하고 폐기 가능합니다.",
     "next_action": "작업 전 시설·전기 담당과 사전 확인 후 공사/설치 가능 시간에 맞춰 진행합니다.",
-    "contact_channel": "시설 02-2012-0070; 전기 02-2012-0087; 방재 02-2012-0119",
+    "contact_channel": "미화 02-2012-0058; 설비 02-2012-0054",
     "confidence_type": "운영 사례형 답변",
     "category": "8.5 매장 시설 및 공사"
   },
@@ -421,7 +421,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "지게차 사용 시 신호수 확보 필요. 별도 안전관리자 배치 필요 없음. 보험 가입 의무 없으나 영업 보험 개별 가입 가능.",
     "next_action": "작업 전 시설·전기 담당과 사전 확인 후 공사/설치 가능 시간에 맞춰 진행합니다.",
-    "contact_channel": "시설 02-2012-0070; 전기 02-2012-0087; 방재 02-2012-0119",
+    "contact_channel": "방재 02-2012-0055",
     "confidence_type": "운영 사례형 답변",
     "category": "8.5 매장 시설 및 공사"
   },
@@ -438,7 +438,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "현장 POS는 상품 스캔형이 아닌 최종 결제금액(합계) 입력 방식 운영 사례 확인 합니다. 연동 불가하므로 재고관리 위한 브랜드 개별 POS 지참하거나 노트북 지참하여 재고 관리를 진행해 주세요.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
-    "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
+    "contact_channel": "전산(POS) 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
     "category": "8.6 매장 운영 및 서비스 기준",
     "manual_files": [
@@ -465,7 +465,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "바이어 확인 후 사용 가능. 타 매장에 피해 주는 행위는 불가합니다.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
-    "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.6 매장 운영 및 서비스 기준"
   },
@@ -481,7 +481,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "[제조음료 판매 원칙]\n금액을 받고 현장에서 음료수를 제조하여 판매하는 경우(ex. 녹차라떼 5500원)\n1) 영업신고 필요(일반음식점 or 휴게음식점)\n2) 보건증 필요\n3) 음료 제조에 사용되는 원료에 \"한글표시사항\" 부착\n4) 근무자 위생모, 마스크 착용(투명한 가드 착용 가능)\n\n현장에서 완제품을 시음만 하는 경우\n영업신고는 필요 없음. 그 외 상기 2~4번 모두 준비해야 함\n\n밀봉되어 있는 완제품만 판매할 경우\n한글표시사항 부착된 제품만 잘 판매하면 됩니다.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
-    "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.6 매장 운영 및 서비스 기준"
   },
@@ -497,7 +497,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "고객 상담실 안내 02-2012-0000 또는 02-2012-0002에 전화. 아이파크몰 APP 에 고객 문의 남길 수 있습니다.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
-    "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
     "category": "8.6 매장 운영 및 서비스 기준"
   },
@@ -513,7 +513,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "패션파크 6층 닥터마틴 매장 옆에 고객 상담실 방문하여 접수합니다.",
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수합니다.",
-    "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확정 정책형 답변",
     "category": "8.6 매장 운영 및 서비스 기준"
   },
@@ -529,7 +529,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "무상 제공 사례 확인(불출 일정 운영). 아이파크몰 제공 쇼핑백을 유상으로 판매가 금지됩니다.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
     "keywords": [
@@ -550,7 +550,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "정해진 날짜/시간에 별 주차장 지하 3층에서 불출하는 운영 사례 확인 합니다.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
   },
@@ -566,7 +566,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "소형-중형-대형-특대형 으로 운영. 별 주차장 지하 3층에서 희망하는 만큼 직접 수령해 주세요.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
   },
@@ -582,7 +582,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "신규회선발급\n-02-2012-2200(KT 아이파크몰사무소, 2F 유니클로매장내) 신청. -신규번호발급후, 개별바이어에게매장번호전달. -신청후,익일적용으로인해입점전사전등록必. 기존회선명의변경\n-인수자, 인계자개인사업자자격必. -신분증, 사업자등록증지참후, KT플라자용산점(삼각지역) 방문해 주세요. -명의변경은점내사무소에서처리 불가합니다.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "KT 02-2012-2200",
     "confidence_type": "운영 사례형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
     "manual_files": [
@@ -601,7 +601,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "POS 매뉴얼 사전 송부 및 오픈 전 현장 사용 교육 제공 사례 확인 합니다.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "전산(POS) 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
     "manual_files": [
@@ -621,7 +621,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "POS 장애 시 전산실(02-2012-0200) 점검이 연계됩니다.",
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
-    "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
+    "contact_channel": "전산(POS) 02-2012-0200",
     "confidence_type": "확정 정책형 답변",
     "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
     "manual_files": [
@@ -642,7 +642,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "정규 입점 브랜드는 신규입점교육 1회 수강하도록 권장합니다.",
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.8 인력 운영 및 교육",
     "manual_files": [
@@ -662,7 +662,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "협력사원 모바일 앱 가입 시 모바일 출입증 발급 가능 첨부파일을 확인해 주세요.",
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.8 인력 운영 및 교육",
     "manual_files": [
@@ -682,7 +682,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "팝업 매장 비우지 않도록 교차근무 권장합니다. 패션파크, 리빙파크, D7 등에 직원 휴게 공간 확인합니다.",
     "next_action": "입점 전 교육·출입증 등록을 완료하고 근무 규정을 공유합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.8 인력 운영 및 교육",
     "manual_files": [
@@ -702,7 +702,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "월별 정산, 월초 트러스빌 이라는 사이트에서 역발행 세금계산서 협력사에서 직접 승인 후 익월 25일 입금 기준 확인 합니다.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
-    "contact_channel": "트러스빌; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
@@ -726,7 +726,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "역발행 세금계산서 확인 즉시 바이어에게 문의해 주세요.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
-    "contact_channel": "트러스빌; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
@@ -750,7 +750,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "매출에서 수수료 제외 금액 기준으로 월말 역발행 세금계산서 발행 사례 확인 합니다.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
-    "contact_channel": "트러스빌; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
@@ -774,7 +774,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "브랜드 프로모션은 브랜드 비용으로 청구. 아이파크몰과의 공동판촉 등 진행 원할 시 바이어 소통이 필요합니다.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
-    "contact_channel": "트러스빌; 담당 바이어",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
     "category": "8.9 정산 및 행정"
   },
@@ -790,7 +790,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "행사장 구조물 높이 기준은 구역별 상이하므로 바이어 소통 필요(최대 높이 1500~1600mm)",
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영"
   },
@@ -806,7 +806,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "패션파크 5층 수선실 옆 POP 실 방문하여 세중PMS 라는 프로그램 통해 자체 신청해 주세요. 쇼카드 및 A4,A3 POP 출력 가능합니다.",
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영"
   },
@@ -822,7 +822,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "첨부파일을 확인해 주세요.",
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영"
   },
@@ -838,7 +838,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "에스컬레이터(가로형) 1920*1080px 엘리베이터(세로형) 1080*1920px 로 JPG 파일 각 1장 담당 바이어에게 송출 희망일 7일 전 전달. 매장명, 연락처, 위치, 행사내용, 기간 등 포함합니다. 단, 장소 표시시 아이파크몰 이라는 문구 삭제. 아이파크몰 내 송출되는 자료이기 때문. 영상 송출은 불가합니다.",
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [
@@ -860,7 +860,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "앱 광고는 대표 이미지 1컷(정방형 권장) 및 프로모션 기간, 내용 포함하여 담당 바이어에게 송출 희망일 2주전 직접 신청해 주세요.",
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영"
   },
@@ -876,7 +876,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "철수는 설치와 마찬가지로 출입신청 후 각 하역장 동선 기준 운영(반드시 폐점 후 작업).",
     "next_action": "철수 계획을 사전 공유하고 출입신청 후 폐점 이후 원상복구까지 완료합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
     "category": "8.11 철수, 연장, 계약 종료"
   },
@@ -892,7 +892,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "협력사가 부담합니다.",
     "next_action": "철수 계획을 사전 공유하고 출입신청 후 폐점 이후 원상복구까지 완료합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "미화 02-2012-0058",
     "confidence_type": "확정 정책형 답변",
     "category": "8.11 철수, 연장, 계약 종료"
   },
@@ -908,7 +908,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "60일 내에 담당 바이어와 상의해 주세요.",
     "next_action": "철수 계획을 사전 공유하고 출입신청 후 폐점 이후 원상복구까지 완료합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.11 철수, 연장, 계약 종료"
   },
@@ -924,7 +924,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "미정산 발생 사례 없으나 있을 경우 담당 바이어와 상의해 주세요. 시설 훼손 시 원상 복구가 필수입니다.",
     "next_action": "철수 계획을 사전 공유하고 출입신청 후 폐점 이후 원상복구까지 완료합니다.",
-    "contact_channel": "담당 바이어; 보안 02-2012-4112",
+    "contact_channel": "설비 02-2012-0054; 담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.11 철수, 연장, 계약 종료"
   },
@@ -947,7 +947,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "This request is outside the iPark brand operation FAQ scope, so a reliable answer is not available in this chatbot.",
     "next_action": "Please rephrase the question within iPark entry/operation topics for accurate guidance.",
-    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.1 입점 형태 및 기본 운영"
   },
@@ -970,7 +970,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "Real-time confirmed values can change by operation status, so this dataset alone cannot guarantee final values.",
     "next_action": "Please verify final values through same-day APP notice and the responsible buyer/security channel.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.2 출입 신청 및 인원 등록"
   }
