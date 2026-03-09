@@ -30,8 +30,15 @@ window.LOCAL_FAQ_DATA = [
     "answer": "공휴일은 21:00 종료 기준이 확인됩니다(예: 12/25, 1/1).",
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
     "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
-    "confidence_type": "운영 사례형 답변",
-    "category": "8.1 입점 형태 및 기본 운영"
+    "confidence_type": "확인 필요형 답변",
+    "category": "8.1 입점 형태 및 기본 운영",
+    "keywords": [
+      "confirmed hours",
+      "holiday hours",
+      "real-time",
+      "this week",
+      "today"
+    ]
   },
   {
     "faq_id": "FAQ-003",
@@ -143,8 +150,14 @@ window.LOCAL_FAQ_DATA = [
     "answer": "야간 작업 시간대는 19:00~익일 10:00 기준, 출입신청 후 담당 승인부서 승인 필요.",
     "next_action": "PMS에서 출입신청을 접수하고 승인부서를 지정한 뒤 승인 완료 여부를 확인합니다.",
     "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
-    "confidence_type": "운영 사례형 답변",
-    "category": "8.2 출입 신청 및 인원 등록"
+    "confidence_type": "확인 필요형 답변",
+    "category": "8.2 출입 신청 및 인원 등록",
+    "keywords": [
+      "approver",
+      "night work approval",
+      "today approval",
+      "who approves"
+    ]
   },
   {
     "faq_id": "FAQ-010",
@@ -431,6 +444,12 @@ window.LOCAL_FAQ_DATA = [
     "manual_files": [
       "./manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
       "./manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
+    ],
+    "keywords": [
+      "barcode scan",
+      "not scan-based",
+      "pos integration",
+      "scan POS"
     ]
   },
   {
@@ -512,7 +531,12 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인합니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS"
+    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "keywords": [
+      "paid shopping bag",
+      "resale allowed",
+      "shopping bag resale"
+    ]
   },
   {
     "faq_id": "FAQ-031",
@@ -679,10 +703,15 @@ window.LOCAL_FAQ_DATA = [
     "answer": "월별 정산, 월초 트러스빌 이라는 사이트에서 역발행 세금계산서 협력사에서 직접 승인 후 익월 25일 입금 기준 확인 합니다.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
-    "confidence_type": "운영 사례형 답변",
+    "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
       "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ],
+    "keywords": [
+      "exact payout date",
+      "payment schedule",
+      "this month settlement"
     ]
   },
   {
@@ -698,10 +727,15 @@ window.LOCAL_FAQ_DATA = [
     "answer": "역발행 세금계산서 확인 즉시 바이어에게 문의해 주세요.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
-    "confidence_type": "운영 사례형 답변",
+    "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
       "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ],
+    "keywords": [
+      "closing date",
+      "objection deadline",
+      "settlement cutoff"
     ]
   },
   {
@@ -717,10 +751,15 @@ window.LOCAL_FAQ_DATA = [
     "answer": "매출에서 수수료 제외 금액 기준으로 월말 역발행 세금계산서 발행 사례 확인 합니다.",
     "next_action": "월초 정산 일정에 맞춰 트러스빌에서 세금계산서 승인 후 입금 일정을 확인합니다.",
     "contact_channel": "트러스빌; 담당 바이어",
-    "confidence_type": "운영 사례형 답변",
+    "confidence_type": "확인 필요형 답변",
     "category": "8.9 정산 및 행정",
     "manual_files": [
       "./manual/트러스빌 가입 매뉴얼 (아이파크몰).pdf"
+    ],
+    "keywords": [
+      "issue date",
+      "monthly closing",
+      "tax invoice date"
     ]
   },
   {
@@ -801,7 +840,13 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "소재 규격/마감기한을 확인해 담당 바이어에게 기한 내 제출합니다.",
     "contact_channel": "담당 바이어; PMS",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.10 마케팅, 사인물, 콘텐츠 반영"
+    "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
+    "keywords": [
+      "did video",
+      "jpg only",
+      "moving image",
+      "video DID"
+    ]
   },
   {
     "faq_id": "FAQ-047",
@@ -882,5 +927,51 @@ window.LOCAL_FAQ_DATA = [
     "contact_channel": "담당 바이어; 보안 02-2012-4112",
     "confidence_type": "확인 필요형 답변",
     "category": "8.11 철수, 연장, 계약 종료"
+  },
+  {
+    "faq_id": "FAQ-052",
+    "stage": "입점문의",
+    "question": "Can you answer out-of-scope requests such as stock price, lodging, or API billing?",
+    "paraphrases": [
+      "This is outside iPark FAQ. Can you still answer?",
+      "Give me stock outlook and travel recommendations",
+      "What is ChatGPT API price?"
+    ],
+    "keywords": [
+      "out of scope",
+      "stock price",
+      "lodging",
+      "hotel",
+      "api billing",
+      "travel recommendation"
+    ],
+    "answer": "This request is outside the iPark brand operation FAQ scope, so a reliable answer is not available in this chatbot.",
+    "next_action": "Please rephrase the question within iPark entry/operation topics for accurate guidance.",
+    "contact_channel": "담당 바이어; 아이파크몰 APP(쇼핑정보-매장검색)",
+    "confidence_type": "확인 필요형 답변",
+    "category": "8.1 입점 형태 및 기본 운영"
+  },
+  {
+    "faq_id": "FAQ-053",
+    "stage": "입점진행",
+    "question": "Can you confirm real-time values for today or this week?",
+    "paraphrases": [
+      "Tell me today confirmed operating hours",
+      "Who is the approver assigned right now?",
+      "Is tomorrow loading time confirmed?"
+    ],
+    "keywords": [
+      "today",
+      "tomorrow",
+      "this week",
+      "real-time",
+      "confirmed now",
+      "current approver"
+    ],
+    "answer": "Real-time confirmed values can change by operation status, so this dataset alone cannot guarantee final values.",
+    "next_action": "Please verify final values through same-day APP notice and the responsible buyer/security channel.",
+    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "confidence_type": "확인 필요형 답변",
+    "category": "8.2 출입 신청 및 인원 등록"
   }
 ];
