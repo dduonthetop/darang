@@ -977,5 +977,21 @@ window.LOCAL_FAQ_DATA = [
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
     "category": "8.2 출입 신청 및 인원 등록"
+  },
+  {
+    "faq_id": "FAQ-52",
+    "stage": "매장운영",
+    "question": "POS는 기본제공되나요?",
+    "paraphrases": [
+      "POS를 따로 준비해야 하나요",
+      "POS 신청하는 방법 알려주세요",
+      "POS 제공 여부 알려주세요",
+      "POS 제공 여부 문의드립니다"
+    ],
+    "answer": "POS는 아이파크몰측에서 자사 POS를 대여해드립니다",
+    "next_action": "설치 위치 및 필요 설치 대수를 확인하여 담당 바이어에게 요청합니다.",
+    "contact_channel": "전산/POS 02-2012-0200; 담당 바이어",
+    "confidence_type": "확정 정책형 답변",
+    "category": "8.12 POS"
   }
 ];
