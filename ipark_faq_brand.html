@@ -292,6 +292,13 @@
         return normalize(t).split(" ").filter(Boolean);
       }
 
+      function intentFlags(question) {
+        const q = normalize(question);
+        const hasPos = /(^|\s)(pos|포스)(\s|$)/.test(q) || q.includes("바코드") || q.includes("스캔");
+        const hasShoppingBag = q.includes("쇼핑백");
+        return { hasPos, hasShoppingBag };
+      }
+
       function overlap(a, b) {
         const sa = new Set(a);
         const sb = new Set(b);
@@ -316,6 +323,8 @@
         const qt = tokenize(question);
         const full = [item.question, ...(item.paraphrases || []), ...(item.keywords || []), item.category, item.stage].join(" ");
         const ft = tokenize(full);
+        const flags = intentFlags(question);
+        const itemNorm = normalize(full);
 
         let score = overlap(qt, ft) * 0.72;
         const questionNorm = normalize(item.question || "");
@@ -329,6 +338,16 @@
         if (categoryPrefix) {
           if ((item.category || "").startsWith(categoryPrefix)) score += 0.14;
           else score -= 0.03;
+        }
+
+        // Prevent cross-topic leakage inside 8.7 (POS vs 쇼핑백).
+        if (flags.hasPos) {
+          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score += 0.26;
+          if (itemNorm.includes("쇼핑백")) score -= 0.22;
+        }
+        if (flags.hasShoppingBag) {
+          if (itemNorm.includes("쇼핑백")) score += 0.26;
+          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score -= 0.22;
         }
 
         return score;
