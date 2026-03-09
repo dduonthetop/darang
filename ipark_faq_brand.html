@@ -277,6 +277,23 @@
         "매장운영": ["운영", "pos", "포스", "쇼핑백", "정산", "매출", "고장", "민원", "고객"]
       };
 
+      const INTENT_TAG_PATTERNS = {
+        pos: /(^|\s)(pos|포스)(\s|$)|바코드|스캔|전산/,
+        shoppingbag: /쇼핑백|불출/,
+        phone: /내선|kt|전화/,
+        entry: /출입|출입신청|pms|야간/,
+        parking: /주차|주차권|주차요금/,
+        loading: /하역|반입|반출|셔터|동선/,
+        electric: /전기|조명/,
+        facility: /설비|누수|공조/,
+        safety: /방재|소방|안전|화기/,
+        settlement: /정산|입금|트러스빌/,
+        tax: /세금계산서|역발행/,
+        ads_app: /app|앱|광고|상세페이지/,
+        ads_did: /did|송출|에스컬레이터|엘리베이터/,
+        cs: /컴플레인|고객상담|분실물|유실물|사고/
+      };
+
       let categoryHint = "";
       let exampleSelectorEl = null;
 
@@ -297,6 +314,15 @@
         const hasPos = /(^|\s)(pos|포스)(\s|$)/.test(q) || q.includes("바코드") || q.includes("스캔");
         const hasShoppingBag = q.includes("쇼핑백");
         return { hasPos, hasShoppingBag };
+      }
+
+      function detectIntentTags(text) {
+        const n = normalize(text);
+        const tags = new Set();
+        Object.entries(INTENT_TAG_PATTERNS).forEach(([tag, pattern]) => {
+          if (pattern.test(n)) tags.add(tag);
+        });
+        return tags;
       }
 
       function overlap(a, b) {
@@ -325,6 +351,8 @@
         const ft = tokenize(full);
         const flags = intentFlags(question);
         const itemNorm = normalize(full);
+        const qTags = detectIntentTags(question);
+        const itemTags = detectIntentTags(full);
 
         let score = overlap(qt, ft) * 0.72;
         const questionNorm = normalize(item.question || "");
@@ -348,6 +376,15 @@
         if (flags.hasShoppingBag) {
           if (itemNorm.includes("쇼핑백")) score += 0.26;
           if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score -= 0.22;
+        }
+
+        // General cross-category disambiguation:
+        // if question has clear intent tags, penalize items with disjoint tags.
+        if (qTags.size && itemTags.size) {
+          let overlapCount = 0;
+          qTags.forEach((t) => { if (itemTags.has(t)) overlapCount += 1; });
+          if (overlapCount === 0) score -= 0.18;
+          else score += Math.min(0.14, overlapCount * 0.07);
         }
 
         return score;
