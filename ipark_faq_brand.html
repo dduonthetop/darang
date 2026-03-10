@@ -226,7 +226,7 @@
       </section>
 
       <section class="composer">
-        <input id="q" type="text" placeholder="예: 입점은 어떻게 진행하나요?" maxlength="300" />
+        <input id="q" type="text" placeholder="예: 매장 운영시간이 어떻게 되나요?" maxlength="300" />
         <button class="send" id="send">전송</button>
       </section>
     </main>
@@ -240,7 +240,7 @@
       const DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? window.LOCAL_FAQ_DATA : [];
 
       const CATEGORIES = [
-        { code: "8.1", label: "입점 형태 및 기본 운영" },
+        { code: "8.1", label: "기본 운영" },
         { code: "8.2", label: "출입 신청 및 인원 등록" },
         { code: "8.3", label: "차량/주차/하역/동선" },
         { code: "8.4", label: "반입/반출 및 보관" },
@@ -256,7 +256,7 @@
       ];
 
       const EXAMPLES_BY_CATEGORY = {
-        "8.1": ["입점은 어떻게 진행하나요?", "매장 운영시간이 어떻게 되나요?"],
+        "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
         "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
         "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
         "8.4": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],

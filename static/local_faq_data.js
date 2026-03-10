@@ -14,7 +14,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.1 입점 형태 및 기본 운영"
+    "category": "8.1 기본 운영"
   },
   {
     "faq_id": "FAQ-002",
@@ -31,7 +31,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
-    "category": "8.1 입점 형태 및 기본 운영",
+    "category": "8.1 기본 운영",
     "keywords": [
       "confirmed hours",
       "holiday hours",
@@ -54,7 +54,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.1 입점 형태 및 기본 운영"
+    "category": "8.1 기본 운영"
   },
   {
     "faq_id": "FAQ-004",
@@ -70,7 +70,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "아이파크몰 APP에서 최신 운영시간을 확인하고 필요 시 담당 바이어에게 예외 여부를 문의합니다.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.1 입점 형태 및 기본 운영"
+    "category": "8.1 기본 운영"
   },
   {
     "faq_id": "FAQ-005",
@@ -953,7 +953,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "Please rephrase the question within iPark entry/operation topics for accurate guidance.",
     "contact_channel": "담당 바이어 문의",
     "confidence_type": "확인 필요형 답변",
-    "category": "8.1 입점 형태 및 기본 운영"
+    "category": "8.1 기본 운영"
   },
   {
     "faq_id": "FAQ-053",
