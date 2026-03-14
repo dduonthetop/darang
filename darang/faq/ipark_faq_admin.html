@@ -391,6 +391,62 @@
         box-shadow: 0 16px 28px rgba(240, 50, 35, 0.22);
       }
 
+      .attachment-tools,
+      .attachment-list-box,
+      .attachment-item,
+      .attachment-meta {
+        display: grid;
+      }
+
+      .attachment-tools {
+        gap: 12px;
+      }
+
+      .attachment-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 180px auto;
+        gap: 10px;
+      }
+
+      .attachment-list-box {
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.94);
+      }
+
+      .attachment-item {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+        padding: 12px 14px;
+        border-radius: 16px;
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        background: #ffffff;
+      }
+
+      .attachment-meta {
+        gap: 4px;
+        min-width: 0;
+      }
+
+      .attachment-link {
+        color: var(--primary-deep);
+        font-weight: 700;
+        text-decoration: none;
+        word-break: break-all;
+      }
+
+      .attachment-link:hover {
+        text-decoration: underline;
+      }
+
+      .attachment-kind {
+        color: var(--muted);
+        font-size: 12px;
+      }
+
       .editor-list,
       .editor-panel {
         border: 1px solid var(--line);
@@ -552,6 +608,24 @@
               <input id="editContact" type="text" />
             </div>
             <div class="field">
+              <label>참고 URL / 매뉴얼</label>
+              <div class="attachment-tools">
+                <div class="attachment-row">
+                  <input id="attachmentUrlInput" type="url" placeholder="https://example.com/manual" />
+                  <input id="attachmentLabelInput" type="text" placeholder="표시 이름(선택)" />
+                  <button id="addUrlBtn" type="button" class="ghost-btn">URL 추가</button>
+                </div>
+                <div class="attachment-row">
+                  <input id="manualFileInput" type="file" />
+                  <input id="manualFileLabelInput" type="text" placeholder="파일 표시 이름(선택)" />
+                  <button id="uploadManualBtn" type="button" class="ghost-btn">매뉴얼 업로드</button>
+                </div>
+                <div id="attachmentList" class="attachment-list-box">
+                  <p class="toolbar-note">등록된 참고 URL이나 매뉴얼이 없습니다.</p>
+                </div>
+              </div>
+            </div>
+            <div class="field">
               <label for="editConfidence">답변 유형</label>
               <select id="editConfidence"></select>
               <small id="confidenceHelp" class="field-help"></small>
@@ -599,6 +673,13 @@
       const editAnswer = document.getElementById("editAnswer");
       const editNextAction = document.getElementById("editNextAction");
       const editContact = document.getElementById("editContact");
+      const attachmentUrlInput = document.getElementById("attachmentUrlInput");
+      const attachmentLabelInput = document.getElementById("attachmentLabelInput");
+      const addUrlBtn = document.getElementById("addUrlBtn");
+      const manualFileInput = document.getElementById("manualFileInput");
+      const manualFileLabelInput = document.getElementById("manualFileLabelInput");
+      const uploadManualBtn = document.getElementById("uploadManualBtn");
+      const attachmentList = document.getElementById("attachmentList");
       const editConfidence = document.getElementById("editConfidence");
       const confidenceHelp = document.getElementById("confidenceHelp");
       const saveEditorBtn = document.getElementById("saveEditorBtn");
@@ -757,6 +838,110 @@
         return (t || "").toLowerCase().replace(/\s+/g, " ").trim();
       }
 
+      function attachmentLabelFromUrl(url = "") {
+        if (!url) return "첨부 자료";
+        if (url.startsWith("data:")) return "업로드 파일";
+        if (url.startsWith("./references/manual/")) return url.replace("./references/manual/", "");
+        try {
+          const parsed = new URL(url);
+          return parsed.pathname.split("/").pop() || parsed.hostname || url;
+        } catch (err) {
+          const segments = url.split("/");
+          return segments[segments.length - 1] || url;
+        }
+      }
+
+      function normalizeAttachment(entry) {
+        if (!entry) return null;
+        if (typeof entry === "string") {
+          const label = attachmentLabelFromUrl(entry);
+          return {
+            type: entry.startsWith("http") ? "url" : "file",
+            label,
+            url: entry,
+          };
+        }
+        if (typeof entry === "object" && typeof entry.url === "string") {
+          return {
+            type: entry.type || (entry.url.startsWith("http") ? "url" : "file"),
+            label: entry.label || attachmentLabelFromUrl(entry.url),
+            url: entry.url,
+          };
+        }
+        return null;
+      }
+
+      function ensureCurrentAttachments(item) {
+        if (!item) return [];
+        const next = (Array.isArray(item.manual_files) ? item.manual_files : [])
+          .map(normalizeAttachment)
+          .filter(Boolean);
+        item.manual_files = next;
+        return next;
+      }
+
+      function renderAttachmentList(item = DATA[selectedAdminIndex]) {
+        const attachments = ensureCurrentAttachments(item);
+        attachmentList.innerHTML = "";
+        if (!attachments.length) {
+          attachmentList.innerHTML = "<p class='toolbar-note'>등록된 참고 URL이나 매뉴얼이 없습니다.</p>";
+          return;
+        }
+        attachments.forEach((attachment, index) => {
+          const row = document.createElement("div");
+          row.className = "attachment-item";
+
+          const meta = document.createElement("div");
+          meta.className = "attachment-meta";
+
+          const link = document.createElement("a");
+          link.className = "attachment-link";
+          link.href = attachment.url || "#";
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+          link.textContent = attachment.label || attachmentLabelFromUrl(attachment.url);
+          meta.appendChild(link);
+
+          const kind = document.createElement("span");
+          kind.className = "attachment-kind";
+          kind.textContent = attachment.type === "url" ? "URL 링크" : "업로드된 매뉴얼";
+          meta.appendChild(kind);
+
+          const removeBtn = document.createElement("button");
+          removeBtn.type = "button";
+          removeBtn.className = "ghost-btn";
+          removeBtn.textContent = "삭제";
+          removeBtn.addEventListener("click", () => {
+            updateCurrentItemFromForm();
+            const current = DATA[selectedAdminIndex];
+            const currentAttachments = ensureCurrentAttachments(current);
+            currentAttachments.splice(index, 1);
+            current.manual_files = currentAttachments;
+            renderAttachmentList(current);
+          });
+
+          row.appendChild(meta);
+          row.appendChild(removeBtn);
+          attachmentList.appendChild(row);
+        });
+      }
+
+      function resetAttachmentInputs() {
+        attachmentUrlInput.value = "";
+        attachmentLabelInput.value = "";
+        manualFileInput.value = "";
+        manualFileLabelInput.value = "";
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result || ""));
+          reader.onerror = () => reject(new Error("파일을 읽지 못했습니다."));
+          reader.readAsDataURL(file);
+        });
+      }
+
       function isLoggedIn() {
         return !!readAdminSession();
       }
@@ -903,6 +1088,8 @@
           editContact.value = "";
           editConfidence.value = CONFIDENCE_OPTIONS[0].value;
           updateConfidenceHelp(CONFIDENCE_OPTIONS[0].value);
+          renderAttachmentList(null);
+          resetAttachmentInputs();
           return;
         }
         editQuestion.value = item.question || "";
@@ -915,6 +1102,8 @@
           : CONFIDENCE_OPTIONS[0].value;
         editConfidence.value = knownType;
         updateConfidenceHelp(knownType);
+        renderAttachmentList(item);
+        resetAttachmentInputs();
       }
 
       function updateCurrentItemFromForm() {
@@ -986,6 +1175,53 @@
         renderEditorMeta(meta);
         editorStatus.textContent = "질문이 삭제되었습니다. 같은 브라우저의 FAQ 화면에 바로 반영됩니다.";
         window.alert("질문이 삭제되었습니다.");
+      }
+
+      function handleAddUrl() {
+        updateCurrentItemFromForm();
+        const item = DATA[selectedAdminIndex];
+        if (!item) {
+          window.alert("먼저 질문을 선택해 주세요.");
+          return;
+        }
+        const url = attachmentUrlInput.value.trim();
+        if (!url) {
+          window.alert("추가할 URL을 입력해 주세요.");
+          return;
+        }
+        const label = attachmentLabelInput.value.trim() || attachmentLabelFromUrl(url);
+        const attachments = ensureCurrentAttachments(item);
+        attachments.push({ type: "url", label, url });
+        item.manual_files = attachments;
+        renderAttachmentList(item);
+        attachmentUrlInput.value = "";
+        attachmentLabelInput.value = "";
+      }
+
+      async function handleUploadManual() {
+        updateCurrentItemFromForm();
+        const item = DATA[selectedAdminIndex];
+        if (!item) {
+          window.alert("먼저 질문을 선택해 주세요.");
+          return;
+        }
+        const file = manualFileInput.files?.[0];
+        if (!file) {
+          window.alert("업로드할 파일을 선택해 주세요.");
+          return;
+        }
+        try {
+          const dataUrl = await readFileAsDataUrl(file);
+          const label = manualFileLabelInput.value.trim() || file.name || "업로드 파일";
+          const attachments = ensureCurrentAttachments(item);
+          attachments.push({ type: "file", label, url: dataUrl });
+          item.manual_files = attachments;
+          renderAttachmentList(item);
+          manualFileInput.value = "";
+          manualFileLabelInput.value = "";
+        } catch (error) {
+          window.alert(error.message || "파일 업로드에 실패했습니다.");
+        }
       }
 
       async function saveEditorFormToBackend() {
@@ -1172,6 +1408,8 @@
         updateConfidenceHelp(event.target.value);
       });
       addQuestionBtn.addEventListener("click", handleAddQuestion);
+      addUrlBtn.addEventListener("click", handleAddUrl);
+      uploadManualBtn.addEventListener("click", handleUploadManual);
       saveEditorBtn.addEventListener("click", saveEditorForm);
       resetEditorBtn.addEventListener("click", resetEditorForm);
       deleteQuestionBtn.addEventListener("click", handleDeleteQuestion);

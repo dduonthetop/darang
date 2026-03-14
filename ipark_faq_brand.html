@@ -1573,13 +1573,41 @@
       }
 
       function safeHref(path) {
-        return encodeURI(path || "");
+        if (!path) return "";
+        if (path.startsWith("data:") || path.startsWith("http")) return path;
+        return encodeURI(path);
+      }
+
+      function normalizeAttachment(entry) {
+        if (!entry) return null;
+        if (typeof entry === "string") {
+          const label = entry.startsWith("./references/manual/")
+            ? entry.replace("./references/manual/", "")
+            : entry.split("/").pop() || entry;
+          return {
+            type: entry.startsWith("http") ? "url" : "file",
+            label,
+            url: entry,
+          };
+        }
+        if (typeof entry === "object" && typeof entry.url === "string") {
+          const fallbackLabel = entry.url.startsWith("./references/manual/")
+            ? entry.url.replace("./references/manual/", "")
+            : entry.url.split("/").pop() || entry.url;
+          return {
+            type: entry.type || (entry.url.startsWith("http") ? "url" : "file"),
+            label: entry.label || fallbackLabel,
+            url: entry.url,
+          };
+        }
+        return null;
       }
 
       function renderManualAttachments(data) {
-        const fromData = Array.isArray(data.manual_files) ? data.manual_files : [];
-        const files = [...new Set(fromData)].filter(Boolean);
-        if (!files.length) return;
+        const attachments = (Array.isArray(data.manual_files) ? data.manual_files : [])
+          .map(normalizeAttachment)
+          .filter(Boolean);
+        if (!attachments.length) return;
 
         const box = document.createElement("div");
         box.className = "attachment-box";
@@ -1591,14 +1619,16 @@
 
         const list = document.createElement("ul");
         list.className = "attachment-list";
-        files.forEach((filePath) => {
+        attachments.forEach((attachment) => {
           const li = document.createElement("li");
           const a = document.createElement("a");
-          a.href = safeHref(filePath);
+          a.href = safeHref(attachment.url);
           a.target = "_blank";
           a.rel = "noopener noreferrer";
-          a.download = filePath.split("/").pop() || "manual.pdf";
-          a.textContent = filePath.replace("./references/manual/", "");
+          if (attachment.type !== "url") {
+            a.download = attachment.label || "manual";
+          }
+          a.textContent = attachment.label || attachment.url;
           li.appendChild(a);
           list.appendChild(li);
         });
