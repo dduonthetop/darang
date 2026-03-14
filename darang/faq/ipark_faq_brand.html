@@ -11,21 +11,26 @@
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
 
       :root {
-        --bg: #eef3f8;
-        --bg-deep: #d9e6ef;
-        --surface: rgba(255, 255, 255, 0.78);
+        --bg: #f7f9fc;
+        --bg-deep: #e9eff8;
+        --surface: rgba(255, 255, 255, 0.8);
         --surface-strong: #ffffff;
-        --surface-soft: rgba(246, 249, 252, 0.88);
-        --line: rgba(148, 163, 184, 0.24);
-        --line-strong: rgba(100, 116, 139, 0.24);
-        --text: #0f172a;
-        --muted: #5b6779;
-        --primary: #10a37f;
-        --primary-deep: #0b7d63;
-        --primary-soft: rgba(16, 163, 127, 0.12);
-        --shadow-lg: 0 30px 90px rgba(15, 23, 42, 0.12);
-        --shadow-md: 0 18px 48px rgba(15, 23, 42, 0.08);
-        --ok: #22c55e;
+        --surface-soft: rgba(250, 251, 255, 0.92);
+        --line: rgba(84, 125, 192, 0.14);
+        --line-strong: rgba(84, 125, 192, 0.24);
+        --text: #3f4650;
+        --muted: #667085;
+        --primary: #547dc0;
+        --primary-deep: #475e99;
+        --accent-lime: #bed92e;
+        --accent-coral: #f34a3c;
+        --accent-teal: #45c0b0;
+        --accent-yellow: #f8e57a;
+        --accent-purple: #a184c6;
+        --primary-soft: rgba(84, 125, 192, 0.12);
+        --shadow-lg: 0 30px 90px rgba(84, 125, 192, 0.14);
+        --shadow-md: 0 18px 48px rgba(63, 70, 80, 0.08);
+        --ok: #45c0b0;
       }
 
       * {
@@ -38,9 +43,10 @@
         font-family: "SUIT", "Pretendard", "Noto Sans KR", sans-serif;
         color: var(--text);
         background:
-          radial-gradient(circle at top left, rgba(16, 163, 127, 0.18), transparent 26%),
-          radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 28%),
-          linear-gradient(180deg, #f7fafc 0%, var(--bg) 48%, #e8eef5 100%);
+          radial-gradient(circle at 8% 14%, rgba(190, 217, 46, 0.22), transparent 16%),
+          radial-gradient(circle at 78% 22%, rgba(84, 125, 192, 0.16), transparent 18%),
+          radial-gradient(circle at 88% 80%, rgba(161, 132, 198, 0.18), transparent 14%),
+          linear-gradient(180deg, #ffffff 0%, var(--bg) 52%, var(--bg-deep) 100%);
       }
 
       body::before {
@@ -88,25 +94,39 @@
         position: relative;
         overflow: hidden;
         border-radius: 32px;
-        padding: 28px 30px;
+        padding: 30px 32px;
         display: grid;
-        grid-template-columns: minmax(0, 1.3fr) minmax(280px, 0.7fr);
-        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 26px;
+        right: 36px;
+        width: 62px;
+        height: 62px;
+        border-radius: 50%;
+        border: 12px solid #ff6a13;
+        background: transparent;
+        pointer-events: none;
       }
 
       .hero::after {
         content: "";
         position: absolute;
-        inset: auto -120px -140px auto;
-        width: 320px;
-        height: 320px;
-        border-radius: 50%;
-        background: radial-gradient(circle, rgba(16, 163, 127, 0.2), transparent 68%);
+        left: -14px;
+        bottom: -18px;
+        width: 86px;
+        height: 86px;
+        border-radius: 28px 0 0 0;
+        background: var(--accent-lime);
         pointer-events: none;
       }
 
       .eyebrow,
-      .section-label,
       .chat-fixed-kicker {
         display: inline-flex;
         align-items: center;
@@ -134,51 +154,6 @@
         line-height: 1.7;
       }
 
-      .hero-metrics {
-        margin-top: 22px;
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 12px;
-      }
-
-      .metric-card {
-        padding: 16px 18px;
-        border-radius: 22px;
-        border: 1px solid rgba(255, 255, 255, 0.58);
-        background: rgba(255, 255, 255, 0.62);
-        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
-      }
-
-      .metric-label {
-        display: block;
-        font-size: 12px;
-        color: var(--muted);
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .metric-value {
-        display: block;
-        margin-top: 10px;
-        font-family: "Space Grotesk", "SUIT", sans-serif;
-        font-size: 22px;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-      }
-
-      .metric-copy {
-        display: block;
-        margin-top: 6px;
-        font-size: 13px;
-        color: var(--muted);
-      }
-
-      .hero-side {
-        display: grid;
-        align-content: space-between;
-        gap: 16px;
-      }
-
       .status {
         width: fit-content;
         display: inline-flex;
@@ -186,9 +161,9 @@
         gap: 8px;
         padding: 10px 14px;
         border-radius: 999px;
-        border: 1px solid rgba(34, 197, 94, 0.16);
-        background: rgba(240, 253, 244, 0.9);
-        color: #166534;
+        border: 1px solid rgba(69, 192, 176, 0.18);
+        background: rgba(69, 192, 176, 0.1);
+        color: #237a70;
         font-size: 13px;
         font-weight: 600;
       }
@@ -201,33 +176,14 @@
         box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.12);
       }
 
-      .hero-note {
-        padding: 18px 20px;
-        border-radius: 24px;
-        background: rgba(15, 23, 42, 0.88);
-        color: rgba(255, 255, 255, 0.92);
-        box-shadow: var(--shadow-lg);
-      }
-
-      .hero-note strong {
-        display: block;
-        margin-bottom: 8px;
-        font-size: 15px;
-      }
-
-      .hero-note p {
-        margin: 0;
-        color: rgba(255, 255, 255, 0.72);
-        font-size: 13px;
-        line-height: 1.6;
-      }
-
       .admin-area {
         display: flex;
         align-items: center;
         justify-content: flex-end;
         gap: 10px;
         flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
       }
 
       .admin-link,
@@ -265,7 +221,7 @@
         color: #ffffff;
         border-color: transparent;
         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-deep) 100%);
-        box-shadow: 0 16px 28px rgba(16, 163, 127, 0.22);
+        box-shadow: 0 16px 28px rgba(84, 125, 192, 0.22);
       }
 
       .admin-user {
@@ -274,7 +230,7 @@
         gap: 8px;
         border-radius: 999px;
         padding: 11px 16px;
-        background: rgba(15, 23, 42, 0.88);
+        background: linear-gradient(135deg, var(--primary-deep) 0%, #5f6b80 100%);
         color: #ffffff;
         font-size: 13px;
         font-weight: 700;
@@ -301,62 +257,7 @@
       }
 
       .workspace {
-        display: grid;
-        grid-template-columns: 310px minmax(0, 1fr);
-        gap: 18px;
-        align-items: start;
-      }
-
-      .insight {
-        border-radius: 28px;
-        padding: 24px;
-        display: grid;
-        gap: 18px;
-      }
-
-      .insight-card {
-        padding: 18px;
-        border-radius: 22px;
-        background: rgba(255, 255, 255, 0.7);
-        border: 1px solid rgba(255, 255, 255, 0.62);
-      }
-
-      .insight-card h2,
-      .insight-card h3 {
-        margin: 10px 0 0;
-        font-size: 18px;
-        letter-spacing: -0.02em;
-      }
-
-      .insight-card p,
-      .insight-card li {
-        color: var(--muted);
-        font-size: 14px;
-        line-height: 1.65;
-      }
-
-      .insight-list {
-        margin: 12px 0 0;
-        padding-left: 18px;
-      }
-
-      .insight-pills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 14px;
-      }
-
-      .insight-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        padding: 9px 12px;
-        border-radius: 999px;
-        background: rgba(16, 163, 127, 0.08);
-        color: var(--primary-deep);
-        font-size: 13px;
-        font-weight: 700;
+        display: block;
       }
 
       .chat-shell {
@@ -383,8 +284,8 @@
         padding: 22px;
         border-bottom: 1px solid var(--line);
         background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 252, 0.96)),
-          radial-gradient(circle at top right, rgba(16, 163, 127, 0.08), transparent 28%);
+          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.96)),
+          radial-gradient(circle at top right, rgba(190, 217, 46, 0.16), transparent 28%);
       }
 
       .chat-fixed-head {
@@ -414,7 +315,7 @@
         gap: 8px;
         padding: 10px 14px;
         border-radius: 999px;
-        background: rgba(15, 23, 42, 0.92);
+        background: linear-gradient(135deg, var(--accent-teal) 0%, var(--primary) 100%);
         color: rgba(255, 255, 255, 0.9);
         font-size: 13px;
         font-weight: 700;
@@ -432,8 +333,8 @@
         margin-top: 18px;
         align-self: flex-start;
         width: 100%;
-        border: 1px solid rgba(16, 163, 127, 0.1);
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(246, 249, 252, 0.92));
+        border: 1px solid rgba(84, 125, 192, 0.1);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 249, 255, 0.92));
         border-radius: 22px;
         padding: 16px;
         display: grid;
@@ -482,7 +383,7 @@
       .attachment-box {
         align-self: flex-start;
         width: min(82%, 760px);
-        border: 1px solid rgba(16, 163, 127, 0.12);
+        border: 1px solid rgba(84, 125, 192, 0.14);
         background: rgba(255, 255, 255, 0.94);
         border-radius: 22px;
         padding: 14px 16px;
@@ -545,8 +446,8 @@
       .field input:focus,
       .field textarea:focus,
       .field select:focus {
-        border-color: rgba(16, 163, 127, 0.4);
-        box-shadow: 0 0 0 4px rgba(16, 163, 127, 0.12);
+        border-color: rgba(84, 125, 192, 0.4);
+        box-shadow: 0 0 0 4px rgba(84, 125, 192, 0.12);
         background: #ffffff;
       }
 
@@ -584,7 +485,7 @@
         padding: 22px;
         border-radius: 28px;
         border: 1px solid rgba(255, 255, 255, 0.4);
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.94);
         box-shadow: var(--shadow-lg);
         backdrop-filter: blur(28px);
       }
@@ -719,11 +620,6 @@
       }
 
       @media (max-width: 1100px) {
-        .hero,
-        .workspace {
-          grid-template-columns: 1fr;
-        }
-
         .chat {
           min-height: 640px;
         }
@@ -736,7 +632,6 @@
         }
 
         .hero,
-        .insight,
         .chat-shell,
         .modal-card {
           padding: 18px;
@@ -746,7 +641,7 @@
           font-size: 30px;
         }
 
-        .hero-metrics {
+        .hero {
           grid-template-columns: 1fr;
         }
 
@@ -779,68 +674,19 @@
     <main class="app">
       <section class="hero panel">
         <div>
-          <span class="eyebrow">iPark FAQ Intelligence Console</span>
-          <h1>임원들이 봐도 인상적인<br />브랜드 운영 FAQ</h1>
-          <p class="sub">입점 문의부터 출입 요청, 정산, POS, 시설, 매장 운영 이슈까지 빠르게 응답하는 브랜드 전용 FAQ 경험입니다. 관리자는 로그인 후 즉시 내용을 다듬고, 사용자들은 같은 화면에서 최신 답변을 확인할 수 있습니다.</p>
-          <div class="hero-metrics">
-            <div class="metric-card">
-              <span class="metric-label">Response Mode</span>
-              <span class="metric-value">Conversational</span>
-              <span class="metric-copy">챗GPT 스타일의 자연스러운 응답 톤</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-label">Update Flow</span>
-              <span class="metric-value">Admin Editable</span>
-              <span class="metric-copy">로그인 후 바로 FAQ 수정 가능</span>
-            </div>
-            <div class="metric-card">
-              <span class="metric-label">Leadership View</span>
-              <span class="metric-value">Executive Ready</span>
-              <span class="metric-copy">보고용으로도 돋보이는 화면 구성</span>
-            </div>
-          </div>
+          <span class="eyebrow">Urban Playground</span>
+          <h1>Urban Playground 아이파크몰<br />팝업 운영 FAQ</h1>
+          <p class="sub">기본 운영부터 출입, 정산, POS, 시설 이슈까지 빠르게 응답해 드리는 브랜드 전용 FAQ 챗봇입니다.</p>
         </div>
-        <div class="hero-side">
-          <div>
-            <span class="status"><span class="dot-ok"></span>실시간 FAQ 운영 화면</span>
-          </div>
-          <div class="admin-area">
-            <span id="adminUserBadge" class="admin-user"></span>
-            <button id="topLogoutBtn" class="logout-link" type="button">로그아웃</button>
-            <a class="admin-link" id="adminLoginLink" href="#">관리자 로그인</a>
-          </div>
-          <div class="hero-note">
-            <strong>운영 포인트</strong>
-            <p>로그인한 관리자는 같은 화면 안에서 FAQ를 바로 다듬을 수 있고, 사용자는 별도 이동 없이 챗봇 답변 결과를 즉시 확인할 수 있습니다.</p>
-          </div>
+        <div class="admin-area">
+          <span class="status"><span class="dot-ok"></span>운영 FAQ</span>
+          <span id="adminUserBadge" class="admin-user"></span>
+          <button id="topLogoutBtn" class="logout-link" type="button">로그아웃</button>
+          <a class="admin-link" id="adminLoginLink" href="#">관리자 로그인</a>
         </div>
       </section>
 
       <section class="workspace">
-        <aside class="insight">
-          <div class="insight-card">
-            <span class="section-label">Why This Works</span>
-            <h2>브랜드 운영팀용 AI 콘솔</h2>
-            <p>질문을 받은 뒤 곧바로 답하는 것에 그치지 않고, 관리자가 운영 정책을 상시 보완할 수 있는 구조로 설계했습니다.</p>
-            <div class="insight-pills">
-              <span class="insight-pill">입점 문의</span>
-              <span class="insight-pill">출입 요청</span>
-              <span class="insight-pill">정산</span>
-              <span class="insight-pill">POS</span>
-              <span class="insight-pill">시설 이슈</span>
-            </div>
-          </div>
-          <div class="insight-card">
-            <span class="section-label">Executive Notes</span>
-            <h3>이 화면에서 바로 보이는 강점</h3>
-            <ul class="insight-list">
-              <li>질문 선택형 시작점과 자유 입력형 검색을 동시에 지원합니다.</li>
-              <li>FAQ 데이터가 바뀌면 동일한 화면에서 즉시 응답 결과를 검증할 수 있습니다.</li>
-              <li>관리자 로그인 상태는 우측 상단에 명확하게 표시됩니다.</li>
-            </ul>
-          </div>
-        </aside>
-
         <section class="chat-shell">
           <section id="chat" class="chat">
             <div class="chat-fixed">
