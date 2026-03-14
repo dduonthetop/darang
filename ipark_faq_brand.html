@@ -1509,12 +1509,8 @@
 
       function renderExampleSelector(categoryCode) {
         const examples = EXAMPLES_BY_CATEGORY[categoryCode] || [];
-
-        if (!exampleSelectorEl) {
-          const { wrap } = addOptionBubble("예시 질문을 선택하거나 직접 입력해 주세요.");
-          exampleSelectorEl = wrap;
-        }
-
+        const { wrap } = addOptionBubble("예시 질문을 선택하거나 직접 입력해 주세요.");
+        exampleSelectorEl = wrap;
         const row = exampleSelectorEl.querySelector(".row");
         row.innerHTML = "";
 
