@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPark FAQ Admin Login</title>
+    <link rel="stylesheet" href="/static/admin_login.css" />
+  </head>
+  <body>
+    <main class="login-shell">
+      <section class="login-card">
+        <p class="eyebrow">Admin Login</p>
+        <h1>사번 로그인</h1>
+        <p class="copy">아이디와 비밀번호 모두 사번으로 입력합니다. 로그인 후 저장한 FAQ는 수정자 이름과 사번이 기록됩니다.</p>
+        <p class="status">직원 파일 상태: {{ employee_source_status }}</p>
+
+        <form id="loginForm" class="login-form">
+          <label>
+            <span>사번</span>
+            <input id="employeeId" type="text" autocomplete="username" required />
+          </label>
+          <label>
+            <span>비밀번호</span>
+            <input id="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">로그인</button>
+        </form>
+
+        <p id="errorText" class="error-text"></p>
+      </section>
+    </main>
+
+    <script src="/static/admin_login.js"></script>
+  </body>
+</html>

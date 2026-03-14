@@ -1,0 +1,104 @@
+:root {
+  --bg1: #f8efe3;
+  --bg2: #efe3d4;
+  --card: rgba(255, 252, 247, 0.95);
+  --line: #d8cab6;
+  --text: #27190f;
+  --muted: #6f5d4a;
+  --accent: #9c4024;
+  --danger: #a61d24;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(156, 64, 36, 0.16), transparent 28%),
+    linear-gradient(180deg, var(--bg1), var(--bg2));
+}
+
+.login-shell {
+  width: min(100vw - 20px, 480px);
+}
+
+.login-card {
+  padding: 28px;
+  border: 1px solid rgba(120, 89, 61, 0.18);
+  border-radius: 28px;
+  background: var(--card);
+  box-shadow: 0 20px 50px rgba(53, 32, 18, 0.12);
+}
+
+.eyebrow {
+  margin: 0 0 10px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 12px;
+}
+
+h1 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 36px;
+}
+
+.copy,
+.status {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.login-form {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+label {
+  display: grid;
+  gap: 8px;
+}
+
+label span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+input,
+button {
+  font: inherit;
+}
+
+input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: #fff;
+}
+
+button {
+  margin-top: 6px;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 16px;
+  color: #fff;
+  background: var(--accent);
+  cursor: pointer;
+}
+
+.error-text {
+  min-height: 20px;
+  margin: 12px 0 0;
+  color: var(--danger);
+  font-size: 14px;
+}

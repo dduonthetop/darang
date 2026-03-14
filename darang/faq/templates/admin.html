@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iPark FAQ Admin</title>
+    <link rel="stylesheet" href="/static/admin.css" />
+  </head>
+  <body>
+    <main class="layout">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Admin Console</p>
+          <h1>FAQ 답변 근거 자료 관리</h1>
+          <p class="hero-copy">
+            공개 FAQ 챗봇이 사용하는 질문, 답변, 키워드, 매뉴얼 링크를 한 화면에서 수정하고 저장합니다.
+          </p>
+          <p id="sessionInfo" class="hero-copy compact"></p>
+          <p id="revisionInfo" class="hero-copy compact"></p>
+        </div>
+        <div class="hero-actions">
+          <button id="logoutBtn" class="ghost">로그아웃</button>
+          <button id="reloadBtn" class="ghost">다시 불러오기</button>
+          <button id="saveBtn" class="primary">전체 저장</button>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="sidebar panel">
+          <div class="sidebar-top">
+            <input id="searchInput" type="search" placeholder="질문/카테고리 검색" />
+            <button id="newBtn" class="ghost wide">새 FAQ 추가</button>
+          </div>
+          <div class="sidebar-meta">
+            <span id="countBadge" class="badge">0건</span>
+            <span id="dirtyBadge" class="badge muted">저장됨</span>
+          </div>
+          <div id="faqList" class="faq-list"></div>
+        </aside>
+
+        <section class="editor panel">
+          <div class="editor-head">
+            <div>
+              <p class="eyebrow">Selected Item</p>
+              <h2 id="editorTitle">FAQ를 선택해 주세요</h2>
+              <p id="itemAudit" class="audit-text"></p>
+            </div>
+            <button id="deleteBtn" class="danger" disabled>선택 항목 삭제</button>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span>FAQ ID</span>
+              <input id="faq_id" type="text" />
+            </label>
+            <label>
+              <span>단계</span>
+              <input id="stage" type="text" placeholder="예: 입점문의" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span>대상</span>
+              <input id="audience" type="text" placeholder="예: 공통" />
+            </label>
+            <label>
+              <span>카테고리</span>
+              <input id="category" type="text" placeholder="예: 8.1 입점 형태 및 기본 운영" />
+            </label>
+          </div>
+
+          <label>
+            <span>대표 질문</span>
+            <textarea id="question" rows="2"></textarea>
+          </label>
+
+          <label>
+            <span>유사 질문</span>
+            <textarea id="paraphrases" rows="5" placeholder="한 줄에 하나씩 입력"></textarea>
+          </label>
+
+          <label>
+            <span>답변</span>
+            <textarea id="answer" rows="6"></textarea>
+          </label>
+
+          <label>
+            <span>다음 액션</span>
+            <textarea id="next_action" rows="3"></textarea>
+          </label>
+
+          <div class="grid two">
+            <label>
+              <span>문의 채널</span>
+              <textarea id="contact_channel" rows="3"></textarea>
+            </label>
+            <label>
+              <span>제한/주의사항</span>
+              <textarea id="restrictions" rows="3"></textarea>
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span>공개 범위</span>
+              <input id="visibility" type="text" placeholder="예: 공통공개" />
+            </label>
+            <label>
+              <span>답변 신뢰도 유형</span>
+              <input id="confidence_type" type="text" placeholder="예: 운영 사례형 답변" />
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span>업데이트 일자</span>
+              <input id="updated_at" type="text" placeholder="예: 2026-03-14" />
+            </label>
+            <label>
+              <span>근거 자료 출처</span>
+              <textarea id="source" rows="3" placeholder="예: source_answers.xls; manual.pdf"></textarea>
+            </label>
+          </div>
+
+          <div class="grid two">
+            <label>
+              <span>키워드</span>
+              <textarea id="keywords" rows="4" placeholder="한 줄에 하나씩 입력"></textarea>
+            </label>
+            <label>
+              <span>매뉴얼 파일 링크</span>
+              <textarea id="manual_files" rows="4" placeholder="./references/manual/sample.pdf"></textarea>
+            </label>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="/static/admin.js"></script>
+  </body>
+</html>
