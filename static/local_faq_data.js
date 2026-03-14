@@ -29,7 +29,8 @@ window.LOCAL_FAQ_DATA = [
       "각각",
       "어떻게",
       "되나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-002",
@@ -63,7 +64,8 @@ window.LOCAL_FAQ_DATA = [
       "영업",
       "기준이",
       "있나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-003",
@@ -97,7 +99,8 @@ window.LOCAL_FAQ_DATA = [
       "출입",
       "가능한",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-004",
@@ -129,7 +132,8 @@ window.LOCAL_FAQ_DATA = [
       "채널로",
       "언제",
       "안내하나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-005",
@@ -157,7 +161,8 @@ window.LOCAL_FAQ_DATA = [
       "시스템이나",
       "양식으로",
       "접수하나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-006",
@@ -186,7 +191,8 @@ window.LOCAL_FAQ_DATA = [
       "최소",
       "소요",
       "기간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-007",
@@ -216,7 +222,8 @@ window.LOCAL_FAQ_DATA = [
       "절차는",
       "어떻게",
       "다른가요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-008",
@@ -247,7 +254,8 @@ window.LOCAL_FAQ_DATA = [
       "필수",
       "제출",
       "서류는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-009",
@@ -277,7 +285,8 @@ window.LOCAL_FAQ_DATA = [
       "기준과",
       "승인권자는",
       "누구인가요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-010",
@@ -308,7 +317,8 @@ window.LOCAL_FAQ_DATA = [
       "기준",
       "시간과",
       "대상은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-011",
@@ -336,7 +346,8 @@ window.LOCAL_FAQ_DATA = [
       "요금",
       "정산",
       "방식은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-012",
@@ -368,7 +379,8 @@ window.LOCAL_FAQ_DATA = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-013",
@@ -400,7 +412,8 @@ window.LOCAL_FAQ_DATA = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-014",
@@ -432,7 +445,8 @@ window.LOCAL_FAQ_DATA = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-015",
@@ -460,7 +474,8 @@ window.LOCAL_FAQ_DATA = [
       "시간대와",
       "피크타임",
       "제한은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-016",
@@ -490,7 +505,8 @@ window.LOCAL_FAQ_DATA = [
       "사용",
       "가능",
       "제한은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-017",
@@ -517,7 +533,8 @@ window.LOCAL_FAQ_DATA = [
       "여부와",
       "장소",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-018",
@@ -544,7 +561,8 @@ window.LOCAL_FAQ_DATA = [
       "여부와",
       "가능",
       "기간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-019",
@@ -573,7 +591,8 @@ window.LOCAL_FAQ_DATA = [
       "보안",
       "확인",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-020",
@@ -603,7 +622,8 @@ window.LOCAL_FAQ_DATA = [
       "급배수",
       "통신",
       "어디까지인가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-021",
@@ -632,7 +652,8 @@ window.LOCAL_FAQ_DATA = [
       "여부와",
       "신청",
       "리드타임은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-022",
@@ -662,7 +683,8 @@ window.LOCAL_FAQ_DATA = [
       "화기",
       "승인",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-023",
@@ -693,7 +715,8 @@ window.LOCAL_FAQ_DATA = [
       "폐기물",
       "처리",
       "무엇인가요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-024",
@@ -723,7 +746,8 @@ window.LOCAL_FAQ_DATA = [
       "가입",
       "의무가",
       "있나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-025",
@@ -740,20 +764,32 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "운영 기준을 숙지하시고, 이슈가 발생하면 고객상담실 또는 담당 바이어 채널로 접수하시면 됩니다.",
     "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.6 매장 운영 및 서비스 기준",
+    "category": "8.12 POS",
     "keywords": [
-      "8.6",
+      "8.12",
+      "POS",
       "매장",
       "운영",
       "서비스",
       "기준",
-      "POS",
       "연동",
       "또는",
       "매출",
       "보고",
       "방식은",
       "무엇인가요"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -784,7 +820,8 @@ window.LOCAL_FAQ_DATA = [
       "사용",
       "제한이",
       "있나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-027",
@@ -813,7 +850,8 @@ window.LOCAL_FAQ_DATA = [
       "이벤트",
       "허용",
       "범위는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-028",
@@ -843,7 +881,8 @@ window.LOCAL_FAQ_DATA = [
       "주체와",
       "에스컬레이션",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-029",
@@ -872,7 +911,8 @@ window.LOCAL_FAQ_DATA = [
       "발생",
       "신고",
       "체계는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-030",
@@ -900,7 +940,8 @@ window.LOCAL_FAQ_DATA = [
       "제공",
       "유상",
       "구매인지"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-031",
@@ -926,7 +967,8 @@ window.LOCAL_FAQ_DATA = [
       "위치와",
       "가능",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-032",
@@ -955,7 +997,8 @@ window.LOCAL_FAQ_DATA = [
       "추가",
       "요청",
       "방법은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-033",
@@ -971,9 +1014,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.13 ????",
     "keywords": [
-      "8.7",
+      "8.13",
+      "????",
       "매장",
       "비품/쇼핑백/내선전화/POS",
       "내선전화",
@@ -984,6 +1028,13 @@ window.LOCAL_FAQ_DATA = [
       "비용",
       "부담",
       "기준은"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "?? ?? ?? ??",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%20%3F%3F%20%3F%3F%20%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1000,12 +1051,12 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
+      "8.12",
+      "POS",
       "매장",
       "비품/쇼핑백/내선전화/POS",
-      "POS",
       "사용",
       "방법",
       "안내",
@@ -1015,6 +1066,18 @@ window.LOCAL_FAQ_DATA = [
       "현장",
       "지원",
       "문의처는"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1031,12 +1094,12 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
+      "8.12",
+      "POS",
       "매장",
       "비품/쇼핑백/내선전화/POS",
-      "POS",
       "장애",
       "발생",
       "즉시",
@@ -1044,6 +1107,18 @@ window.LOCAL_FAQ_DATA = [
       "연락처와",
       "처리",
       "SLA는"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1075,7 +1150,8 @@ window.LOCAL_FAQ_DATA = [
       "CS",
       "보안",
       "있나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-037",
@@ -1102,7 +1178,8 @@ window.LOCAL_FAQ_DATA = [
       "출입카드",
       "착용",
       "기준은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-038",
@@ -1130,7 +1207,8 @@ window.LOCAL_FAQ_DATA = [
       "공간",
       "사용",
       "규정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-039",
@@ -1155,7 +1233,8 @@ window.LOCAL_FAQ_DATA = [
       "주기",
       "지급",
       "일정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-040",
@@ -1182,7 +1261,8 @@ window.LOCAL_FAQ_DATA = [
       "이의신청",
       "마감일",
       "기준은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-041",
@@ -1210,7 +1290,8 @@ window.LOCAL_FAQ_DATA = [
       "필수",
       "기재",
       "항목은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-042",
@@ -1237,7 +1318,8 @@ window.LOCAL_FAQ_DATA = [
       "관리비",
       "청구",
       "방식은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-043",
@@ -1268,7 +1350,8 @@ window.LOCAL_FAQ_DATA = [
       "소재",
       "위치",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-044",
@@ -1295,7 +1378,8 @@ window.LOCAL_FAQ_DATA = [
       "출력",
       "장소는",
       "어디인가요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-045",
@@ -1325,7 +1409,8 @@ window.LOCAL_FAQ_DATA = [
       "광고",
       "가이드라인은",
       "무엇인가요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-046",
@@ -1356,7 +1441,8 @@ window.LOCAL_FAQ_DATA = [
       "프로세스는",
       "어떻게",
       "되나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-047",
@@ -1385,7 +1471,8 @@ window.LOCAL_FAQ_DATA = [
       "가이드라인은",
       "어떻게",
       "되나요"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-048",
@@ -1414,7 +1501,8 @@ window.LOCAL_FAQ_DATA = [
       "시간과",
       "반출",
       "동선은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-049",
@@ -1443,7 +1531,8 @@ window.LOCAL_FAQ_DATA = [
       "비용",
       "부담",
       "주체는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-050",
@@ -1472,7 +1561,8 @@ window.LOCAL_FAQ_DATA = [
       "시점과",
       "의사결정",
       "일정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-051",
@@ -1501,6 +1591,7 @@ window.LOCAL_FAQ_DATA = [
       "발생",
       "처리",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   }
 ];

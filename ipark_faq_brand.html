@@ -995,7 +995,7 @@
         "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
         "8.4": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],
         "8.5": ["추가 전력 사용은 어떻게 신청하나요?", "공사 가능 시간은 언제인가요?"],
-        "8.6": ["POS에 바코드 스캔 기능이 있나요?", "고객 컴플레인은 어디로 접수하나요?"],
+        "8.6": ["고객 컴플레인은 어디로 접수하나요?", "매장 운영 중 민원은 어떻게 접수하나요?"],
         "8.7": ["쇼핑백은 어디서 받나요?", "쇼핑백 수령 위치가 어디인가요?"],
         "8.12": ["POS는 기본 제공되나요?", "POS 장애 발생 시 어디로 연락하나요?"],
         "8.13": ["내선전화 신청은 어떻게 하나요?", "내선전화 설치 리드타임은 얼마나 걸리나요?"],
@@ -1328,6 +1328,18 @@
         return tags;
       }
 
+      function itemMatchesCategory(item, categoryCode) {
+        if (!categoryCode) return true;
+        const category = item.category || "";
+        if (category.startsWith(categoryCode)) return true;
+        const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
+        const tags = detectIntentTags(intentText);
+        if (categoryCode === "8.12") return tags.has("pos");
+        if (categoryCode === "8.13") return tags.has("phone");
+        if (categoryCode === "8.7") return tags.has("shoppingbag");
+        return false;
+      }
+
       function overlap(a, b) {
         const sa = new Set(a);
         const sb = new Set(b);
@@ -1409,7 +1421,7 @@
       }
 
       function findExactInScope(questionNorm, categoryPrefix) {
-        const scoped = DATA.filter((item) => (item.category || "").startsWith(categoryPrefix));
+        const scoped = DATA.filter((item) => itemMatchesCategory(item, categoryPrefix));
         for (const item of scoped) {
           if (normalize(item.question || "") === questionNorm) return item;
           const paras = (item.paraphrases || []).map((p) => normalize(p));
@@ -1440,7 +1452,7 @@
         const qn = normalize(question);
         const intentScopedData = getIntentScopedData(question, DATA);
         const intentScopedByCategory = categoryPrefix
-          ? intentScopedData.filter((item) => (item.category || "").startsWith(categoryPrefix))
+          ? intentScopedData.filter((item) => itemMatchesCategory(item, categoryPrefix))
           : intentScopedData;
 
         const exactPool = intentScopedByCategory.length ? intentScopedByCategory : intentScopedData;

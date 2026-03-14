@@ -500,7 +500,8 @@ export const SEED_FAQS = [
       "각각",
       "어떻게",
       "되는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-002",
@@ -534,7 +535,8 @@ export const SEED_FAQS = [
       "영업",
       "기준이",
       "있는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-003",
@@ -568,7 +570,8 @@ export const SEED_FAQS = [
       "출입",
       "가능한",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-004",
@@ -600,7 +603,8 @@ export const SEED_FAQS = [
       "채널로",
       "언제",
       "안내하는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-005",
@@ -628,7 +632,8 @@ export const SEED_FAQS = [
       "시스템",
       "양식으로",
       "접수하는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-006",
@@ -657,7 +662,8 @@ export const SEED_FAQS = [
       "최소",
       "소요",
       "기간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-007",
@@ -687,7 +693,8 @@ export const SEED_FAQS = [
       "절차는",
       "어떻게",
       "다른가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-008",
@@ -718,7 +725,8 @@ export const SEED_FAQS = [
       "필수",
       "제출",
       "서류는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-009",
@@ -748,7 +756,8 @@ export const SEED_FAQS = [
       "기준과",
       "승인권자는",
       "누구인가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-010",
@@ -779,7 +788,8 @@ export const SEED_FAQS = [
       "기준",
       "시간과",
       "대상은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-011",
@@ -807,7 +817,8 @@ export const SEED_FAQS = [
       "요금",
       "정산",
       "방식은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-012",
@@ -839,7 +850,8 @@ export const SEED_FAQS = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-013",
@@ -871,7 +883,8 @@ export const SEED_FAQS = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-014",
@@ -903,7 +916,8 @@ export const SEED_FAQS = [
       "톤수",
       "높이",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-015",
@@ -931,7 +945,8 @@ export const SEED_FAQS = [
       "시간대와",
       "피크타임",
       "제한은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-016",
@@ -961,7 +976,8 @@ export const SEED_FAQS = [
       "사용",
       "가능",
       "제한은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-017",
@@ -988,7 +1004,8 @@ export const SEED_FAQS = [
       "여부와",
       "장소",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-018",
@@ -1015,7 +1032,8 @@ export const SEED_FAQS = [
       "여부와",
       "가능",
       "기간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-019",
@@ -1044,7 +1062,8 @@ export const SEED_FAQS = [
       "보안",
       "확인",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-020",
@@ -1074,7 +1093,8 @@ export const SEED_FAQS = [
       "급배수",
       "통신",
       "어디까지인가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-021",
@@ -1103,7 +1123,8 @@ export const SEED_FAQS = [
       "여부와",
       "신청",
       "리드타임은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-022",
@@ -1133,7 +1154,8 @@ export const SEED_FAQS = [
       "화기",
       "승인",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-023",
@@ -1164,7 +1186,8 @@ export const SEED_FAQS = [
       "폐기물",
       "처리",
       "무엇인가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-024",
@@ -1194,7 +1217,8 @@ export const SEED_FAQS = [
       "가입",
       "의무가",
       "있는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-025",
@@ -1211,20 +1235,32 @@ export const SEED_FAQS = [
     "next_action": "운영 기준을 숙지하고 이슈 발생 시 고객상담실 또는 담당 바이어 채널로 접수한다.",
     "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.6 매장 운영 및 서비스 기준",
+    "category": "8.12 POS",
     "keywords": [
-      "8.6",
+      "8.12",
+      "POS",
       "매장",
       "운영",
       "서비스",
       "기준",
-      "POS",
       "연동",
       "또는",
       "매출",
       "보고",
       "방식은",
       "무엇인가"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1255,7 +1291,8 @@ export const SEED_FAQS = [
       "사용",
       "제한이",
       "있는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-027",
@@ -1284,7 +1321,8 @@ export const SEED_FAQS = [
       "이벤트",
       "허용",
       "범위는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-028",
@@ -1314,7 +1352,8 @@ export const SEED_FAQS = [
       "주체와",
       "에스컬레이션",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-029",
@@ -1343,7 +1382,8 @@ export const SEED_FAQS = [
       "발생",
       "신고",
       "체계는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-030",
@@ -1371,7 +1411,8 @@ export const SEED_FAQS = [
       "제공",
       "유상",
       "구매인지"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-031",
@@ -1397,7 +1438,8 @@ export const SEED_FAQS = [
       "위치와",
       "가능",
       "시간은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-032",
@@ -1426,7 +1468,8 @@ export const SEED_FAQS = [
       "추가",
       "요청",
       "방법은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-033",
@@ -1442,9 +1485,10 @@ export const SEED_FAQS = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인한다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.13 ????",
     "keywords": [
-      "8.7",
+      "8.13",
+      "????",
       "매장",
       "비품/쇼핑백/내선전화/POS",
       "내선전화",
@@ -1455,6 +1499,13 @@ export const SEED_FAQS = [
       "비용",
       "부담",
       "기준은"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "?? ?? ?? ??",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%20%3F%3F%20%3F%3F%20%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1471,12 +1522,12 @@ export const SEED_FAQS = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인한다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
+      "8.12",
+      "POS",
       "매장",
       "비품/쇼핑백/내선전화/POS",
-      "POS",
       "사용",
       "방법",
       "안내",
@@ -1486,6 +1537,18 @@ export const SEED_FAQS = [
       "현장",
       "지원",
       "문의처는"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1502,12 +1565,12 @@ export const SEED_FAQS = [
     "next_action": "불출/신청 일정에 맞춰 비품·POS 요청을 접수하고 현장 수령·설치를 확인한다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
+      "8.12",
+      "POS",
       "매장",
       "비품/쇼핑백/내선전화/POS",
-      "POS",
       "장애",
       "발생",
       "즉시",
@@ -1515,6 +1578,18 @@ export const SEED_FAQS = [
       "연락처와",
       "처리",
       "SLA는"
+    ],
+    "manual_files": [
+      {
+        "type": "file",
+        "label": "????? ??? ???????? POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+      },
+      {
+        "type": "file",
+        "label": "????? ??? FnB POS ???",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+      }
     ]
   },
   {
@@ -1546,7 +1621,8 @@ export const SEED_FAQS = [
       "CS",
       "보안",
       "있는가"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-037",
@@ -1573,7 +1649,8 @@ export const SEED_FAQS = [
       "출입카드",
       "착용",
       "기준은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-038",
@@ -1601,7 +1678,8 @@ export const SEED_FAQS = [
       "공간",
       "사용",
       "규정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-039",
@@ -1626,7 +1704,8 @@ export const SEED_FAQS = [
       "주기",
       "지급",
       "일정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-040",
@@ -1653,7 +1732,8 @@ export const SEED_FAQS = [
       "이의신청",
       "마감일",
       "기준은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-041",
@@ -1681,7 +1761,8 @@ export const SEED_FAQS = [
       "필수",
       "기재",
       "항목은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-042",
@@ -1708,7 +1789,8 @@ export const SEED_FAQS = [
       "관리비",
       "청구",
       "방식은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-043",
@@ -1739,7 +1821,8 @@ export const SEED_FAQS = [
       "소재",
       "위치",
       "제한"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-044",
@@ -1765,7 +1848,8 @@ export const SEED_FAQS = [
       "POP",
       "출력",
       "장소"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-045",
@@ -1794,7 +1878,8 @@ export const SEED_FAQS = [
       "기획",
       "광고",
       "가이드라인"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-046",
@@ -1823,7 +1908,8 @@ export const SEED_FAQS = [
       "송출",
       "신청",
       "프로세스"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-047",
@@ -1850,7 +1936,8 @@ export const SEED_FAQS = [
       "APP",
       "신청",
       "가이드라인"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-048",
@@ -1879,7 +1966,8 @@ export const SEED_FAQS = [
       "시간과",
       "반출",
       "동선은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-049",
@@ -1908,7 +1996,8 @@ export const SEED_FAQS = [
       "비용",
       "부담",
       "주체는"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-050",
@@ -1937,7 +2026,8 @@ export const SEED_FAQS = [
       "시점과",
       "의사결정",
       "일정은"
-    ]
+    ],
+    "manual_files": []
   },
   {
     "faq_id": "FAQ-051",
@@ -1966,6 +2056,7 @@ export const SEED_FAQS = [
       "발생",
       "처리",
       "절차는"
-    ]
+    ],
+    "manual_files": []
   }
 ];

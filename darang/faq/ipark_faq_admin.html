@@ -838,6 +838,27 @@
         return (t || "").toLowerCase().replace(/\s+/g, " ").trim();
       }
 
+      function detectCategoryIntentTags(text) {
+        const raw = normalize(text);
+        const tags = new Set();
+        if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔|전산/.test(raw)) tags.add("pos");
+        if (/쇼핑백|불출/.test(raw)) tags.add("shoppingbag");
+        if (/내선|전화|kt/.test(raw)) tags.add("phone");
+        return tags;
+      }
+
+      function itemMatchesSelectedCategory(item, categoryCode) {
+        if (categoryCode === "ALL") return true;
+        const category = item.category || "";
+        if (category.startsWith(categoryCode)) return true;
+        const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
+        const tags = detectCategoryIntentTags(intentText);
+        if (categoryCode === "8.12") return tags.has("pos");
+        if (categoryCode === "8.13") return tags.has("phone");
+        if (categoryCode === "8.7") return tags.has("shoppingbag");
+        return false;
+      }
+
       function attachmentLabelFromUrl(url = "") {
         if (!url) return "첨부 자료";
         if (url.startsWith("data:")) return "업로드 파일";
@@ -1041,9 +1062,7 @@
         return DATA
           .map((item, index) => ({ item, index }))
           .filter(({ item }) => {
-            const inCategory =
-              selectedCategoryCode === "ALL" || (item.category || "").startsWith(selectedCategoryCode);
-            if (!inCategory) return false;
+            if (!itemMatchesSelectedCategory(item, selectedCategoryCode)) return false;
             if (!keyword) return true;
             return normalize(`${item.question} ${item.category} ${item.answer}`).includes(keyword);
           });

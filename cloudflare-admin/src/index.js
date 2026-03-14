@@ -8,6 +8,66 @@ const ALLOWED_ORIGINS = new Set([
   "http://localhost:5500",
 ]);
 
+const RAW_MANUAL_BASE = "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/";
+
+function manualUrl(filename) {
+  return RAW_MANUAL_BASE + encodeURIComponent(filename);
+}
+
+const POS_MANUALS = [
+  {
+    type: "file",
+    label: "아이파크몰 용산점 리빙·패션·팝업 POS 매뉴얼",
+    url: manualUrl("아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf"),
+  },
+  {
+    type: "file",
+    label: "아이파크몰 용산점 FnB POS 매뉴얼",
+    url: manualUrl("아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"),
+  },
+];
+
+const PHONE_MANUALS = [
+  {
+    type: "file",
+    label: "내선 전화 신청 방법",
+    url: manualUrl("내선 전화 신청 방법.pdf"),
+  },
+];
+
+function normalizeFaqItem(item) {
+  const next = {
+    ...item,
+    manual_files: Array.isArray(item?.manual_files) ? item.manual_files : [],
+  };
+  const question = String(next.question || "");
+  const keywords = Array.isArray(next.keywords) ? next.keywords : [];
+
+  if (question === "POS 연동 또는 매출 보고 방식은 무엇인가요?") {
+    next.category = "8.12 POS";
+    next.manual_files = POS_MANUALS;
+    next.keywords = ["8.12", "POS", ...keywords.filter((k) => !["8.6", "8.7", "POS", "비품/쇼핑백/내선전화/POS"].includes(k))];
+  } else if (question === "POS 사용 방법 안내 채널(매뉴얼/교육/현장 지원)과 문의처는?") {
+    next.category = "8.12 POS";
+    next.manual_files = POS_MANUALS;
+    next.keywords = ["8.12", "POS", ...keywords.filter((k) => !["8.7", "POS", "비품/쇼핑백/내선전화/POS"].includes(k))];
+  } else if (question === "POS 장애 발생 시 즉시 대응 연락처와 처리 SLA는?") {
+    next.category = "8.12 POS";
+    next.manual_files = POS_MANUALS;
+    next.keywords = ["8.12", "POS", ...keywords.filter((k) => !["8.7", "POS", "비품/쇼핑백/내선전화/POS"].includes(k))];
+  } else if (question === "내선전화 신청 절차, 설치 리드타임, 비용 부담 기준은?") {
+    next.category = "8.13 유선전화";
+    next.manual_files = PHONE_MANUALS;
+    next.keywords = ["8.13", "유선전화", ...keywords.filter((k) => !["8.7", "내선전화", "비품/쇼핑백/내선전화/POS"].includes(k))];
+  }
+
+  return next;
+}
+
+function normalizeFaqItems(items) {
+  return (Array.isArray(items) ? items : []).map(normalizeFaqItem);
+}
+
 function json(data, init = {}) {
   const headers = new Headers(init.headers || {});
   headers.set("Content-Type", "application/json; charset=utf-8");
@@ -88,8 +148,9 @@ async function getFaqState(env) {
   const row = await env.DB.prepare(
     "SELECT faqs_json, revision, last_editor_id, last_editor_name, last_edited_at FROM faq_state WHERE id = 1",
   ).first();
+  const items = normalizeFaqItems(JSON.parse(row?.faqs_json || "[]"));
   return {
-    items: JSON.parse(row?.faqs_json || "[]"),
+    items,
     meta: {
       revision: Number(row?.revision || 0),
       last_editor_id: row?.last_editor_id || "",
@@ -191,7 +252,7 @@ export default {
       if (request.method === "PUT" && url.pathname === "/api/admin/faqs") {
         const admin = await requireAuth(request, env);
         const body = await request.json();
-        const items = Array.isArray(body.items) ? body.items : [];
+        const items = normalizeFaqItems(Array.isArray(body.items) ? body.items : []);
         const now = new Date().toISOString();
         const current = await getFaqState(env);
         const nextRevision = current.meta.revision + 1;
