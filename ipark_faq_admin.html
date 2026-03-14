@@ -37,6 +37,7 @@
         font-family: "SUIT", "Pretendard", "Noto Sans KR", sans-serif;
         color: var(--text);
         background: linear-gradient(180deg, #ffffff 0%, var(--bg) 50%, var(--bg-deep) 100%);
+        overflow-x: hidden;
       }
 
       button,
@@ -55,6 +56,7 @@
         padding: 28px 0 40px;
         display: grid;
         gap: 18px;
+        overflow-x: hidden;
       }
 
       .hero,
@@ -175,6 +177,7 @@
       .auth-panel,
       .editor-shell {
         padding: 24px;
+        overflow-x: hidden;
       }
 
       .auth-panel {
@@ -293,24 +296,28 @@
       .toolbar-shell {
         display: grid;
         gap: 12px;
+        overflow: hidden;
       }
 
       .category-toolbar {
-        display: flex;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        justify-content: space-between;
         gap: 12px;
-        flex-wrap: wrap;
+        min-width: 0;
       }
 
       .category-scroll {
-        flex: 1;
         display: flex;
         gap: 10px;
+        min-width: 0;
+        max-width: 100%;
         overflow-x: auto;
+        overflow-y: hidden;
         padding-bottom: 4px;
         scrollbar-width: none;
         -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
       }
 
       .category-scroll::-webkit-scrollbar {
@@ -392,6 +399,10 @@
         }
 
         .editor-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .category-toolbar {
           grid-template-columns: 1fr;
         }
       }
