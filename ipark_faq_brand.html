@@ -591,46 +591,220 @@
       }
 
       @media (max-width: 720px) {
+        body {
+          background: linear-gradient(180deg, #f6f8fa 0%, #eef2f5 100%);
+        }
+
         .app {
-          width: 96vw;
-          padding-top: 16px;
+          width: 100%;
+          padding: 10px 12px calc(18px + env(safe-area-inset-bottom, 0px));
+          gap: 12px;
         }
 
         .hero,
         .chat-shell,
         .modal-card {
-          padding: 18px;
-        }
-
-        .hero h1 {
-          font-size: 30px;
+          padding: 16px;
         }
 
         .hero {
           grid-template-columns: 1fr;
+          gap: 14px;
+          padding: 20px 18px;
+          border-radius: 26px;
+        }
+
+        .eyebrow {
+          font-size: 11px;
+          letter-spacing: 0.14em;
+        }
+
+        .hero h1 {
+          margin-top: 10px;
+          font-size: clamp(28px, 7.4vw, 34px);
+          line-height: 1.08;
+        }
+
+        .sub {
+          margin-top: 12px;
+          font-size: 14px;
+          line-height: 1.65;
+        }
+
+        .admin-area {
+          justify-content: flex-start;
+          gap: 8px;
+        }
+
+        .status,
+        .admin-link,
+        .admin-user,
+        .logout-link {
+          min-height: 42px;
+          padding: 10px 13px;
+          font-size: 13px;
+        }
+
+        .admin-user {
+          max-width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        .page-note {
+          margin: 0 4px;
+          text-align: left;
+        }
+
+        .chat-shell {
+          padding: 10px;
+          border-radius: 26px;
+          gap: 10px;
+        }
+
+        .chat {
+          min-height: auto;
+          max-height: none;
+          border-radius: 22px;
+        }
+
+        .chat-fixed {
+          position: static;
+          padding: 18px 16px 12px;
         }
 
         .chat-fixed-head {
-          flex-direction: column;
-          align-items: flex-start;
+          display: grid;
+          gap: 10px;
+        }
+
+        .chat-fixed-greeting {
+          margin-top: 0;
+          font-size: 17px;
+          line-height: 1.4;
+        }
+
+        .chat-fixed-title {
+          margin-top: 6px;
+          font-size: 13px;
+          line-height: 1.6;
+        }
+
+        .fixed-badge {
+          width: fit-content;
+          padding: 8px 12px;
+          font-size: 12px;
+        }
+
+        .option-bubble {
+          margin-top: 14px;
+          padding: 12px;
+          border-radius: 18px;
+          gap: 8px;
+        }
+
+        .option-title {
+          font-size: 12px;
+        }
+
+        .row {
+          flex-wrap: nowrap;
+          gap: 8px;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding-bottom: 2px;
+          scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .row::-webkit-scrollbar {
+          display: none;
+        }
+
+        .option-btn {
+          flex: 0 0 auto;
+          min-height: 42px;
+          padding: 10px 14px;
+          white-space: nowrap;
+        }
+
+        .chat-messages {
+          padding: 16px;
+          gap: 12px;
         }
 
         .bubble,
         .attachment-box {
           max-width: 100%;
           width: 100%;
+          font-size: 14px;
+        }
+
+        .bubble {
+          padding: 13px 15px;
+          border-radius: 20px;
+        }
+
+        .attachment-box {
+          border-radius: 18px;
         }
 
         .composer {
           grid-template-columns: 1fr;
+          gap: 10px;
+          padding: 10px;
+          border-radius: 20px;
+          position: sticky;
+          bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+          z-index: 4;
+          background: rgba(255, 255, 255, 0.96);
+          box-shadow: 0 18px 30px rgba(75, 80, 85, 0.14);
+          backdrop-filter: blur(18px);
+        }
+
+        .composer input {
+          min-height: 50px;
+          padding: 14px 15px;
         }
 
         .send {
-          min-height: 52px;
+          width: 100%;
+          min-height: 50px;
+          border-radius: 18px;
         }
 
         .editor-layout {
           grid-template-columns: 1fr;
+        }
+
+        .modal-backdrop {
+          align-items: flex-end;
+          padding: 12px;
+        }
+
+        .modal-card {
+          width: 100%;
+          max-height: min(88vh, 760px);
+          border-radius: 24px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        .hero h1 {
+          font-size: 26px;
+        }
+
+        .sub {
+          font-size: 13px;
+        }
+
+        .chat-fixed {
+          padding: 16px 14px 10px;
+        }
+
+        .chat-messages {
+          padding: 14px;
         }
       }
     </style>
