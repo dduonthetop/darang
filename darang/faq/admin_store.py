@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from .faq_loader import FAQItem, load_faq_items
+from .github_sync import auto_sync_github
 
 BASE_DIR = Path(__file__).resolve().parent
 CSV_HEADERS = [
@@ -214,6 +215,7 @@ def save_admin_dataset(csv_path: str | Path, items: List[Dict[str, Any]], editor
             "employee_source_status": previous_meta.get("employee_source_status", ""),
         }
     )
+    github_sync = auto_sync_github(editor)
 
     return {
         "saved": True,
@@ -221,4 +223,5 @@ def save_admin_dataset(csv_path: str | Path, items: List[Dict[str, Any]], editor
         "csv_path": str(path),
         "static_targets": [str(target) for target in STATIC_DATA_TARGETS],
         "meta": meta,
+        "github_sync": github_sync,
     }

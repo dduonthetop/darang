@@ -218,11 +218,30 @@ async function saveDataset() {
     renderMeta(data.meta || {});
     await loadDataset();
     markDirty(false);
+    handleGithubSync(data.github_sync);
   } catch (error) {
     window.alert(error.message || "저장에 실패했습니다.");
   } finally {
     saveBtn.disabled = false;
     saveBtn.textContent = "전체 저장";
+  }
+}
+
+function handleGithubSync(syncInfo) {
+  if (!syncInfo) return;
+  if (syncInfo.status === "pushed") {
+    window.alert("저장 후 GitHub 사이트까지 동기화되었습니다.");
+    return;
+  }
+  if (syncInfo.status === "noop") {
+    return;
+  }
+  if (syncInfo.status === "disabled") {
+    window.alert("저장은 완료되었지만 GitHub 자동 동기화는 비활성화되어 있습니다.");
+    return;
+  }
+  if (syncInfo.status === "error") {
+    window.alert(`저장은 완료되었지만 GitHub 동기화에 실패했습니다.\n${syncInfo.message || ""}`);
   }
 }
 
