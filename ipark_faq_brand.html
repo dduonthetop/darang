@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
@@ -41,6 +41,13 @@
         align-items: flex-start;
         gap: 12px;
       }
+      .admin-area {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
       h1 { margin: 0; font-size: 20px; }
       .sub { margin: 6px 0 0; color: var(--muted); font-size: 13px; }
       .admin-link {
@@ -65,6 +72,30 @@
         background: var(--primary);
         border-color: var(--primary);
         color: #fff;
+      }
+      .admin-user {
+        display: none;
+        align-items: center;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: #ffffff;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .admin-user.visible {
+        display: inline-flex;
+      }
+      .logout-link {
+        display: none;
+        border: 1px solid #cbd5e1;
+        border-radius: 999px;
+        padding: 8px 12px;
+        background: #ffffff;
+        font-size: 13px;
+      }
+      .logout-link.visible {
+        display: inline-flex;
       }
       .status {
         margin-top: 8px;
@@ -480,6 +511,8 @@
       const qInput = document.getElementById("q");
       const sendBtn = document.getElementById("send");
       const adminLoginLink = document.getElementById("adminLoginLink");
+      const adminUserBadge = document.getElementById("adminUserBadge");
+      const topLogoutBtn = document.getElementById("topLogoutBtn");
       const loginModal = document.getElementById("loginModal");
       const editorModal = document.getElementById("editorModal");
       const closeLoginModal = document.getElementById("closeLoginModal");
@@ -504,6 +537,7 @@
       let dataRevision = 0;
       const siteConfig = window.SITE_CONFIG || {};
       const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
+      const EMPLOYEE_MAP = window.ADMIN_EMPLOYEE_MAP || {};
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
@@ -1295,6 +1329,21 @@
         setAdminLinkState();
         closeEditor();
       });
+      topLogoutBtn.addEventListener("click", async () => {
+        if (isBackendMode() && readBackendToken()) {
+          try {
+            await fetch(apiUrl("/api/logout"), {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${readBackendToken()}` },
+            });
+          } catch (err) {
+            // no-op
+          }
+        }
+        clearBackendToken();
+        clearAdminSession();
+        setAdminLinkState();
+      });
       loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const id = employeeIdInput.value.trim();
@@ -1315,6 +1364,7 @@
             setAdminLinkState();
             closeLogin();
             await syncLiveData(true);
+            greetLoggedInUser(payload.user || { employee_id: id });
             openEditorModal();
             return;
           } catch (error) {
@@ -1328,9 +1378,15 @@
           window.alert("관리자에게 문의하세요.");
           return;
         }
-        writeAdminSession({ employee_id: id, logged_in_at: new Date().toISOString() });
+        const session = {
+          employee_id: id,
+          name: EMPLOYEE_MAP[id] || "",
+          logged_in_at: new Date().toISOString(),
+        };
+        writeAdminSession(session);
         setAdminLinkState();
         closeLogin();
+        greetLoggedInUser(session);
         openEditorModal();
       });
       [loginModal, editorModal].forEach((modal) => {
