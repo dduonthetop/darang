@@ -22,11 +22,7 @@
         --muted: #667085;
         --primary: #547dc0;
         --primary-deep: #475e99;
-        --accent-lime: #bed92e;
-        --accent-coral: #f34a3c;
         --accent-teal: #45c0b0;
-        --accent-yellow: #f8e57a;
-        --accent-purple: #a184c6;
         --primary-soft: rgba(84, 125, 192, 0.12);
         --shadow-lg: 0 30px 90px rgba(84, 125, 192, 0.14);
         --shadow-md: 0 18px 48px rgba(63, 70, 80, 0.08);
@@ -42,21 +38,7 @@
         min-height: 100vh;
         font-family: "SUIT", "Pretendard", "Noto Sans KR", sans-serif;
         color: var(--text);
-        background:
-          radial-gradient(circle at 8% 14%, rgba(190, 217, 46, 0.22), transparent 16%),
-          radial-gradient(circle at 78% 22%, rgba(84, 125, 192, 0.16), transparent 18%),
-          radial-gradient(circle at 88% 80%, rgba(161, 132, 198, 0.18), transparent 14%),
-          linear-gradient(180deg, #ffffff 0%, var(--bg) 52%, var(--bg-deep) 100%);
-      }
-
-      body::before {
-        content: "";
-        position: fixed;
-        inset: 0;
-        background:
-          linear-gradient(120deg, rgba(255, 255, 255, 0.38), transparent 30%),
-          radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.52), transparent 22%);
-        pointer-events: none;
+        background: linear-gradient(180deg, #ffffff 0%, var(--bg) 52%, var(--bg-deep) 100%);
       }
 
       button,
@@ -99,31 +81,6 @@
         grid-template-columns: minmax(0, 1fr) auto;
         gap: 18px;
         align-items: start;
-      }
-
-      .hero::before {
-        content: "";
-        position: absolute;
-        top: 26px;
-        right: 36px;
-        width: 62px;
-        height: 62px;
-        border-radius: 50%;
-        border: 12px solid #ff6a13;
-        background: transparent;
-        pointer-events: none;
-      }
-
-      .hero::after {
-        content: "";
-        position: absolute;
-        left: -14px;
-        bottom: -18px;
-        width: 86px;
-        height: 86px;
-        border-radius: 28px 0 0 0;
-        background: var(--accent-lime);
-        pointer-events: none;
       }
 
       .eyebrow,
@@ -283,9 +240,7 @@
         z-index: 2;
         padding: 22px;
         border-bottom: 1px solid var(--line);
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.96)),
-          radial-gradient(circle at top right, rgba(190, 217, 46, 0.16), transparent 28%);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.96));
       }
 
       .chat-fixed-head {
