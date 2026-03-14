@@ -783,6 +783,7 @@
       const EMPLOYEE_MAP = window.ADMIN_EMPLOYEE_MAP || {};
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
+      const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
@@ -1628,6 +1629,15 @@
         modal.addEventListener("click", (event) => {
           if (event.target === modal) modal.classList.remove("open");
         });
+      });
+
+      window.addEventListener("storage", (event) => {
+        if (event.key === ADMIN_OVERRIDES_KEY && !isBackendMode()) {
+          applyLocalOverrides();
+        }
+        if (event.key === ADMIN_META_KEY) {
+          syncLiveData(true);
+        }
       });
 
       async function initPage() {
