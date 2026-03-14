@@ -506,8 +506,9 @@
       const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
+      const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
-      const adminLoginUrl = siteConfig.adminLoginUrl || (window.location.origin ? `${window.location.origin}/admin/login` : "");
+      const adminLoginUrl = siteConfig.adminLoginUrl || (isGithubPages ? "" : (window.location.origin ? `${window.location.origin}/admin/login` : ""));
       let selectedAdminIndex = 0;
 
       const CATEGORIES = [
@@ -626,7 +627,7 @@
       function initAdminLink() {
         adminLoginLink.addEventListener("click", (event) => {
           event.preventDefault();
-          if (adminLoginUrl && !(window.location.hostname.endsWith("github.io") && !siteConfig.adminLoginUrl)) {
+          if (adminLoginUrl) {
             window.location.href = adminLoginUrl;
             return;
           }
