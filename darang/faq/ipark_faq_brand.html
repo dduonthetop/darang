@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>iPark FAQ 챗봇 데모</title>
     <script src="./static/site_config.js"></script>
+    <script src="./static/employee_auth.js"></script>
     <style>
       :root {
         --bg: #f4f7fb;
@@ -59,6 +60,11 @@
       .admin-link:hover {
         border-color: var(--primary);
         color: var(--primary);
+      }
+      .admin-link.logged-in {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
       }
       .status {
         margin-top: 8px;
@@ -215,6 +221,129 @@
         gap: 5px;
         align-items: center;
       }
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.48);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+        z-index: 20;
+      }
+      .modal-backdrop.open {
+        display: flex;
+      }
+      .modal-card {
+        width: min(720px, 100%);
+        max-height: 88vh;
+        overflow: auto;
+        background: #fff;
+        border-radius: 20px;
+        border: 1px solid var(--line);
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+        padding: 18px;
+      }
+      .modal-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      .modal-title {
+        margin: 0;
+        font-size: 20px;
+      }
+      .modal-copy {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      .icon-btn {
+        border-radius: 10px;
+        padding: 8px 10px;
+      }
+      .login-form,
+      .editor-shell {
+        display: grid;
+        gap: 12px;
+      }
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+      .field label {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .field input,
+      .field textarea,
+      .field select {
+        width: 100%;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 12px;
+        font: inherit;
+      }
+      .field textarea {
+        min-height: 90px;
+        resize: vertical;
+      }
+      .editor-layout {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr);
+        gap: 12px;
+      }
+      .editor-list {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 8px;
+        display: grid;
+        gap: 8px;
+        max-height: 58vh;
+        overflow: auto;
+        background: #f8fafc;
+      }
+      .editor-item {
+        width: 100%;
+        text-align: left;
+        border-radius: 12px;
+        padding: 10px 12px;
+      }
+      .editor-item.active {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #fff;
+      }
+      .editor-item small {
+        display: block;
+        margin-top: 4px;
+        opacity: 0.75;
+      }
+      .editor-panel {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+        background: #fff;
+      }
+      .editor-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .muted-note {
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+      .error-note {
+        color: #b91c1c;
+        font-size: 13px;
+      }
       .dot {
         width: 7px;
         height: 7px;
@@ -231,6 +360,9 @@
         .panel-top {
           flex-direction: column;
           align-items: stretch;
+        }
+        .editor-layout {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -265,6 +397,82 @@
       </section>
     </main>
 
+    <div id="loginModal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <div>
+            <h2 class="modal-title">관리자 로그인</h2>
+            <p class="modal-copy">사번을 아이디와 비밀번호에 동일하게 입력하면 이 브라우저에서 FAQ 편집 모드를 사용할 수 있습니다.</p>
+          </div>
+          <button id="closeLoginModal" class="icon-btn">닫기</button>
+        </div>
+        <form id="loginForm" class="login-form">
+          <div class="field">
+            <label for="employeeIdInput">아이디</label>
+            <input id="employeeIdInput" type="text" autocomplete="username" />
+          </div>
+          <div class="field">
+            <label for="employeePwInput">비밀번호</label>
+            <input id="employeePwInput" type="password" autocomplete="current-password" />
+          </div>
+          <div class="editor-actions">
+            <button type="submit" class="send">로그인</button>
+          </div>
+          <p id="loginError" class="error-note"></p>
+        </form>
+      </div>
+    </div>
+
+    <div id="editorModal" class="modal-backdrop" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-head">
+          <div>
+            <h2 class="modal-title">FAQ 관리자</h2>
+            <p class="modal-copy">이 편집은 현재 브라우저에만 저장됩니다. 저장 직후 이 페이지 FAQ 답변에 즉시 반영됩니다.</p>
+          </div>
+          <button id="closeEditorModal" class="icon-btn">닫기</button>
+        </div>
+        <div class="editor-shell">
+          <div class="field">
+            <label for="adminSearch">FAQ 검색</label>
+            <input id="adminSearch" type="search" placeholder="질문 또는 카테고리 검색" />
+          </div>
+          <div class="editor-layout">
+            <div id="editorList" class="editor-list"></div>
+            <div class="editor-panel">
+              <div class="field">
+                <label for="editQuestion">질문</label>
+                <textarea id="editQuestion"></textarea>
+              </div>
+              <div class="field">
+                <label for="editAnswer">답변</label>
+                <textarea id="editAnswer"></textarea>
+              </div>
+              <div class="field">
+                <label for="editNextAction">다음 액션</label>
+                <textarea id="editNextAction"></textarea>
+              </div>
+              <div class="field">
+                <label for="editContact">문의 채널</label>
+                <input id="editContact" type="text" />
+              </div>
+              <div class="field">
+                <label for="editConfidence">답변 유형</label>
+                <input id="editConfidence" type="text" />
+              </div>
+              <div class="editor-actions">
+                <button id="saveEditorBtn" type="button" class="send">저장</button>
+                <button id="resetEditorBtn" type="button">원본으로 되돌리기</button>
+                <button id="logoutEditorBtn" type="button">로그아웃</button>
+              </div>
+              <p class="muted-note">브라우저 저장소를 지우거나 다른 기기에서 접속하면 이 수정본은 보이지 않습니다.</p>
+              <p id="editorStatus" class="error-note"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="./static/local_faq_data.js"></script>
     <script>
       const chat = document.getElementById("chatMessages");
@@ -272,11 +480,35 @@
       const qInput = document.getElementById("q");
       const sendBtn = document.getElementById("send");
       const adminLoginLink = document.getElementById("adminLoginLink");
+      const loginModal = document.getElementById("loginModal");
+      const editorModal = document.getElementById("editorModal");
+      const closeLoginModal = document.getElementById("closeLoginModal");
+      const closeEditorModal = document.getElementById("closeEditorModal");
+      const loginForm = document.getElementById("loginForm");
+      const employeeIdInput = document.getElementById("employeeIdInput");
+      const employeePwInput = document.getElementById("employeePwInput");
+      const loginError = document.getElementById("loginError");
+      const adminSearch = document.getElementById("adminSearch");
+      const editorList = document.getElementById("editorList");
+      const editQuestion = document.getElementById("editQuestion");
+      const editAnswer = document.getElementById("editAnswer");
+      const editNextAction = document.getElementById("editNextAction");
+      const editContact = document.getElementById("editContact");
+      const editConfidence = document.getElementById("editConfidence");
+      const saveEditorBtn = document.getElementById("saveEditorBtn");
+      const resetEditorBtn = document.getElementById("resetEditorBtn");
+      const logoutEditorBtn = document.getElementById("logoutEditorBtn");
+      const editorStatus = document.getElementById("editorStatus");
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? window.LOCAL_FAQ_DATA : [];
+      const BASE_DATA = JSON.parse(JSON.stringify(DATA));
       let dataRevision = 0;
       const siteConfig = window.SITE_CONFIG || {};
+      const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
+      const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
+      const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
       const adminLoginUrl = siteConfig.adminLoginUrl || (window.location.origin ? `${window.location.origin}/admin/login` : "");
+      let selectedAdminIndex = 0;
 
       const CATEGORIES = [
         { code: "8.1", label: "기본 운영" },
@@ -344,15 +576,155 @@
         return adminApiBase ? `${adminApiBase}${path}` : path;
       }
 
+      function readAdminSession() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function writeAdminSession(session) {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+      }
+
+      function clearAdminSession() {
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+      }
+
+      function loadOverrides() {
+        try {
+          const payload = JSON.parse(localStorage.getItem(ADMIN_OVERRIDES_KEY) || "null");
+          return Array.isArray(payload) ? payload : null;
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function saveOverrides(items) {
+        localStorage.setItem(ADMIN_OVERRIDES_KEY, JSON.stringify(items));
+      }
+
+      function applyLocalOverrides() {
+        const overrides = loadOverrides();
+        if (overrides && overrides.length) {
+          DATA = overrides;
+        } else {
+          DATA = JSON.parse(JSON.stringify(BASE_DATA));
+        }
+      }
+
+      function isLoggedIn() {
+        return !!readAdminSession();
+      }
+
+      function setAdminLinkState() {
+        adminLoginLink.classList.toggle("logged-in", isLoggedIn());
+        adminLoginLink.textContent = isLoggedIn() ? "FAQ 수정" : "관리자 로그인";
+      }
+
       function initAdminLink() {
-        if (!adminLoginUrl || window.location.hostname.endsWith("github.io") && !siteConfig.adminLoginUrl) {
-          adminLoginLink.addEventListener("click", (event) => {
-            event.preventDefault();
-            window.alert("관리자 서버 주소가 아직 설정되지 않았습니다. site_config.js에 adminLoginUrl을 입력해 주세요.");
+        adminLoginLink.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (adminLoginUrl && !(window.location.hostname.endsWith("github.io") && !siteConfig.adminLoginUrl)) {
+            window.location.href = adminLoginUrl;
+            return;
+          }
+          if (isLoggedIn()) {
+            openEditorModal();
+          } else {
+            openLoginModal();
+          }
+        });
+        setAdminLinkState();
+      }
+
+      function openLoginModal() {
+        loginError.textContent = "";
+        employeeIdInput.value = "";
+        employeePwInput.value = "";
+        loginModal.classList.add("open");
+      }
+
+      function closeLogin() {
+        loginModal.classList.remove("open");
+      }
+
+      function openEditorModal() {
+        renderEditorList();
+        renderEditorForm();
+        editorStatus.textContent = "";
+        editorModal.classList.add("open");
+      }
+
+      function closeEditor() {
+        editorModal.classList.remove("open");
+      }
+
+      function filteredAdminItems() {
+        const keyword = normalize(adminSearch.value || "");
+        return DATA
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => {
+            if (!keyword) return true;
+            return normalize(`${item.question} ${item.category} ${item.answer}`).includes(keyword);
           });
+      }
+
+      function renderEditorList() {
+        const items = filteredAdminItems();
+        if (!items.length) {
+          editorList.innerHTML = "<div class='muted-note'>검색 결과가 없습니다.</div>";
           return;
         }
-        adminLoginLink.href = adminLoginUrl;
+        if (!items.some(({ index }) => index === selectedAdminIndex)) {
+          selectedAdminIndex = items[0].index;
+        }
+        editorList.innerHTML = "";
+        items.forEach(({ item, index }) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "editor-item";
+          if (index === selectedAdminIndex) btn.classList.add("active");
+          btn.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(item.category || "-")}</small>`;
+          btn.addEventListener("click", () => {
+            selectedAdminIndex = index;
+            renderEditorList();
+            renderEditorForm();
+          });
+          editorList.appendChild(btn);
+        });
+      }
+
+      function renderEditorForm() {
+        const item = DATA[selectedAdminIndex];
+        if (!item) return;
+        editQuestion.value = item.question || "";
+        editAnswer.value = item.answer || "";
+        editNextAction.value = item.next_action || "";
+        editContact.value = item.contact_channel || "";
+        editConfidence.value = item.confidence_type || "";
+      }
+
+      function saveEditorForm() {
+        const item = DATA[selectedAdminIndex];
+        if (!item) return;
+        item.question = editQuestion.value.trim();
+        item.answer = editAnswer.value.trim();
+        item.next_action = editNextAction.value.trim();
+        item.contact_channel = editContact.value.trim();
+        item.confidence_type = editConfidence.value.trim();
+        saveOverrides(DATA);
+        renderEditorList();
+        editorStatus.textContent = "저장되었습니다. 이 브라우저의 FAQ 답변에 즉시 반영됩니다.";
+      }
+
+      function resetToBaseData() {
+        localStorage.removeItem(ADMIN_OVERRIDES_KEY);
+        applyLocalOverrides();
+        renderEditorList();
+        renderEditorForm();
+        editorStatus.textContent = "원본 데이터로 되돌렸습니다.";
       }
 
       async function syncLiveData(force = false) {
@@ -369,6 +741,7 @@
         } catch (err) {
           // Static file mode should continue to work without server API.
         }
+        applyLocalOverrides();
       }
 
       function normalize(t) {
@@ -814,6 +1187,37 @@
         }
       });
 
+      closeLoginModal.addEventListener("click", closeLogin);
+      closeEditorModal.addEventListener("click", closeEditor);
+      adminSearch.addEventListener("input", renderEditorList);
+      saveEditorBtn.addEventListener("click", saveEditorForm);
+      resetEditorBtn.addEventListener("click", resetToBaseData);
+      logoutEditorBtn.addEventListener("click", () => {
+        clearAdminSession();
+        setAdminLinkState();
+        closeEditor();
+      });
+      loginForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const id = employeeIdInput.value.trim();
+        const pw = employeePwInput.value.trim();
+        if (!AUTH_IDS.includes(id) || id !== pw) {
+          loginError.textContent = "관리자에게 문의하세요.";
+          window.alert("관리자에게 문의하세요.");
+          return;
+        }
+        writeAdminSession({ employee_id: id, logged_in_at: new Date().toISOString() });
+        setAdminLinkState();
+        closeLogin();
+        openEditorModal();
+      });
+      [loginModal, editorModal].forEach((modal) => {
+        modal.addEventListener("click", (event) => {
+          if (event.target === modal) modal.classList.remove("open");
+        });
+      });
+
+      applyLocalOverrides();
       renderCategorySelector();
       initAdminLink();
       syncLiveData(true);
