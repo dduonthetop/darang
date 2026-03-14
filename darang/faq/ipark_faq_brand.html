@@ -786,7 +786,8 @@
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
-      const adminLoginUrl = siteConfig.adminLoginUrl || (isGithubPages ? "" : (window.location.origin ? `${window.location.origin}/admin/login` : ""));
+      const adminPageUrl = "./ipark_faq_admin.html";
+      const adminLoginUrl = siteConfig.adminLoginUrl || adminPageUrl;
       let selectedAdminIndex = 0;
 
       const CATEGORIES = [
@@ -921,7 +922,8 @@
         const maskedName = session?.name || EMPLOYEE_MAP[employeeId] || "";
 
         adminLoginLink.classList.toggle("logged-in", loggedIn);
-        adminLoginLink.textContent = loggedIn ? "FAQ 수정 열기" : "관리자 로그인";
+        adminLoginLink.href = adminPageUrl;
+        adminLoginLink.textContent = loggedIn ? "FAQ 관리자" : "관리자 로그인";
         adminUserBadge.classList.toggle("visible", loggedIn);
         topLogoutBtn.classList.toggle("visible", loggedIn);
         adminUserBadge.textContent = loggedIn ? [employeeId, maskedName].filter(Boolean).join(" ") : "";
@@ -937,11 +939,7 @@
       function initAdminLink() {
         adminLoginLink.addEventListener("click", (event) => {
           event.preventDefault();
-          if (isLoggedIn()) {
-            openEditorModal();
-          } else {
-            openLoginModal();
-          }
+          window.location.href = adminPageUrl;
         });
         setAdminLinkState();
       }

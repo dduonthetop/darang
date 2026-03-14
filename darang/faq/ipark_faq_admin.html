@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Urban Playground FAQ 관리자</title>
+    <script src="./static/site_config.js"></script>
+    <script src="./static/employee_auth.js"></script>
+    <script src="./static/local_faq_data.js"></script>
+    <style>
+      @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
+
+      :root {
+        --bg: #f3f5f7;
+        --bg-deep: #e7ebef;
+        --surface: rgba(255, 255, 255, 0.88);
+        --surface-strong: #ffffff;
+        --line: rgba(153, 152, 153, 0.18);
+        --line-strong: rgba(93, 137, 179, 0.24);
+        --text: #4b5055;
+        --muted: #74787d;
+        --primary: #5d89b3;
+        --primary-deep: #4f7396;
+        --primary-light: #9cb6d2;
+        --shadow-lg: 0 30px 90px rgba(93, 137, 179, 0.16);
+        --shadow-md: 0 18px 48px rgba(75, 80, 85, 0.09);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "SUIT", "Pretendard", "Noto Sans KR", sans-serif;
+        color: var(--text);
+        background: linear-gradient(180deg, #ffffff 0%, var(--bg) 50%, var(--bg-deep) 100%);
+      }
+
+      button,
+      input,
+      textarea {
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .admin-app {
+        width: min(1440px, 94vw);
+        margin: 0 auto;
+        padding: 28px 0 40px;
+        display: grid;
+        gap: 18px;
+      }
+
+      .hero,
+      .auth-panel,
+      .editor-shell {
+        border: 1px solid var(--line);
+        border-radius: 30px;
+        background: var(--surface);
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(24px);
+      }
+
+      .hero {
+        padding: 28px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--primary-deep);
+      }
+
+      h1 {
+        margin: 12px 0 0;
+        font-family: "Space Grotesk", "SUIT", sans-serif;
+        font-size: clamp(30px, 4vw, 48px);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+      }
+
+      .sub {
+        margin: 14px 0 0;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.7;
+      }
+
+      .hero-actions,
+      .session-line,
+      .editor-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .back-link,
+      .ghost-btn,
+      .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 11px 15px;
+        border: 1px solid var(--line-strong);
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+      }
+
+      .back-link:hover,
+      .ghost-btn:hover,
+      .primary-btn:hover {
+        transform: translateY(-1px);
+        border-color: rgba(93, 137, 179, 0.42);
+        box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+      }
+
+      .primary-btn {
+        color: #ffffff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 55%, var(--primary-deep) 100%);
+        box-shadow: 0 16px 28px rgba(93, 137, 179, 0.24);
+      }
+
+      .session-badge {
+        display: none;
+        align-items: center;
+        gap: 8px;
+        padding: 11px 16px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #62676d 0%, var(--text) 100%);
+        color: #ffffff;
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .session-badge::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        box-shadow: 0 0 0 5px rgba(156, 182, 210, 0.2);
+      }
+
+      .session-badge.visible,
+      .logout-btn.visible {
+        display: inline-flex;
+      }
+
+      .logout-btn {
+        display: none;
+      }
+
+      .auth-panel,
+      .editor-shell {
+        padding: 24px;
+      }
+
+      .auth-panel {
+        width: min(560px, 100%);
+        justify-self: center;
+      }
+
+      .hidden {
+        display: none !important;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 24px;
+        letter-spacing: -0.03em;
+      }
+
+      .panel-copy {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .form-grid,
+      .field {
+        display: grid;
+        gap: 10px;
+      }
+
+      .field {
+        margin-top: 16px;
+      }
+
+      .field label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+
+      .field input,
+      .field textarea {
+        width: 100%;
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        background: rgba(251, 251, 251, 0.98);
+        border-radius: 18px;
+        padding: 15px 16px;
+        color: var(--text);
+        outline: none;
+        transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      }
+
+      .field input:focus,
+      .field textarea:focus {
+        border-color: rgba(93, 137, 179, 0.42);
+        box-shadow: 0 0 0 4px rgba(93, 137, 179, 0.14);
+        background: #ffffff;
+      }
+
+      .field textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+
+      .editor-shell {
+        display: grid;
+        gap: 16px;
+      }
+
+      .editor-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .status-note {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .error-note {
+        color: #b91c1c;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .editor-layout {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr);
+        gap: 14px;
+      }
+
+      .editor-list,
+      .editor-panel {
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+
+      .editor-list {
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+        max-height: 70vh;
+        overflow: auto;
+      }
+
+      .editor-item {
+        width: 100%;
+        text-align: left;
+        border-radius: 18px;
+        padding: 14px 15px;
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        background: #ffffff;
+        color: var(--text);
+      }
+
+      .editor-item.active {
+        color: #ffffff;
+        border-color: transparent;
+        background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 55%, var(--primary-deep) 100%);
+      }
+
+      .editor-item small {
+        display: block;
+        margin-top: 6px;
+        opacity: 0.78;
+      }
+
+      .editor-panel {
+        padding: 18px;
+      }
+
+      @media (max-width: 980px) {
+        .hero,
+        .editor-head {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .editor-layout {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        .admin-app {
+          width: 96vw;
+          padding-top: 16px;
+        }
+
+        .hero,
+        .auth-panel,
+        .editor-shell {
+          padding: 18px;
+        }
+
+        h1 {
+          font-size: 30px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="admin-app">
+      <section class="hero">
+        <div>
+          <span class="eyebrow">Urban Playground Admin</span>
+          <h1>Urban Playground 아이파크몰 FAQ 관리자</h1>
+          <p class="sub">로그인 후 FAQ 질문, 답변, 다음 액션, 문의 채널을 한 페이지에서 수정할 수 있습니다.</p>
+        </div>
+        <div class="hero-actions">
+          <span id="sessionBadge" class="session-badge"></span>
+          <button id="logoutBtn" class="ghost-btn logout-btn" type="button">로그아웃</button>
+          <a class="back-link" href="./ipark_faq_brand.html">FAQ 화면으로 돌아가기</a>
+        </div>
+      </section>
+
+      <section id="authPanel" class="auth-panel">
+        <h2 class="panel-title">관리자 로그인</h2>
+        <p class="panel-copy">사번을 아이디와 비밀번호에 동일하게 입력하면 편집 화면으로 들어갑니다.</p>
+        <form id="loginForm" class="form-grid">
+          <div class="field">
+            <label for="employeeIdInput">아이디</label>
+            <input id="employeeIdInput" type="text" autocomplete="username" />
+          </div>
+          <div class="field">
+            <label for="employeePwInput">비밀번호</label>
+            <input id="employeePwInput" type="password" autocomplete="current-password" />
+          </div>
+          <div class="editor-actions" style="margin-top:16px;">
+            <button type="submit" class="primary-btn">로그인</button>
+          </div>
+          <p id="loginError" class="error-note"></p>
+        </form>
+      </section>
+
+      <section id="editorPanel" class="editor-shell hidden">
+        <div class="editor-head">
+          <div>
+            <h2 class="panel-title">FAQ 편집</h2>
+            <p class="panel-copy">항목을 선택한 뒤 내용을 수정하고 저장하면 FAQ 데이터에 반영됩니다.</p>
+          </div>
+          <div>
+            <p id="editorStatus" class="status-note"></p>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:0;">
+          <label for="adminSearch">FAQ 검색</label>
+          <input id="adminSearch" type="search" placeholder="질문, 카테고리, 답변 내용으로 검색" />
+        </div>
+
+        <div class="editor-layout">
+          <div id="editorList" class="editor-list"></div>
+          <div class="editor-panel">
+            <div class="field" style="margin-top:0;">
+              <label for="editQuestion">질문</label>
+              <textarea id="editQuestion"></textarea>
+            </div>
+            <div class="field">
+              <label for="editAnswer">답변</label>
+              <textarea id="editAnswer"></textarea>
+            </div>
+            <div class="field">
+              <label for="editNextAction">다음 액션</label>
+              <textarea id="editNextAction"></textarea>
+            </div>
+            <div class="field">
+              <label for="editContact">문의 채널</label>
+              <input id="editContact" type="text" />
+            </div>
+            <div class="field">
+              <label for="editConfidence">답변 유형</label>
+              <input id="editConfidence" type="text" />
+            </div>
+            <div class="editor-actions" style="margin-top:18px;">
+              <button id="saveEditorBtn" type="button" class="primary-btn">저장</button>
+              <button id="resetEditorBtn" type="button" class="ghost-btn">다시 불러오기</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
+      const EMPLOYEE_MAP = window.ADMIN_EMPLOYEE_MAP || {};
+      const siteConfig = window.SITE_CONFIG || {};
+      const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
+      const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
+      const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
+      const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
+
+      let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? JSON.parse(JSON.stringify(window.LOCAL_FAQ_DATA)) : [];
+      const BASE_DATA = JSON.parse(JSON.stringify(DATA));
+      let selectedAdminIndex = 0;
+      let dataRevision = 0;
+
+      const authPanel = document.getElementById("authPanel");
+      const editorPanel = document.getElementById("editorPanel");
+      const sessionBadge = document.getElementById("sessionBadge");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const loginForm = document.getElementById("loginForm");
+      const employeeIdInput = document.getElementById("employeeIdInput");
+      const employeePwInput = document.getElementById("employeePwInput");
+      const loginError = document.getElementById("loginError");
+      const adminSearch = document.getElementById("adminSearch");
+      const editorList = document.getElementById("editorList");
+      const editQuestion = document.getElementById("editQuestion");
+      const editAnswer = document.getElementById("editAnswer");
+      const editNextAction = document.getElementById("editNextAction");
+      const editContact = document.getElementById("editContact");
+      const editConfidence = document.getElementById("editConfidence");
+      const saveEditorBtn = document.getElementById("saveEditorBtn");
+      const resetEditorBtn = document.getElementById("resetEditorBtn");
+      const editorStatus = document.getElementById("editorStatus");
+
+      function apiUrl(path) {
+        return adminApiBase ? `${adminApiBase}${path}` : path;
+      }
+
+      function isBackendMode() {
+        return !!adminApiBase;
+      }
+
+      function readBackendToken() {
+        return localStorage.getItem(BACKEND_TOKEN_KEY) || "";
+      }
+
+      function writeBackendToken(token) {
+        if (token) localStorage.setItem(BACKEND_TOKEN_KEY, token);
+      }
+
+      function clearBackendToken() {
+        localStorage.removeItem(BACKEND_TOKEN_KEY);
+      }
+
+      function readAdminSession() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function writeAdminSession(session) {
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(session));
+      }
+
+      function clearAdminSession() {
+        localStorage.removeItem(ADMIN_SESSION_KEY);
+      }
+
+      function loadOverrides() {
+        try {
+          const payload = JSON.parse(localStorage.getItem(ADMIN_OVERRIDES_KEY) || "null");
+          return Array.isArray(payload) ? payload : null;
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function saveOverrides(items) {
+        localStorage.setItem(ADMIN_OVERRIDES_KEY, JSON.stringify(items));
+      }
+
+      function applyLocalOverrides() {
+        if (isBackendMode()) return;
+        const overrides = loadOverrides();
+        DATA = overrides && overrides.length ? overrides : JSON.parse(JSON.stringify(BASE_DATA));
+      }
+
+      function normalize(t) {
+        return (t || "").toLowerCase().replace(/\s+/g, " ").trim();
+      }
+
+      function isLoggedIn() {
+        return !!readAdminSession();
+      }
+
+      function setAuthState() {
+        const session = readAdminSession();
+        const loggedIn = !!session;
+        const employeeId = session?.employee_id || "";
+        const maskedName = session?.name || EMPLOYEE_MAP[employeeId] || "";
+
+        authPanel.classList.toggle("hidden", loggedIn);
+        editorPanel.classList.toggle("hidden", !loggedIn);
+        sessionBadge.classList.toggle("visible", loggedIn);
+        logoutBtn.classList.toggle("visible", loggedIn);
+        sessionBadge.textContent = loggedIn ? [employeeId, maskedName].filter(Boolean).join(" ") : "";
+      }
+
+      function escapeHtml(raw) {
+        return (raw || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function filteredAdminItems() {
+        const keyword = normalize(adminSearch.value || "");
+        return DATA
+          .map((item, index) => ({ item, index }))
+          .filter(({ item }) => {
+            if (!keyword) return true;
+            return normalize(`${item.question} ${item.category} ${item.answer}`).includes(keyword);
+          });
+      }
+
+      function renderEditorList() {
+        const items = filteredAdminItems();
+        if (!items.length) {
+          editorList.innerHTML = "<div class='status-note'>검색 결과가 없습니다.</div>";
+          return;
+        }
+        if (!items.some(({ index }) => index === selectedAdminIndex)) {
+          selectedAdminIndex = items[0].index;
+        }
+        editorList.innerHTML = "";
+        items.forEach(({ item, index }) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "editor-item";
+          if (index === selectedAdminIndex) button.classList.add("active");
+          button.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(item.category || "-")}</small>`;
+          button.addEventListener("click", () => {
+            selectedAdminIndex = index;
+            renderEditorList();
+            renderEditorForm();
+          });
+          editorList.appendChild(button);
+        });
+      }
+
+      function renderEditorForm() {
+        const item = DATA[selectedAdminIndex];
+        if (!item) return;
+        editQuestion.value = item.question || "";
+        editAnswer.value = item.answer || "";
+        editNextAction.value = item.next_action || "";
+        editContact.value = item.contact_channel || "";
+        editConfidence.value = item.confidence_type || "";
+      }
+
+      function updateCurrentItemFromForm() {
+        const item = DATA[selectedAdminIndex];
+        if (!item) return;
+        item.question = editQuestion.value.trim();
+        item.answer = editAnswer.value.trim();
+        item.next_action = editNextAction.value.trim();
+        item.contact_channel = editContact.value.trim();
+        item.confidence_type = editConfidence.value.trim();
+      }
+
+      async function saveEditorFormToBackend() {
+        const token = readBackendToken();
+        if (!token) {
+          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+          return;
+        }
+        const response = await fetch(apiUrl("/api/admin/faqs"), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ items: DATA }),
+        });
+        if (!response.ok) {
+          if (response.status === 401) {
+            clearBackendToken();
+            clearAdminSession();
+            setAuthState();
+            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          throw new Error("저장에 실패했습니다.");
+        }
+        const payload = await response.json();
+        if (Array.isArray(payload.items)) DATA = payload.items;
+        dataRevision = Number(payload.meta?.revision || dataRevision);
+        renderEditorList();
+        renderEditorForm();
+        editorStatus.textContent = "저장이 완료되었습니다. 공용 FAQ에도 최신 내용이 반영됩니다.";
+      }
+
+      async function saveEditorForm() {
+        updateCurrentItemFromForm();
+        if (isBackendMode()) {
+          try {
+            await saveEditorFormToBackend();
+          } catch (error) {
+            editorStatus.textContent = error.message || "저장에 실패했습니다.";
+          }
+          return;
+        }
+        saveOverrides(DATA);
+        renderEditorList();
+        editorStatus.textContent = "저장이 완료되었습니다. 같은 브라우저의 FAQ 화면에 바로 반영됩니다.";
+      }
+
+      async function resetEditorForm() {
+        if (isBackendMode()) {
+          await syncLiveData(true);
+          renderEditorList();
+          renderEditorForm();
+          editorStatus.textContent = "최신 데이터를 다시 불러왔습니다.";
+          return;
+        }
+        localStorage.removeItem(ADMIN_OVERRIDES_KEY);
+        applyLocalOverrides();
+        renderEditorList();
+        renderEditorForm();
+        editorStatus.textContent = "기본 데이터로 되돌렸습니다.";
+      }
+
+      async function validateBackendSession() {
+        if (!isBackendMode()) return false;
+        const token = readBackendToken();
+        if (!token) return false;
+        const response = await fetch(apiUrl("/api/session"), {
+          headers: { "Authorization": `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          clearBackendToken();
+          clearAdminSession();
+          return false;
+        }
+        const payload = await response.json();
+        writeAdminSession(payload.user || { employee_id: "" });
+        if (payload.meta?.revision) dataRevision = Number(payload.meta.revision || 0);
+        return true;
+      }
+
+      async function syncLiveData(force = false) {
+        if (!isBackendMode()) {
+          applyLocalOverrides();
+          return;
+        }
+        try {
+          const res = await fetch(apiUrl("/api/public-faqs"), { cache: "no-store" });
+          if (!res.ok) return;
+          const payload = await res.json();
+          const nextRevision = Number(payload.meta?.revision || 0);
+          if (!force && nextRevision === dataRevision) return;
+          if (Array.isArray(payload.items) && payload.items.length) {
+            DATA = payload.items;
+            dataRevision = nextRevision;
+          }
+        } catch (err) {
+          // keep existing data
+        }
+      }
+
+      async function handleLogout() {
+        if (isBackendMode() && readBackendToken()) {
+          try {
+            await fetch(apiUrl("/api/logout"), {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${readBackendToken()}` },
+            });
+          } catch (err) {
+            // no-op
+          }
+        }
+        clearBackendToken();
+        clearAdminSession();
+        setAuthState();
+        editorStatus.textContent = "";
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const id = employeeIdInput.value.trim();
+        const pw = employeePwInput.value.trim();
+        loginError.textContent = "";
+
+        if (isBackendMode()) {
+          try {
+            const response = await fetch(apiUrl("/api/login"), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ employee_id: id, password: pw }),
+            });
+            if (!response.ok) throw new Error("관리자에게 문의하세요.");
+            const payload = await response.json();
+            writeBackendToken(payload.token || "");
+            writeAdminSession(payload.user || { employee_id: id });
+            await syncLiveData(true);
+            renderEditorList();
+            renderEditorForm();
+            setAuthState();
+            return;
+          } catch (error) {
+            loginError.textContent = error.message || "관리자에게 문의하세요.";
+            window.alert(loginError.textContent);
+            return;
+          }
+        }
+
+        if (!AUTH_IDS.includes(id) || id !== pw) {
+          loginError.textContent = "관리자에게 문의하세요.";
+          window.alert(loginError.textContent);
+          return;
+        }
+
+        writeAdminSession({
+          employee_id: id,
+          name: EMPLOYEE_MAP[id] || "",
+          logged_in_at: new Date().toISOString(),
+        });
+        applyLocalOverrides();
+        renderEditorList();
+        renderEditorForm();
+        setAuthState();
+      });
+
+      adminSearch.addEventListener("input", renderEditorList);
+      saveEditorBtn.addEventListener("click", saveEditorForm);
+      resetEditorBtn.addEventListener("click", resetEditorForm);
+      logoutBtn.addEventListener("click", handleLogout);
+
+      async function initPage() {
+        if (isBackendMode()) {
+          await validateBackendSession();
+          await syncLiveData(true);
+        } else {
+          applyLocalOverrides();
+        }
+        setAuthState();
+        renderEditorList();
+        renderEditorForm();
+      }
+
+      initPage();
+    </script>
+  </body>
+</html>
