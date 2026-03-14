@@ -506,6 +506,7 @@
       const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
+      const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
       const adminLoginUrl = siteConfig.adminLoginUrl || (isGithubPages ? "" : (window.location.origin ? `${window.location.origin}/admin/login` : ""));
@@ -577,6 +578,22 @@
         return adminApiBase ? `${adminApiBase}${path}` : path;
       }
 
+      function isBackendMode() {
+        return !!adminApiBase;
+      }
+
+      function readBackendToken() {
+        return localStorage.getItem(BACKEND_TOKEN_KEY) || "";
+      }
+
+      function writeBackendToken(token) {
+        if (token) localStorage.setItem(BACKEND_TOKEN_KEY, token);
+      }
+
+      function clearBackendToken() {
+        localStorage.removeItem(BACKEND_TOKEN_KEY);
+      }
+
       function readAdminSession() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || "null");
@@ -607,6 +624,7 @@
       }
 
       function applyLocalOverrides() {
+        if (isBackendMode()) return;
         const overrides = loadOverrides();
         if (overrides && overrides.length) {
           DATA = overrides;
@@ -627,7 +645,7 @@
       function initAdminLink() {
         adminLoginLink.addEventListener("click", (event) => {
           event.preventDefault();
-          if (adminLoginUrl) {
+          if (!isBackendMode() && adminLoginUrl) {
             window.location.href = adminLoginUrl;
             return;
           }
@@ -715,12 +733,24 @@
         item.next_action = editNextAction.value.trim();
         item.contact_channel = editContact.value.trim();
         item.confidence_type = editConfidence.value.trim();
+        if (isBackendMode()) {
+          saveEditorFormToBackend();
+          return;
+        }
         saveOverrides(DATA);
         renderEditorList();
         editorStatus.textContent = "저장되었습니다. 이 브라우저의 FAQ 답변에 즉시 반영됩니다.";
       }
 
       function resetToBaseData() {
+        if (isBackendMode()) {
+          syncLiveData(true).then(() => {
+            renderEditorList();
+            renderEditorForm();
+            editorStatus.textContent = "서버 저장본으로 다시 불러왔습니다.";
+          });
+          return;
+        }
         localStorage.removeItem(ADMIN_OVERRIDES_KEY);
         applyLocalOverrides();
         renderEditorList();
@@ -728,9 +758,65 @@
         editorStatus.textContent = "원본 데이터로 되돌렸습니다.";
       }
 
+      async function saveEditorFormToBackend() {
+        const token = readBackendToken();
+        if (!token) {
+          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+          return;
+        }
+        try {
+          const response = await fetch(apiUrl("/api/admin/faqs"), {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ items: DATA }),
+          });
+          if (!response.ok) {
+            if (response.status === 401) {
+              clearBackendToken();
+              clearAdminSession();
+              setAdminLinkState();
+              throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            }
+            throw new Error("저장에 실패했습니다.");
+          }
+          const payload = await response.json();
+          if (Array.isArray(payload.items)) {
+            DATA = payload.items;
+          }
+          dataRevision = Number(payload.meta?.revision || dataRevision);
+          renderEditorList();
+          renderEditorForm();
+          editorStatus.textContent = "공유 저장이 완료되었습니다. 다른 사용자도 같은 최신 FAQ를 보게 됩니다.";
+        } catch (error) {
+          editorStatus.textContent = error.message || "저장에 실패했습니다.";
+        }
+      }
+
+      async function validateBackendSession() {
+        if (!isBackendMode()) return false;
+        const token = readBackendToken();
+        if (!token) return false;
+        const response = await fetch(apiUrl("/api/session"), {
+          headers: { "Authorization": `Bearer ${token}` },
+        });
+        if (!response.ok) {
+          clearBackendToken();
+          clearAdminSession();
+          return false;
+        }
+        const payload = await response.json();
+        writeAdminSession(payload.user || { employee_id: "" });
+        if (payload.meta?.revision) dataRevision = Number(payload.meta.revision || 0);
+        return true;
+      }
+
       async function syncLiveData(force = false) {
         try {
-          const res = await fetch(apiUrl("/admin/api/public-faqs"), { cache: "no-store" });
+          const publicPath = isBackendMode() ? "/api/public-faqs" : "/admin/api/public-faqs";
+          const res = await fetch(apiUrl(publicPath), { cache: "no-store" });
           if (!res.ok) return;
           const payload = await res.json();
           const nextRevision = Number(payload.meta?.revision || 0);
@@ -1193,15 +1279,50 @@
       adminSearch.addEventListener("input", renderEditorList);
       saveEditorBtn.addEventListener("click", saveEditorForm);
       resetEditorBtn.addEventListener("click", resetToBaseData);
-      logoutEditorBtn.addEventListener("click", () => {
+      logoutEditorBtn.addEventListener("click", async () => {
+        if (isBackendMode() && readBackendToken()) {
+          try {
+            await fetch(apiUrl("/api/logout"), {
+              method: "POST",
+              headers: { "Authorization": `Bearer ${readBackendToken()}` },
+            });
+          } catch (err) {
+            // no-op
+          }
+        }
+        clearBackendToken();
         clearAdminSession();
         setAdminLinkState();
         closeEditor();
       });
-      loginForm.addEventListener("submit", (event) => {
+      loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const id = employeeIdInput.value.trim();
         const pw = employeePwInput.value.trim();
+        if (isBackendMode()) {
+          try {
+            const response = await fetch(apiUrl("/api/login"), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ employee_id: id, password: pw }),
+            });
+            if (!response.ok) {
+              throw new Error("관리자에게 문의하세요.");
+            }
+            const payload = await response.json();
+            writeBackendToken(payload.token || "");
+            writeAdminSession(payload.user || { employee_id: id });
+            setAdminLinkState();
+            closeLogin();
+            await syncLiveData(true);
+            openEditorModal();
+            return;
+          } catch (error) {
+            loginError.textContent = error.message || "관리자에게 문의하세요.";
+            window.alert(loginError.textContent);
+            return;
+          }
+        }
         if (!AUTH_IDS.includes(id) || id !== pw) {
           loginError.textContent = "관리자에게 문의하세요.";
           window.alert("관리자에게 문의하세요.");
@@ -1218,11 +1339,19 @@
         });
       });
 
-      applyLocalOverrides();
-      renderCategorySelector();
-      initAdminLink();
-      syncLiveData(true);
-      window.setInterval(() => syncLiveData(false), 15000);
+      async function initPage() {
+        if (isBackendMode()) {
+          await validateBackendSession();
+        } else {
+          applyLocalOverrides();
+        }
+        renderCategorySelector();
+        initAdminLink();
+        await syncLiveData(true);
+        window.setInterval(() => syncLiveData(false), 15000);
+      }
+
+      initPage();
 
       if (!DATA.length) {
         addBubble("로컬 데이터셋을 불러오지 못했습니다. static/local_faq_data.js 파일 경로를 확인해 주세요.");
