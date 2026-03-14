@@ -159,6 +159,9 @@ def load_admin_meta() -> Dict[str, Any]:
             "last_editor_name": "",
             "last_edited_at": "",
             "employee_source_status": "",
+            "github_sync_status": "",
+            "github_sync_message": "",
+            "github_synced_at": "",
         }
     return json.loads(ADMIN_META_PATH.read_text(encoding="utf-8"))
 
@@ -213,9 +216,20 @@ def save_admin_dataset(csv_path: str | Path, items: List[Dict[str, Any]], editor
             "last_editor_name": editor.get("name", ""),
             "last_edited_at": now,
             "employee_source_status": previous_meta.get("employee_source_status", ""),
+            "github_sync_status": previous_meta.get("github_sync_status", ""),
+            "github_sync_message": previous_meta.get("github_sync_message", ""),
+            "github_synced_at": previous_meta.get("github_synced_at", ""),
         }
     )
     github_sync = auto_sync_github(editor)
+    meta.update(
+        {
+            "github_sync_status": github_sync.get("status", ""),
+            "github_sync_message": github_sync.get("message", ""),
+            "github_synced_at": now if github_sync.get("status") in {"pushed", "noop"} else previous_meta.get("github_synced_at", ""),
+        }
+    )
+    save_admin_meta(meta)
 
     return {
         "saved": True,

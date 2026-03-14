@@ -3,5 +3,8 @@
   "last_editor_id": "",
   "last_editor_name": "",
   "last_edited_at": "",
-  "employee_source_status": "Employee list workbook references an external sheet file, but it is missing: C:\\chatbotpj\\darang_bundle_latest\\darang\\faq\\Employee_list(2026-03-14).files\\sheet001.htm"
+  "employee_source_status": "",
+  "github_sync_status": "",
+  "github_sync_message": "",
+  "github_synced_at": ""
 }

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>iPark FAQ 챗봇 데모</title>
+    <script src="./static/site_config.js"></script>
     <style>
       :root {
         --bg: #f4f7fb;
@@ -242,7 +243,7 @@
             <h1>iPark FAQ 챗봇 데모</h1>
             <p class="sub">입점문의 / 입점진행 / 매장운영 질문에 응답하는 대화형 데모</p>
           </div>
-          <a class="admin-link" href="/admin/login">관리자 로그인</a>
+          <a class="admin-link" id="adminLoginLink" href="#">관리자 로그인</a>
         </div>
         <span class="status"><span class="dot-ok"></span>로컬 데이터셋 모드 (서버 없이 실행 가능)</span>
       </section>
@@ -270,8 +271,12 @@
       const categoryRow = document.getElementById("categoryRow");
       const qInput = document.getElementById("q");
       const sendBtn = document.getElementById("send");
+      const adminLoginLink = document.getElementById("adminLoginLink");
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? window.LOCAL_FAQ_DATA : [];
       let dataRevision = 0;
+      const siteConfig = window.SITE_CONFIG || {};
+      const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
+      const adminLoginUrl = siteConfig.adminLoginUrl || (window.location.origin ? `${window.location.origin}/admin/login` : "");
 
       const CATEGORIES = [
         { code: "8.1", label: "기본 운영" },
@@ -335,9 +340,24 @@
       let categoryHint = "";
       let exampleSelectorEl = null;
 
+      function apiUrl(path) {
+        return adminApiBase ? `${adminApiBase}${path}` : path;
+      }
+
+      function initAdminLink() {
+        if (!adminLoginUrl || window.location.hostname.endsWith("github.io") && !siteConfig.adminLoginUrl) {
+          adminLoginLink.addEventListener("click", (event) => {
+            event.preventDefault();
+            window.alert("관리자 서버 주소가 아직 설정되지 않았습니다. site_config.js에 adminLoginUrl을 입력해 주세요.");
+          });
+          return;
+        }
+        adminLoginLink.href = adminLoginUrl;
+      }
+
       async function syncLiveData(force = false) {
         try {
-          const res = await fetch("/admin/api/public-faqs", { cache: "no-store" });
+          const res = await fetch(apiUrl("/admin/api/public-faqs"), { cache: "no-store" });
           if (!res.ok) return;
           const payload = await res.json();
           const nextRevision = Number(payload.meta?.revision || 0);
@@ -795,6 +815,7 @@
       });
 
       renderCategorySelector();
+      initAdminLink();
       syncLiveData(true);
       window.setInterval(() => syncLiveData(false), 15000);
 

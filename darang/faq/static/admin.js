@@ -35,6 +35,7 @@ const dirtyBadge = document.getElementById("dirtyBadge");
 const editorTitle = document.getElementById("editorTitle");
 const sessionInfo = document.getElementById("sessionInfo");
 const revisionInfo = document.getElementById("revisionInfo");
+const githubSyncInfo = document.getElementById("githubSyncInfo");
 const itemAudit = document.getElementById("itemAudit");
 
 function normalize(text) {
@@ -250,6 +251,9 @@ function renderMeta(meta) {
   revisionInfo.textContent = meta.last_editor_id
     ? `최근 반영: ${meta.last_editor_name} (${meta.last_editor_id}) · ${meta.last_edited_at || "-"} · revision ${meta.revision || 0}`
     : `최근 반영 이력 없음 · revision ${meta.revision || 0}`;
+  githubSyncInfo.textContent = meta.github_sync_status
+    ? `GitHub 동기화: ${meta.github_sync_status} · ${meta.github_synced_at || "-"}${meta.github_sync_message ? ` · ${meta.github_sync_message}` : ""}`
+    : "GitHub 동기화 이력 없음";
 }
 
 async function loadSession() {
