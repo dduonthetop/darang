@@ -966,6 +966,7 @@
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
+      const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const MANUAL_FALLBACKS = [
         {
@@ -1006,7 +1007,7 @@
         { code: "8.11", label: "철수/연장/계약 종료" }
       ];
 
-      const EXAMPLES_BY_CATEGORY = {
+      const DEFAULT_EXAMPLES_BY_CATEGORY = {
         "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
         "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
         "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
@@ -1021,6 +1022,7 @@
         "8.10": ["DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
         "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"]
       };
+      let EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
 
       // Hardcoded preset answers can drift from dataset and cause factual mismatch.
       // Keep answers dataset-driven.
@@ -1099,6 +1101,24 @@
 
       function saveOverrides(items) {
         localStorage.setItem(ADMIN_OVERRIDES_KEY, JSON.stringify(items));
+      }
+
+      function readExampleOverrides() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_EXAMPLES_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function loadExampleConfig() {
+        EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
+        const overrides = readExampleOverrides();
+        if (!overrides || typeof overrides !== "object") return;
+        Object.entries(overrides).forEach(([categoryCode, values]) => {
+          if (!Array.isArray(values)) return;
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
       }
 
       function sanitizeDataset(items) {
@@ -1925,6 +1945,9 @@
         if (event.key === ADMIN_META_KEY) {
           syncLiveData(true);
         }
+        if (event.key === ADMIN_EXAMPLES_KEY) {
+          loadExampleConfig();
+        }
       });
 
       async function initPage() {
@@ -1933,6 +1956,7 @@
         } else {
           applyLocalOverrides();
         }
+        loadExampleConfig();
         renderCategorySelector();
         initAdminLink();
         await syncLiveData(true);

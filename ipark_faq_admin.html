@@ -454,6 +454,28 @@
         background: rgba(255, 255, 255, 0.9);
       }
 
+      .example-editor {
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.94);
+        padding: 18px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .example-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .example-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
       .editor-list {
         padding: 10px;
         display: grid;
@@ -505,6 +527,10 @@
         }
 
         .attachment-row {
+          grid-template-columns: 1fr;
+        }
+
+        .example-grid {
           grid-template-columns: 1fr;
         }
       }
@@ -592,6 +618,38 @@
           <p id="categoryStatus" class="toolbar-note"></p>
         </div>
 
+        <div class="example-editor">
+          <div class="editor-head" style="margin:0;">
+            <div>
+              <h3 style="margin:0; font-size:20px;">카테고리 예시 질문</h3>
+              <p class="example-note">선택한 대분류 카테고리를 눌렀을 때 공개 FAQ 화면에 노출되는 예시질문입니다.</p>
+            </div>
+            <div class="editor-actions">
+              <button id="saveExamplesBtn" type="button" class="primary-btn">예시질문 저장</button>
+              <button id="resetExamplesBtn" type="button" class="ghost-btn">기본값으로 되돌리기</button>
+            </div>
+          </div>
+          <p id="exampleCategoryLabel" class="toolbar-note">카테고리를 선택하면 예시질문을 수정할 수 있습니다.</p>
+          <div class="example-grid">
+            <div class="field" style="margin-top:0;">
+              <label for="exampleQuestion1">예시 질문 1</label>
+              <input id="exampleQuestion1" type="text" />
+            </div>
+            <div class="field" style="margin-top:0;">
+              <label for="exampleQuestion2">예시 질문 2</label>
+              <input id="exampleQuestion2" type="text" />
+            </div>
+            <div class="field" style="margin-top:0;">
+              <label for="exampleQuestion3">예시 질문 3</label>
+              <input id="exampleQuestion3" type="text" />
+            </div>
+            <div class="field" style="margin-top:0;">
+              <label for="exampleQuestion4">예시 질문 4</label>
+              <input id="exampleQuestion4" type="text" />
+            </div>
+          </div>
+        </div>
+
         <div class="editor-layout">
           <div id="editorList" class="editor-list"></div>
           <div class="editor-panel">
@@ -652,7 +710,23 @@
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
+      const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
+      const DEFAULT_EXAMPLES_BY_CATEGORY = {
+        "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
+        "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
+        "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
+        "8.4": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],
+        "8.5": ["추가 전력 사용은 어떻게 신청하나요?", "공사 가능 시간은 언제인가요?"],
+        "8.6": ["고객 컴플레인은 어디로 접수하나요?", "매장 운영 중 민원은 어떻게 접수하나요?"],
+        "8.7": ["쇼핑백은 어디서 받나요?", "쇼핑백 수령 위치가 어디인가요?"],
+        "8.12": ["POS는 기본 제공되나요?", "POS 장애 발생 시 어디로 연락하나요?"],
+        "8.13": ["내선전화 신청은 어떻게 하나요?", "내선전화 설치 리드타임은 얼마나 걸리나요?"],
+        "8.8": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
+        "8.9": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
+        "8.10": ["DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
+        "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"]
+      };
       const MANUAL_FALLBACKS = [
         {
           matchers: ["fnb", "pos"],
@@ -673,6 +747,7 @@
 
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? JSON.parse(JSON.stringify(window.LOCAL_FAQ_DATA)) : [];
       const BASE_DATA = JSON.parse(JSON.stringify(DATA));
+      let EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
       let selectedAdminIndex = 0;
       let dataRevision = 0;
       let selectedCategoryCode = "ALL";
@@ -706,6 +781,15 @@
       const saveEditorBtn = document.getElementById("saveEditorBtn");
       const resetEditorBtn = document.getElementById("resetEditorBtn");
       const deleteQuestionBtn = document.getElementById("deleteQuestionBtn");
+      const saveExamplesBtn = document.getElementById("saveExamplesBtn");
+      const resetExamplesBtn = document.getElementById("resetExamplesBtn");
+      const exampleCategoryLabel = document.getElementById("exampleCategoryLabel");
+      const exampleInputs = [
+        document.getElementById("exampleQuestion1"),
+        document.getElementById("exampleQuestion2"),
+        document.getElementById("exampleQuestion3"),
+        document.getElementById("exampleQuestion4"),
+      ];
       const editorStatus = document.getElementById("editorStatus");
       const editorMeta = document.getElementById("editorMeta");
 
@@ -788,6 +872,28 @@
 
       function saveOverrides(items) {
         localStorage.setItem(ADMIN_OVERRIDES_KEY, JSON.stringify(items));
+      }
+
+      function readExampleOverrides() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_EXAMPLES_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function saveExampleOverrides(payload) {
+        localStorage.setItem(ADMIN_EXAMPLES_KEY, JSON.stringify(payload));
+      }
+
+      function loadExampleConfig() {
+        EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
+        const overrides = readExampleOverrides();
+        if (!overrides || typeof overrides !== "object") return;
+        Object.entries(overrides).forEach(([categoryCode, values]) => {
+          if (!Array.isArray(values)) return;
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
       }
 
       function readAdminMeta() {
@@ -1072,6 +1178,28 @@
         return CATEGORY_OPTIONS.find((option) => option.code === code)?.label || code || "미지정";
       }
 
+      function renderExampleEditor() {
+        if (selectedCategoryCode === "ALL") {
+          exampleCategoryLabel.textContent = "대분류 카테고리를 먼저 선택하면 예시질문을 수정할 수 있습니다.";
+          exampleInputs.forEach((input) => {
+            input.value = "";
+            input.disabled = true;
+          });
+          saveExamplesBtn.disabled = true;
+          resetExamplesBtn.disabled = true;
+          return;
+        }
+
+        const examples = EXAMPLES_BY_CATEGORY[selectedCategoryCode] || [];
+        exampleCategoryLabel.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리의 예시질문을 수정할 수 있습니다.`;
+        exampleInputs.forEach((input, index) => {
+          input.value = examples[index] || "";
+          input.disabled = false;
+        });
+        saveExamplesBtn.disabled = false;
+        resetExamplesBtn.disabled = false;
+      }
+
       function inferStageForCategory(categoryCode) {
         const sample = DATA.find((item) => (item.category || "").startsWith(categoryCode));
         return sample?.stage || "";
@@ -1113,6 +1241,7 @@
           button.addEventListener("click", () => {
             selectedCategoryCode = option.code;
             renderCategoryToolbar();
+            renderExampleEditor();
             renderEditorList();
             renderEditorForm();
           });
@@ -1212,6 +1341,35 @@
         editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리에 새 질문 초안을 추가했습니다. 내용을 입력한 뒤 저장해 주세요.`;
         editQuestion.focus();
         editQuestion.select();
+      }
+
+      function saveCategoryExamples() {
+        if (selectedCategoryCode === "ALL") {
+          window.alert("예시질문을 수정할 카테고리를 먼저 선택해 주세요.");
+          return;
+        }
+        const nextExamples = exampleInputs
+          .map((input) => input.value.trim())
+          .filter(Boolean);
+        if (!nextExamples.length) {
+          window.alert("최소 1개 이상의 예시질문을 입력해 주세요.");
+          return;
+        }
+        EXAMPLES_BY_CATEGORY[selectedCategoryCode] = nextExamples;
+        saveExampleOverrides(EXAMPLES_BY_CATEGORY);
+        editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문이 저장되었습니다.`;
+        window.alert("예시질문이 저장되었습니다.");
+      }
+
+      function resetCategoryExamples() {
+        if (selectedCategoryCode === "ALL") {
+          window.alert("기본값으로 되돌릴 카테고리를 먼저 선택해 주세요.");
+          return;
+        }
+        EXAMPLES_BY_CATEGORY[selectedCategoryCode] = [...(DEFAULT_EXAMPLES_BY_CATEGORY[selectedCategoryCode] || [])];
+        saveExampleOverrides(EXAMPLES_BY_CATEGORY);
+        renderExampleEditor();
+        editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문을 기본값으로 되돌렸습니다.`;
       }
 
       function syncSelectionAfterDelete() {
@@ -1495,6 +1653,8 @@
       saveEditorBtn.addEventListener("click", saveEditorForm);
       resetEditorBtn.addEventListener("click", resetEditorForm);
       deleteQuestionBtn.addEventListener("click", handleDeleteQuestion);
+      saveExamplesBtn.addEventListener("click", saveCategoryExamples);
+      resetExamplesBtn.addEventListener("click", resetCategoryExamples);
       logoutBtn.addEventListener("click", handleLogout);
 
       window.addEventListener("storage", (event) => {
@@ -1506,6 +1666,10 @@
         if (event.key === ADMIN_META_KEY) {
           renderEditorMeta();
         }
+        if (event.key === ADMIN_EXAMPLES_KEY) {
+          loadExampleConfig();
+          renderExampleEditor();
+        }
       });
 
       async function initPage() {
@@ -1516,7 +1680,9 @@
           applyLocalOverrides();
         }
         renderConfidenceOptions();
+        loadExampleConfig();
         renderCategoryToolbar();
+        renderExampleEditor();
         setAuthState();
         renderEditorList();
         renderEditorForm();
