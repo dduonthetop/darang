@@ -1253,13 +1253,13 @@ export const SEED_FAQS = [
     "manual_files": [
       {
         "type": "file",
-        "label": "????? ??? ???????? POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+        "label": "????? ??? ??,??,??-POS ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20%EB%A6%AC%EB%B9%99%2C%ED%8C%A8%EC%85%98%2C%ED%8C%9D%EC%97%85-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf"
       },
       {
         "type": "file",
-        "label": "????? ??? FnB POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+        "label": "????? ??? FnB-POS ???_???? ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20FnB-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC_%ED%98%91%EB%A0%A5%EC%82%AC%EC%9B%90%20%EA%B5%90%EC%9C%A1%EC%9A%A9.pdf"
       }
     ]
   },
@@ -1504,7 +1504,7 @@ export const SEED_FAQS = [
       {
         "type": "file",
         "label": "?? ?? ?? ??",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%20%3F%3F%20%3F%3F%20%3F%3F.pdf"
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EB%82%B4%EC%84%A0%20%EC%A0%84%ED%99%94%20%EC%8B%A0%EC%B2%AD%20%EB%B0%A9%EB%B2%95.pdf"
       }
     ]
   },
@@ -1541,13 +1541,13 @@ export const SEED_FAQS = [
     "manual_files": [
       {
         "type": "file",
-        "label": "????? ??? ???????? POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+        "label": "????? ??? ??,??,??-POS ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20%EB%A6%AC%EB%B9%99%2C%ED%8C%A8%EC%85%98%2C%ED%8C%9D%EC%97%85-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf"
       },
       {
         "type": "file",
-        "label": "????? ??? FnB POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+        "label": "????? ??? FnB-POS ???_???? ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20FnB-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC_%ED%98%91%EB%A0%A5%EC%82%AC%EC%9B%90%20%EA%B5%90%EC%9C%A1%EC%9A%A9.pdf"
       }
     ]
   },
@@ -1582,13 +1582,13 @@ export const SEED_FAQS = [
     "manual_files": [
       {
         "type": "file",
-        "label": "????? ??? ???????? POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20%3F%3F%2C%3F%3F%2C%3F%3F-POS%20%3F%3F%3F.pdf"
+        "label": "????? ??? ??,??,??-POS ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20%EB%A6%AC%EB%B9%99%2C%ED%8C%A8%EC%85%98%2C%ED%8C%9D%EC%97%85-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf"
       },
       {
         "type": "file",
-        "label": "????? ??? FnB POS ???",
-        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%3F%3F%3F%3F%3F%20%3F%3F%3F%20FnB-POS%20%3F%3F%3F_%3F%3F%3F%3F%20%3F%3F%3F.pdf"
+        "label": "????? ??? FnB-POS ???_???? ???.pdf",
+        "url": "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20FnB-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC_%ED%98%91%EB%A0%A5%EC%82%AC%EC%9B%90%20%EA%B5%90%EC%9C%A1%EC%9A%A9.pdf"
       }
     ]
   },

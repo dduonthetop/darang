@@ -1101,13 +1101,30 @@
         localStorage.setItem(ADMIN_OVERRIDES_KEY, JSON.stringify(items));
       }
 
+      function sanitizeDataset(items) {
+        if (!Array.isArray(items)) return [];
+        return items.map((item) => {
+          const next = { ...item };
+          if (Array.isArray(item?.manual_files)) {
+            next.manual_files = item.manual_files
+              .map((entry) => normalizeAttachment(entry, next))
+              .filter(Boolean);
+          }
+          return next;
+        });
+      }
+
       function applyLocalOverrides() {
         if (isBackendMode()) return;
         const overrides = loadOverrides();
         if (overrides && overrides.length) {
-          DATA = overrides;
+          const sanitized = sanitizeDataset(overrides);
+          DATA = sanitized;
+          if (JSON.stringify(overrides) !== JSON.stringify(sanitized)) {
+            saveOverrides(sanitized);
+          }
         } else {
-          DATA = JSON.parse(JSON.stringify(BASE_DATA));
+          DATA = sanitizeDataset(JSON.parse(JSON.stringify(BASE_DATA)));
         }
       }
 
