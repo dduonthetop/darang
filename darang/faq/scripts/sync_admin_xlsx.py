@@ -23,9 +23,15 @@ from darang.faq.faq_loader import load_faq_items  # noqa: E402
 FAQ_DIR = REPO_ROOT / "darang" / "faq"
 CSV_PATH = FAQ_DIR / "ipark_faq_dataset.csv"
 ADMIN_XLSX_PATH = FAQ_DIR / "ipark_faq_dataset_admin_v2.xlsx"
-PHONE_MANUAL = "./references/manual/내선 전화 신청 방법.pdf"
-POS_MANUAL = "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf"
-FNB_POS_MANUAL = "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
+RAW_MANUAL_BASE = "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/"
+PHONE_MANUAL = RAW_MANUAL_BASE + "%EB%82%B4%EC%84%A0%20%EC%A0%84%ED%99%94%20%EC%8B%A0%EC%B2%AD%20%EB%B0%A9%EB%B2%95.pdf"
+POS_MANUAL = RAW_MANUAL_BASE + "%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20%EB%A6%AC%EB%B9%99%2C%ED%8C%A8%EC%85%98%2C%ED%8C%9D%EC%97%85-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC.pdf"
+FNB_POS_MANUAL = RAW_MANUAL_BASE + "%EC%95%84%EC%9D%B4%ED%8C%8C%ED%81%AC%EB%AA%B0%20%EC%9A%A9%EC%82%B0%EC%A0%90%20FnB-POS%20%EB%A7%A4%EB%89%B4%EC%96%BC_%ED%98%91%EB%A0%A5%EC%82%AC%EC%9B%90%20%EA%B5%90%EC%9C%A1%EC%9A%A9.pdf"
+MANUAL_REWRITES = {
+    "./references/manual/내선 전화 신청 방법.pdf": PHONE_MANUAL,
+    "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf": POS_MANUAL,
+    "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf": FNB_POS_MANUAL,
+}
 
 BASE_COLUMNS = [
     "faq_id",
@@ -174,7 +180,9 @@ def canonical_category(question: str, category: str) -> str:
 
 def canonical_manual_files(question: str, existing_manuals: str) -> str:
     if existing_manuals.strip():
-        return existing_manuals.strip()
+        pieces = [piece.strip() for piece in existing_manuals.split(";") if piece.strip()]
+        rewritten = [MANUAL_REWRITES.get(piece, piece) for piece in pieces]
+        return "; ".join(rewritten)
     question_norm = normalize_question_text(question)
     if "POS" in question_norm or "포스" in question_norm:
         return "; ".join([POS_MANUAL, FNB_POS_MANUAL])
