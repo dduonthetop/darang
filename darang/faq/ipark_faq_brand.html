@@ -1121,6 +1121,15 @@
         });
       }
 
+      function applyBackendExamples(payload) {
+        if (!payload || typeof payload !== "object") return;
+        EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
+        Object.entries(payload).forEach(([categoryCode, values]) => {
+          if (!Array.isArray(values)) return;
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
+      }
+
       function sanitizeDataset(items) {
         if (!Array.isArray(items)) return [];
         return items.map((item) => {
@@ -1347,6 +1356,9 @@
           if (Array.isArray(payload.items) && payload.items.length) {
             DATA = payload.items;
             dataRevision = nextRevision;
+          }
+          if (payload.examples && typeof payload.examples === "object") {
+            applyBackendExamples(payload.examples);
           }
         } catch (err) {
           // Static file mode should continue to work without server API.

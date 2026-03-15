@@ -896,6 +896,15 @@
         });
       }
 
+      function applyBackendExamples(payload) {
+        if (!payload || typeof payload !== "object") return;
+        EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
+        Object.entries(payload).forEach(([categoryCode, values]) => {
+          if (!Array.isArray(values)) return;
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
+      }
+
       function readAdminMeta() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_META_KEY) || "null");
@@ -1356,6 +1365,17 @@
           return;
         }
         EXAMPLES_BY_CATEGORY[selectedCategoryCode] = nextExamples;
+        if (isBackendMode()) {
+          saveCategoryExamplesToBackend()
+            .then(() => {
+              editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문이 저장되었습니다.`;
+              window.alert("예시질문이 저장되었습니다.");
+            })
+            .catch((error) => {
+              editorStatus.textContent = error.message || "예시질문 저장에 실패했습니다.";
+            });
+          return;
+        }
         saveExampleOverrides(EXAMPLES_BY_CATEGORY);
         editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문이 저장되었습니다.`;
         window.alert("예시질문이 저장되었습니다.");
@@ -1367,6 +1387,17 @@
           return;
         }
         EXAMPLES_BY_CATEGORY[selectedCategoryCode] = [...(DEFAULT_EXAMPLES_BY_CATEGORY[selectedCategoryCode] || [])];
+        if (isBackendMode()) {
+          saveCategoryExamplesToBackend()
+            .then(() => {
+              renderExampleEditor();
+              editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문을 기본값으로 되돌렸습니다.`;
+            })
+            .catch((error) => {
+              editorStatus.textContent = error.message || "예시질문 저장에 실패했습니다.";
+            });
+          return;
+        }
         saveExampleOverrides(EXAMPLES_BY_CATEGORY);
         renderExampleEditor();
         editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리 예시질문을 기본값으로 되돌렸습니다.`;
@@ -1476,7 +1507,7 @@
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
           },
-          body: JSON.stringify({ items: DATA }),
+          body: JSON.stringify({ items: DATA, examples: EXAMPLES_BY_CATEGORY }),
         });
         if (!response.ok) {
           if (response.status === 401) {
@@ -1489,6 +1520,9 @@
         }
         const payload = await response.json();
         if (Array.isArray(payload.items)) DATA = payload.items;
+        if (payload.examples && typeof payload.examples === "object") {
+          applyBackendExamples(payload.examples);
+        }
         dataRevision = Number(payload.meta?.revision || dataRevision);
         if (payload.meta) {
           writeAdminMeta(payload.meta);
@@ -1498,6 +1532,39 @@
         renderEditorMeta(payload.meta);
         editorStatus.textContent = "저장이 완료되었습니다. 공용 FAQ에도 최신 내용이 반영됩니다.";
         window.alert("저장되었습니다.");
+      }
+
+      async function saveCategoryExamplesToBackend() {
+        const token = readBackendToken();
+        if (!token) {
+          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+          return;
+        }
+        const response = await fetch(apiUrl("/api/admin/examples"), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ examples: EXAMPLES_BY_CATEGORY }),
+        });
+        if (!response.ok) {
+          if (response.status === 401) {
+            clearBackendToken();
+            clearAdminSession();
+            setAuthState();
+            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          throw new Error("예시질문 저장에 실패했습니다.");
+        }
+        const payload = await response.json();
+        if (payload.examples && typeof payload.examples === "object") {
+          applyBackendExamples(payload.examples);
+        }
+        dataRevision = Number(payload.meta?.revision || dataRevision);
+        if (payload.meta) writeAdminMeta(payload.meta);
+        renderExampleEditor();
+        renderEditorMeta(payload.meta);
       }
 
       async function saveEditorForm() {
@@ -1574,6 +1641,10 @@
           if (Array.isArray(payload.items) && payload.items.length) {
             DATA = payload.items;
             dataRevision = nextRevision;
+          }
+          if (payload.examples && typeof payload.examples === "object") {
+            applyBackendExamples(payload.examples);
+            renderExampleEditor();
           }
         } catch (err) {
           // keep existing data

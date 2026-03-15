@@ -9,6 +9,21 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const RAW_MANUAL_BASE = "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/";
+const DEFAULT_EXAMPLES_BY_CATEGORY = {
+  "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
+  "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
+  "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
+  "8.4": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],
+  "8.5": ["추가 전력 사용은 어떻게 신청하나요?", "공사 가능 시간은 언제인가요?"],
+  "8.6": ["고객 컴플레인은 어디로 접수하나요?", "매장 운영 중 민원은 어떻게 접수하나요?"],
+  "8.7": ["쇼핑백은 어디서 받나요?", "쇼핑백 수령 위치가 어디인가요?"],
+  "8.12": ["POS는 기본 제공되나요?", "POS 장애 발생 시 어디로 연락하나요?"],
+  "8.13": ["내선전화 신청은 어떻게 하나요?", "내선전화 설치 리드타임은 얼마나 걸리나요?"],
+  "8.8": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
+  "8.9": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
+  "8.10": ["DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
+  "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"],
+};
 
 function manualUrl(filename) {
   return RAW_MANUAL_BASE + encodeURIComponent(filename);
@@ -115,6 +130,7 @@ async function ensureSchema(env) {
       CREATE TABLE IF NOT EXISTS faq_state (
         id INTEGER PRIMARY KEY CHECK (id = 1),
         faqs_json TEXT NOT NULL,
+        examples_json TEXT NOT NULL DEFAULT '{}',
         revision INTEGER NOT NULL DEFAULT 0,
         last_editor_id TEXT NOT NULL DEFAULT '',
         last_editor_name TEXT NOT NULL DEFAULT '',
@@ -122,6 +138,12 @@ async function ensureSchema(env) {
       )
     `),
   ]);
+
+  try {
+    await env.DB.prepare("ALTER TABLE faq_state ADD COLUMN examples_json TEXT NOT NULL DEFAULT '{}'").run();
+  } catch (error) {
+    // column already exists
+  }
 
   const employeeCount = await env.DB.prepare("SELECT COUNT(*) AS count FROM employees").first();
   if (!employeeCount?.count) {
@@ -137,20 +159,25 @@ async function ensureSchema(env) {
   const state = await env.DB.prepare("SELECT id FROM faq_state WHERE id = 1").first();
   if (!state) {
     await env.DB.prepare(
-      "INSERT INTO faq_state (id, faqs_json, revision, last_editor_id, last_editor_name, last_edited_at) VALUES (1, ?, 0, '', '', '')",
+      "INSERT INTO faq_state (id, faqs_json, examples_json, revision, last_editor_id, last_editor_name, last_edited_at) VALUES (1, ?, ?, 0, '', '', '')",
     )
-      .bind(JSON.stringify(SEED_FAQS))
+      .bind(JSON.stringify(SEED_FAQS), JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY))
       .run();
   }
 }
 
 async function getFaqState(env) {
   const row = await env.DB.prepare(
-    "SELECT faqs_json, revision, last_editor_id, last_editor_name, last_edited_at FROM faq_state WHERE id = 1",
+    "SELECT faqs_json, examples_json, revision, last_editor_id, last_editor_name, last_edited_at FROM faq_state WHERE id = 1",
   ).first();
   const items = normalizeFaqItems(JSON.parse(row?.faqs_json || "[]"));
+  const examples = {
+    ...DEFAULT_EXAMPLES_BY_CATEGORY,
+    ...(JSON.parse(row?.examples_json || "{}")),
+  };
   return {
     items,
+    examples,
     meta: {
       revision: Number(row?.revision || 0),
       last_editor_id: row?.last_editor_id || "",
@@ -198,6 +225,7 @@ export default {
           request,
           json({
             items: state.items,
+            examples: state.examples,
             meta: { revision: state.meta.revision },
           }),
         );
@@ -253,14 +281,17 @@ export default {
         const admin = await requireAuth(request, env);
         const body = await request.json();
         const items = normalizeFaqItems(Array.isArray(body.items) ? body.items : []);
-        const now = new Date().toISOString();
         const current = await getFaqState(env);
+        const examples = body.examples && typeof body.examples === "object"
+          ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
+          : current.examples;
+        const now = new Date().toISOString();
         const nextRevision = current.meta.revision + 1;
 
         await env.DB.prepare(
-          "UPDATE faq_state SET faqs_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
+          "UPDATE faq_state SET faqs_json = ?, examples_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
         )
-          .bind(JSON.stringify(items), nextRevision, admin.employee_id, admin.name, now)
+          .bind(JSON.stringify(items), JSON.stringify(examples), nextRevision, admin.employee_id, admin.name, now)
           .run();
 
         return withCors(
@@ -268,6 +299,38 @@ export default {
           json({
             ok: true,
             items,
+            examples,
+            meta: {
+              revision: nextRevision,
+              last_editor_id: admin.employee_id,
+              last_editor_name: admin.name,
+              last_edited_at: now,
+            },
+          }),
+        );
+      }
+
+      if (request.method === "PUT" && url.pathname === "/api/admin/examples") {
+        const admin = await requireAuth(request, env);
+        const body = await request.json();
+        const current = await getFaqState(env);
+        const examples = body.examples && typeof body.examples === "object"
+          ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
+          : current.examples;
+        const now = new Date().toISOString();
+        const nextRevision = current.meta.revision + 1;
+
+        await env.DB.prepare(
+          "UPDATE faq_state SET examples_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
+        )
+          .bind(JSON.stringify(examples), nextRevision, admin.employee_id, admin.name, now)
+          .run();
+
+        return withCors(
+          request,
+          json({
+            ok: true,
+            examples,
             meta: {
               revision: nextRevision,
               last_editor_id: admin.employee_id,
