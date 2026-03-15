@@ -23,6 +23,9 @@ from darang.faq.faq_loader import load_faq_items  # noqa: E402
 FAQ_DIR = REPO_ROOT / "darang" / "faq"
 CSV_PATH = FAQ_DIR / "ipark_faq_dataset.csv"
 ADMIN_XLSX_PATH = FAQ_DIR / "ipark_faq_dataset_admin_v2.xlsx"
+PHONE_MANUAL = "./references/manual/내선 전화 신청 방법.pdf"
+POS_MANUAL = "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf"
+FNB_POS_MANUAL = "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
 
 BASE_COLUMNS = [
     "faq_id",
@@ -160,6 +163,26 @@ def generate_paraphrases(question: str) -> List[str]:
     return unique[:10]
 
 
+def canonical_category(question: str, category: str) -> str:
+    question_norm = normalize_question_text(question)
+    if "POS" in question_norm or "포스" in question_norm:
+        return "8.12 POS"
+    if "내선전화" in question_norm or "내선 전화" in question_norm or "KT" in question_norm:
+        return "8.13 유선전화"
+    return category
+
+
+def canonical_manual_files(question: str, existing_manuals: str) -> str:
+    if existing_manuals.strip():
+        return existing_manuals.strip()
+    question_norm = normalize_question_text(question)
+    if "POS" in question_norm or "포스" in question_norm:
+        return "; ".join([POS_MANUAL, FNB_POS_MANUAL])
+    if "내선전화" in question_norm or "내선 전화" in question_norm or "KT" in question_norm:
+        return PHONE_MANUAL
+    return existing_manuals.strip()
+
+
 def load_csv_rows() -> Dict[str, Dict[str, str]]:
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -189,6 +212,7 @@ def build_csv_rows(admin_rows: List[Dict[str, str]], csv_rows: Dict[str, Dict[st
         category_code = row.get("category_code", "").strip()
         category_name = row.get("category_name", "").strip()
         category = f"{category_code} {category_name}".strip()
+        category = canonical_category(row.get("question", ""), category)
         paraphrases = generate_paraphrases(row.get("question", ""))
         merged = {key: existing.get(key, "") for key in CSV_HEADERS}
         merged.update(
@@ -207,6 +231,7 @@ def build_csv_rows(admin_rows: List[Dict[str, str]], csv_rows: Dict[str, Dict[st
                 "confidence_type": normalize_question_text(row.get("confidence_type", "")),
                 "updated_at": normalize_question_text(row.get("updated_at", "")) or existing.get("updated_at", ""),
                 "source": normalize_question_text(row.get("source", "")) or existing.get("source", ""),
+                "manual_files": canonical_manual_files(row.get("question", ""), existing.get("manual_files", "")),
             }
         )
         merged_rows.append(merged)

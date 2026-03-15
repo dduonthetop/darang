@@ -899,13 +899,9 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "운영 기준을 숙지하시고, 이슈가 발생하면 고객상담실 또는 담당 바이어 채널로 접수하시면 됩니다.",
     "contact_channel": "고객상담실 02-2012-0000/0002; 전산/POS 02-2012-0200",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.6 매장 운영 및 서비스 기준",
+    "category": "8.12 POS",
     "keywords": [
-      "8.6",
-      "매장",
-      "운영",
-      "서비스",
-      "기준",
+      "8.12",
       "POS",
       "연동",
       "또는",
@@ -913,6 +909,10 @@ window.LOCAL_FAQ_DATA = [
       "보고",
       "방식은",
       "무엇인가요"
+    ],
+    "manual_files": [
+      "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
     ]
   },
   {
@@ -1177,11 +1177,10 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.13 유선전화",
     "keywords": [
-      "8.7",
-      "매장",
-      "비품/쇼핑백/내선전화/POS",
+      "8.13",
+      "유선전화",
       "내선전화",
       "신청",
       "절차",
@@ -1192,6 +1191,9 @@ window.LOCAL_FAQ_DATA = [
       "기준은",
       "어떻게",
       "되나요"
+    ],
+    "manual_files": [
+      "./references/manual/내선 전화 신청 방법.pdf"
     ]
   },
   {
@@ -1213,11 +1215,9 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
-      "매장",
-      "비품/쇼핑백/내선전화/POS",
+      "8.12",
       "POS",
       "사용",
       "방법",
@@ -1230,6 +1230,10 @@ window.LOCAL_FAQ_DATA = [
       "문의처는",
       "어떻게",
       "되나요"
+    ],
+    "manual_files": [
+      "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
     ]
   },
   {
@@ -1251,11 +1255,9 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "확정 정책형 답변",
-    "category": "8.7 매장 비품/쇼핑백/내선전화/POS",
+    "category": "8.12 POS",
     "keywords": [
-      "8.7",
-      "매장",
-      "비품/쇼핑백/내선전화/POS",
+      "8.12",
       "POS",
       "장애",
       "발생",
@@ -1266,6 +1268,10 @@ window.LOCAL_FAQ_DATA = [
       "SLA는",
       "어떻게",
       "되나요"
+    ],
+    "manual_files": [
+      "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+      "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf"
     ]
   },
   {

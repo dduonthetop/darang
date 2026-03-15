@@ -967,6 +967,23 @@
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
+      const MANUAL_FALLBACKS = [
+        {
+          matchers: ["fnb", "pos"],
+          label: "아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf",
+          url: "./references/manual/아이파크몰 용산점 FnB-POS 매뉴얼_협력사원 교육용.pdf",
+        },
+        {
+          matchers: ["pos", "포스"],
+          label: "아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+          url: "./references/manual/아이파크몰 용산점 리빙,패션,팝업-POS 매뉴얼.pdf",
+        },
+        {
+          matchers: ["내선", "전화", "kt"],
+          label: "내선 전화 신청 방법.pdf",
+          url: "./references/manual/내선 전화 신청 방법.pdf",
+        },
+      ];
       const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
       const adminPageUrl = "./ipark_faq_admin.html";
@@ -1598,26 +1615,47 @@
         return encodeURI(path);
       }
 
-      function normalizeAttachment(entry) {
+      function decodeAttachmentText(value = "") {
+        if (!value) return "";
+        try {
+          return decodeURIComponent(value);
+        } catch (err) {
+          return value;
+        }
+      }
+
+      function inferManualFallback(text = "") {
+        const raw = decodeAttachmentText(text).toLowerCase();
+        return MANUAL_FALLBACKS.find((item) => item.matchers.every((matcher) => raw.includes(matcher))) || null;
+      }
+
+      function normalizeAttachment(entry, itemContext = null) {
         if (!entry) return null;
+        const contextText = [itemContext?.question || "", itemContext?.category || ""].join(" ");
         if (typeof entry === "string") {
-          const label = entry.startsWith("./references/manual/")
-            ? entry.replace("./references/manual/", "")
-            : entry.split("/").pop() || entry;
+          const fallback = inferManualFallback(`${entry} ${contextText}`);
+          const label = fallback?.label || (entry.startsWith("./references/manual/")
+            ? decodeAttachmentText(entry.replace("./references/manual/", ""))
+            : decodeAttachmentText(entry.split("/").pop() || entry));
           return {
             type: entry.startsWith("http") ? "url" : "file",
             label,
-            url: entry,
+            url: fallback?.url || entry,
           };
         }
         if (typeof entry === "object" && typeof entry.url === "string") {
+          const fallback = inferManualFallback(`${entry.label || ""} ${entry.url} ${contextText}`);
           const fallbackLabel = entry.url.startsWith("./references/manual/")
-            ? entry.url.replace("./references/manual/", "")
-            : entry.url.split("/").pop() || entry.url;
+            ? decodeAttachmentText(entry.url.replace("./references/manual/", ""))
+            : decodeAttachmentText(entry.url.split("/").pop() || entry.url);
+          const rawLabel = entry.label || fallbackLabel;
+          const decodedLabel = decodeAttachmentText(rawLabel);
+          const brokenLabel = /[\?]{2,}|%3F/i.test(rawLabel);
+          const brokenUrl = /%3F/i.test(entry.url);
           return {
-            type: entry.type || (entry.url.startsWith("http") ? "url" : "file"),
-            label: entry.label || fallbackLabel,
-            url: entry.url,
+            type: entry.type || ((fallback?.url || entry.url).startsWith("http") ? "url" : "file"),
+            label: fallback && (brokenLabel || !decodedLabel) ? fallback.label : decodedLabel,
+            url: fallback && brokenUrl ? fallback.url : entry.url,
           };
         }
         return null;
@@ -1625,7 +1663,7 @@
 
       function renderManualAttachments(data) {
         const attachments = (Array.isArray(data.manual_files) ? data.manual_files : [])
-          .map(normalizeAttachment)
+          .map((entry) => normalizeAttachment(entry, data))
           .filter(Boolean);
         if (!attachments.length) return;
 
