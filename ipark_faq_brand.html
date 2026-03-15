@@ -1510,12 +1510,20 @@
           .sort((a, b) => b.score - a.score);
 
         let top = scored[0];
+        const globalScored = intentScopedData
+          .map((item) => ({ item, score: scoreItem(question, item, "") }))
+          .sort((a, b) => b.score - a.score);
+        const globalTop = globalScored[0];
+
+        if (categoryPrefix && top && globalTop && globalTop.item !== top.item) {
+          const scoreGap = globalTop.score - top.score;
+          if (scoreGap >= 0.08) {
+            top = globalTop;
+          }
+        }
 
         if (!top || top.score < 0.14) {
-          const rescored = intentScopedData
-            .map((item) => ({ item, score: scoreItem(question, item, "") }))
-            .sort((a, b) => b.score - a.score);
-          top = rescored[0];
+          top = globalTop;
         }
 
         if (!top || top.score < 0.12) return localFallback(question);
