@@ -17,6 +17,45 @@
     <script src="./static/employee_auth.js?v=20260316d"></script>
     <script src="./static/category_defaults.js?v=20260316d"></script>
     <script src="./static/local_faq_data.js?v=20260316d"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("loginForm");
+        const idInput = document.getElementById("employeeIdInput");
+        const pwInput = document.getElementById("employeePwInput");
+        const errorEl = document.getElementById("loginError");
+        if (!form || !idInput || !pwInput || !errorEl) return;
+
+        form.addEventListener(
+          "submit",
+          (event) => {
+            const ids = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
+            const employeeMap = window.ADMIN_EMPLOYEE_MAP || {};
+            const id = String(idInput.value || "").trim();
+            const pw = String(pwInput.value || "").trim();
+            if (!id || !pw) return;
+
+            if (!ids.includes(id) || id !== pw) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+              errorEl.textContent = "관리자에게 문의하세요.";
+              window.alert("관리자에게 문의하세요.");
+              return;
+            }
+
+            localStorage.removeItem("ipark_faq_backend_token");
+            localStorage.setItem(
+              "ipark_faq_admin_session",
+              JSON.stringify({
+                employee_id: id,
+                name: employeeMap[id] || "",
+                logged_in_at: new Date().toISOString(),
+              }),
+            );
+          },
+          true,
+        );
+      });
+    </script>
     <style>
       @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
