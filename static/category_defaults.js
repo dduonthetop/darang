@@ -12,8 +12,7 @@ window.IPARK_CATEGORY_CONFIG = Object.freeze({
     "8.10": "마케팅/사인물/콘텐츠",
     "8.11": "철수/연장/계약 종료",
     "8.12": "POS",
-    "8.13": "내선전화",
-    "8.14": "인테리어"
+    "8.13": "내선전화"
   }),
   aliases: Object.freeze({
     "유선전화": "내선전화",

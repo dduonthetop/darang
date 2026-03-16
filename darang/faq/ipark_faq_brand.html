@@ -6,7 +6,7 @@
     <title>아이파크몰 브랜드 챗봇</title>
     <script src="./static/site_config.js"></script>
     <script src="./static/employee_auth.js"></script>
-    <script src="./static/category_defaults.js?v=20260316a"></script>
+    <script src="./static/category_defaults.js"></script>
     <style>
       @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
@@ -995,7 +995,7 @@
       const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
-      const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.14", "8.11"];
+      const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
       const SHARED_CATEGORY_CONFIG = window.IPARK_CATEGORY_CONFIG || {};
       const DEFAULT_CATEGORY_LABELS = Object.freeze({
         ...(SHARED_CATEGORY_CONFIG.labels || {
@@ -1009,7 +1009,6 @@
           "8.8": "인력 운영 및 교육",
           "8.9": "정산 및 행정",
           "8.10": "마케팅/사인물/콘텐츠",
-          "8.14": "인테리어",
           "8.11": "철수/연장/계약 종료",
           "8.12": "POS",
           "8.13": "내선전화"
@@ -1067,7 +1066,6 @@
         "8.8": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
         "8.9": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
         "8.10": ["오프라인 제작물 사이즈 문의드려요.", "DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
-        "8.14": ["착공 승인서 제출 서류는 무엇인가요?", "준공 승인 시 어떤 서류를 제출해야 하나요?", "고객 동선과 피난통로 확보 기준은 어떻게 되나요?", "가설칸막이 설치 기준은 어떻게 되나요?", "외부 파사드 벽체 이격 기준은 어떻게 되나요?"],
         "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"]
       };
       let EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
@@ -1096,7 +1094,6 @@
         tax: /세금계산서|역발행/,
         ads_app: /app|앱|광고|상세페이지/,
         ads_did: /did|송출|에스컬레이터|엘리베이터/,
-        interior: /인테리어|착공|준공|가설칸막이|가설벽체|파사드|마감재|피난통로|동선|도면|벽체 이격|벌크헤드|걸레받이/,
         cs: /컴플레인|고객상담|분실물|유실물|사고/
       };
 
@@ -1204,27 +1201,7 @@
       function normalizeCategoryLabelValue(value, fallback = "") {
         const nextValue = String(value || "").trim();
         if (!nextValue) return fallback;
-        const normalized = CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
-        if (/[?�]/.test(normalized)) return fallback;
-        if (!/^[0-9A-Za-zㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-]+$/.test(normalized)) return fallback;
-        return normalized;
-      }
-
-      function normalizeCategoryLabelMap(payload) {
-        const next = {};
-        let repaired = false;
-        if (!payload || typeof payload !== "object") {
-          return { labels: next, repaired };
-        }
-        Object.entries(payload).forEach(([categoryCode, value]) => {
-          const rawValue = String(value || "").trim();
-          if (!rawValue) return;
-          const fallback = DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode;
-          const normalizedValue = normalizeCategoryLabelValue(rawValue, fallback);
-          if (normalizedValue !== rawValue) repaired = true;
-          next[categoryCode] = normalizedValue;
-        });
-        return { labels: next, repaired };
+        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
       }
 
       function readCategoryLabelOverrides() {
@@ -1239,11 +1216,11 @@
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         const overrides = readCategoryLabelOverrides();
         if (!overrides || typeof overrides !== "object") return;
-        const normalized = normalizeCategoryLabelMap(overrides);
-        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS, ...normalized.labels };
-        if (normalized.repaired) {
-          localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(CATEGORY_LABELS));
-        }
+        Object.entries(overrides).forEach(([categoryCode, value]) => {
+          const nextValue = normalizeCategoryLabelValue(value);
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
+        });
       }
 
       function applyBackendExamples(payload) {
@@ -1258,11 +1235,11 @@
       function applyBackendCategoryLabels(payload) {
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         if (!payload || typeof payload !== "object") return;
-        const normalized = normalizeCategoryLabelMap(payload);
-        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS, ...normalized.labels };
-        if (normalized.repaired) {
-          localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(CATEGORY_LABELS));
-        }
+        Object.entries(payload).forEach(([categoryCode, value]) => {
+          const nextValue = normalizeCategoryLabelValue(value);
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
+        });
       }
 
       function sanitizeDataset(items) {
@@ -1541,7 +1518,6 @@
         const tags = detectIntentTags(intentText);
         if (categoryCode === "8.12") return tags.has("pos");
         if (categoryCode === "8.13") return tags.has("phone");
-        if (categoryCode === "8.14") return tags.has("interior");
         if (categoryCode === "8.7") return tags.has("shoppingbag");
         return false;
       }
@@ -1664,7 +1640,7 @@
         const qTags = detectIntentTags(question);
         const strongTags = [
           "pos", "shoppingbag", "phone", "entry", "parking", "loading",
-          "electric", "facility", "safety", "settlement", "tax", "ads_app", "ads_did", "interior", "cs"
+          "electric", "facility", "safety", "settlement", "tax", "ads_app", "ads_did", "cs"
         ];
         const activeStrongTags = strongTags.filter((t) => qTags.has(t));
         if (!activeStrongTags.length) return dataPool;

@@ -22,7 +22,6 @@ const DEFAULT_EXAMPLES_BY_CATEGORY = {
   "8.8": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
   "8.9": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
   "8.10": ["DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
-  "8.14": ["착공 승인서 제출 서류는 무엇인가요?", "준공 승인 시 어떤 서류를 제출해야 하나요?", "고객 동선과 피난통로 확보 기준은 어떻게 되나요?", "가설칸막이 설치 기준은 어떻게 되나요?", "외부 파사드 벽체 이격 기준은 어떻게 되나요?"],
   "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"],
 };
 
@@ -39,7 +38,6 @@ const DEFAULT_CATEGORY_LABELS = {
   "8.8": "인력 운영 및 교육",
   "8.9": "정산 및 행정",
   "8.10": "마케팅/사인물/콘텐츠",
-  "8.14": "인테리어",
   "8.11": "철수/연장/계약 종료",
 };
 
@@ -49,22 +47,13 @@ const CATEGORY_LABEL_ALIASES = {
   "철수/퇴장/계약 종료": "철수/연장/계약 종료",
 };
 
-function normalizeCategoryLabelValue(value, fallback = "") {
-  const trimmed = String(value || "").trim();
-  if (!trimmed) return fallback;
-  const normalized = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
-  if (/[?�]/.test(normalized)) return fallback;
-  if (!/^[0-9A-Za-zㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-]+$/.test(normalized)) return fallback;
-  return normalized;
-}
-
 function normalizeCategoryLabels(payload) {
   const next = { ...DEFAULT_CATEGORY_LABELS };
   if (!payload || typeof payload !== "object") return next;
   for (const [categoryCode, value] of Object.entries(payload)) {
-    const normalized = normalizeCategoryLabelValue(value, DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode);
-    if (!normalized) continue;
-    next[categoryCode] = normalized;
+    const trimmed = String(value || "").trim();
+    if (!trimmed) continue;
+    next[categoryCode] = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
   }
   return next;
 }
