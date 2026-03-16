@@ -983,6 +983,7 @@
       const editorStatus = document.getElementById("editorStatus");
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? window.LOCAL_FAQ_DATA : [];
       const BASE_DATA = JSON.parse(JSON.stringify(DATA));
+      const BASE_DATA_BY_ID = new Map(BASE_DATA.map((item) => [item.faq_id, item]));
       let dataRevision = 0;
       const siteConfig = window.SITE_CONFIG || {};
       const DEFAULT_ADMIN_API_BASE = "https://ipark-faq-admin-api.dduonthetop.workers.dev";
@@ -1196,14 +1197,40 @@
         if (!overrides || typeof overrides !== "object") return;
         Object.entries(overrides).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
-          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+          const fallbackExamples = DEFAULT_EXAMPLES_BY_CATEGORY[categoryCode] || [];
+          EXAMPLES_BY_CATEGORY[categoryCode] = values
+            .map((value, index) => normalizeExampleText(value, fallbackExamples[index] || ""))
+            .filter(Boolean);
         });
       }
 
       function normalizeCategoryLabelValue(value, fallback = "") {
         const nextValue = String(value || "").trim();
         if (!nextValue) return fallback;
-        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        const normalized = CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        return isCorruptedText(normalized) ? fallback : normalized;
+      }
+
+      function isCorruptedText(value) {
+        const text = String(value || "").trim();
+        if (!text) return false;
+        if (/[�]/.test(text)) return true;
+        const hangulCount = (text.match(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g) || []).length;
+        const questionCount = (text.match(/\?/g) || []).length;
+        const nonStandardCount = (text.match(/[^\u0000-\u007Fㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-:%]/g) || []).length;
+        return hangulCount === 0 && (questionCount >= 2 || nonStandardCount >= 2);
+      }
+
+      function normalizeExampleText(value, fallback = "") {
+        const text = String(value || "").trim();
+        if (!text) return fallback;
+        return isCorruptedText(text) ? fallback : text;
+      }
+
+      function normalizeTextField(value, fallback = "") {
+        const text = String(value || "").trim();
+        if (!text) return fallback;
+        return isCorruptedText(text) ? fallback : text;
       }
 
       function readCategoryLabelOverrides() {
@@ -1249,7 +1276,10 @@
         EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
         Object.entries(payload).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
-          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+          const fallbackExamples = DEFAULT_EXAMPLES_BY_CATEGORY[categoryCode] || [];
+          EXAMPLES_BY_CATEGORY[categoryCode] = values
+            .map((value, index) => normalizeExampleText(value, fallbackExamples[index] || ""))
+            .filter(Boolean);
         });
       }
 
@@ -1266,7 +1296,21 @@
       function sanitizeDataset(items) {
         if (!Array.isArray(items)) return [];
         return items.map((item) => {
+          const fallbackItem = BASE_DATA_BY_ID.get(item?.faq_id) || {};
           const next = { ...item };
+          next.category = normalizeTextField(item?.category, fallbackItem.category || "");
+          next.question = normalizeTextField(item?.question, fallbackItem.question || "");
+          next.answer = normalizeTextField(item?.answer, fallbackItem.answer || "");
+          next.next_action = normalizeTextField(item?.next_action, fallbackItem.next_action || "");
+          next.contact_channel = normalizeTextField(item?.contact_channel, fallbackItem.contact_channel || "");
+          next.confidence_type = normalizeTextField(item?.confidence_type, fallbackItem.confidence_type || "");
+          next.paraphrases = Array.isArray(item?.paraphrases)
+            ? item.paraphrases
+                .map((value, index) => normalizeTextField(value, Array.isArray(fallbackItem.paraphrases) ? fallbackItem.paraphrases[index] || "" : ""))
+                .filter(Boolean)
+            : Array.isArray(fallbackItem.paraphrases)
+              ? [...fallbackItem.paraphrases]
+              : [];
           if (Array.isArray(item?.manual_files)) {
             next.manual_files = item.manual_files
               .map((entry) => normalizeAttachment(entry, next))
