@@ -5,4 +5,4 @@ compatibility_date = "2026-03-14"
 [[d1_databases]]
 binding = "DB"
 database_name = "ipark-faq-admin-db"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "10a2eebc-b838-4c27-8243-24b9fd35f963"
