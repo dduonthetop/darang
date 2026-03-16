@@ -172,7 +172,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "PMS 출입신청 페이지(https://pms.iparkmall.co.kr/intro)에서 접수하시면 됩니다. 차량이 여러 대인 경우에는 차량 등록란에 쉼표로 구분해 입력하시면 되며, 승인부서는 행사 담당팀으로 지정하시면 됩니다.",
     "next_action": "PMS에서 출입신청을 접수하시고 승인부서를 지정한 뒤, 승인 완료 여부를 확인하시면 됩니다.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확정 정책형 답변",
     "category": "8.2 출입 신청 및 인원 등록",
     "keywords": [
@@ -206,7 +206,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "출입신청은 당일에도 가능하지만 누락이 발생할 수 있으므로 행사 하루 전까지 사전신청하시는 것을 권장드립니다.",
     "next_action": "PMS에서 출입신청을 접수하시고 승인부서를 지정한 뒤, 승인 완료 여부를 확인하시면 됩니다.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
     "category": "8.2 출입 신청 및 인원 등록",
     "keywords": [
@@ -242,7 +242,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "주간 출입을 원하시는 경우에는 아이파크몰 지하 1층 별주차장 방재실에서 평일 중 주차권을 구매하셔야 합니다.",
     "next_action": "PMS에서 출입신청을 접수하시고 승인부서를 지정한 뒤, 승인 완료 여부를 확인하시면 됩니다.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확정 정책형 답변",
     "category": "8.2 출입 신청 및 인원 등록",
     "keywords": [
@@ -278,7 +278,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "야간 작업 인원은 출입신청 후 보안데크에서 출입증(표찰)을 수령하시면 됩니다. 이때 보안실에 이름과 전화번호를 함께 공유해 주셔야 합니다.",
     "next_action": "PMS에서 출입신청을 접수하시고 승인부서를 지정한 뒤, 승인 완료 여부를 확인하시면 됩니다.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "확정 정책형 답변",
     "category": "8.2 출입 신청 및 인원 등록",
     "keywords": [
@@ -316,7 +316,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "야간 작업 시간대는 19:00부터 익일 10:00까지이며, 출입신청 후 담당 승인부서의 승인을 받으셔야 합니다.",
     "next_action": "PMS에서 출입신청을 접수하시고 승인부서를 지정한 뒤, 승인 완료 여부를 확인하시면 됩니다.",
-    "contact_channel": "PMS(https://pms.iparkmall.co.kr/intro); 보안 02-2012-4112",
+    "contact_channel": "보안 02-2012-4112",
     "confidence_type": "운영 사례형 답변",
     "category": "8.2 출입 신청 및 인원 등록",
     "keywords": [
@@ -1531,7 +1531,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "행사장 구조물 높이 기준은 구역마다 다르므로 바이어와 협의가 필요합니다. 최대 높이는 통상 1500~1600mm 범위로 안내됩니다.",
     "next_action": "소재 규격과 마감 기한을 확인하신 뒤, 담당 바이어에게 기한 내 제출하시면 됩니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [
@@ -1570,7 +1570,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "패션파크 5층 수선실 옆 POP실에 방문하셔서 세중PMS 프로그램으로 직접 신청하시면 됩니다. 쇼카드와 A4, A3 POP 출력이 가능합니다.",
     "next_action": "소재 규격과 마감 기한을 확인하신 뒤, 담당 바이어에게 기한 내 제출하시면 됩니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [
@@ -1603,7 +1603,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "상세 가이드는 첨부파일을 참고해 주세요.",
     "next_action": "소재 규격과 마감 기한을 확인하신 뒤, 담당 바이어에게 기한 내 제출하시면 됩니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어",
     "confidence_type": "확정 정책형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [
@@ -1638,7 +1638,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "에스컬레이터는 가로형 1920×1080px, 엘리베이터는 세로형 1080×1920px JPG 파일 각 1장을 준비해 담당 바이어에게 송출 희망일 7일 전까지 전달하시면 됩니다. 매장명, 연락처, 위치, 행사 내용, 기간 등을 포함해 주셔야 하며, 장소 표기 시에는 아이파크몰 문구를 별도로 넣지 않으셔도 됩니다. 영상 송출은 불가합니다.",
     "next_action": "소재 규격과 마감 기한을 확인하신 뒤, 담당 바이어에게 기한 내 제출하시면 됩니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어",
     "confidence_type": "확정 정책형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [
@@ -1674,7 +1674,7 @@ window.LOCAL_FAQ_DATA = [
     ],
     "answer": "APP 광고는 대표 이미지 1컷(정방형 권장)과 프로모션 기간, 내용을 포함해 담당 바이어에게 송출 희망일 2주 전까지 직접 신청하시면 됩니다.",
     "next_action": "소재 규격과 마감 기한을 확인하신 뒤, 담당 바이어에게 기한 내 제출하시면 됩니다.",
-    "contact_channel": "담당 바이어; PMS",
+    "contact_channel": "담당 바이어",
     "confidence_type": "운영 사례형 답변",
     "category": "8.10 마케팅, 사인물, 콘텐츠 반영",
     "keywords": [

@@ -191,6 +191,16 @@ def canonical_manual_files(question: str, existing_manuals: str) -> str:
     return existing_manuals.strip()
 
 
+def canonical_contact_channel(contact_channel: str) -> str:
+    pieces = [piece.strip() for piece in contact_channel.split(";") if piece.strip()]
+    filtered = [piece for piece in pieces if "PMS" not in piece.upper()]
+    if filtered:
+        return "; ".join(filtered)
+    if pieces:
+        return "담당 바이어"
+    return ""
+
+
 def load_csv_rows() -> Dict[str, Dict[str, str]]:
     with CSV_PATH.open("r", encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -233,7 +243,7 @@ def build_csv_rows(admin_rows: List[Dict[str, str]], csv_rows: Dict[str, Dict[st
                 "paraphrases": "; ".join(paraphrases),
                 "answer": normalize_question_text(row.get("answer", "")),
                 "next_action": normalize_question_text(row.get("next_action", "")),
-                "contact_channel": normalize_question_text(row.get("contact_channel", "")),
+                "contact_channel": canonical_contact_channel(normalize_question_text(row.get("contact_channel", ""))),
                 "restrictions": normalize_question_text(row.get("restrictions", "")),
                 "visibility": normalize_question_text(row.get("visibility", "")),
                 "confidence_type": normalize_question_text(row.get("confidence_type", "")),

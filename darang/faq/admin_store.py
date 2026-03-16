@@ -54,6 +54,16 @@ def _normalize_list(value: Any) -> List[str]:
     return []
 
 
+def _sanitize_contact_channel(value: Any) -> str:
+    parts = _normalize_list(value)
+    filtered = [part for part in parts if "PMS" not in part.upper()]
+    if filtered:
+        return _join_values(filtered)
+    if parts:
+        return "담당 바이어"
+    return ""
+
+
 def serialize_faq_item(item: FAQItem) -> Dict[str, Any]:
     return {
         "faq_id": item.faq_id,
@@ -64,7 +74,7 @@ def serialize_faq_item(item: FAQItem) -> Dict[str, Any]:
         "paraphrases": list(item.paraphrases),
         "answer": item.answer,
         "next_action": item.next_action,
-        "contact_channel": item.contact_channel,
+        "contact_channel": _sanitize_contact_channel(item.contact_channel),
         "restrictions": item.restrictions,
         "visibility": item.visibility,
         "confidence_type": item.confidence_type,
@@ -92,7 +102,7 @@ def _row_from_payload(item: Dict[str, Any]) -> Dict[str, str]:
         "paraphrases": _join_values(_normalize_list(item.get("paraphrases", []))),
         "answer": str(item.get("answer", "")).strip(),
         "next_action": str(item.get("next_action", "")).strip(),
-        "contact_channel": str(item.get("contact_channel", "")).strip(),
+        "contact_channel": _sanitize_contact_channel(item.get("contact_channel", "")),
         "restrictions": str(item.get("restrictions", "")).strip(),
         "visibility": str(item.get("visibility", "")).strip(),
         "confidence_type": str(item.get("confidence_type", "")).strip(),
@@ -114,7 +124,7 @@ def _to_static_record(item: FAQItem) -> Dict[str, Any]:
         "paraphrases": list(item.paraphrases),
         "answer": item.answer,
         "next_action": item.next_action,
-        "contact_channel": item.contact_channel,
+        "contact_channel": _sanitize_contact_channel(item.contact_channel),
         "confidence_type": item.confidence_type,
         "category": item.category,
     }

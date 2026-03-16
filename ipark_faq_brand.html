@@ -1899,7 +1899,11 @@
       }
 
       function resolveContactChannel(data) {
-        const explicit = (data.contact_channel || "").trim();
+        const explicit = (data.contact_channel || "")
+          .split(";")
+          .map((part) => part.trim())
+          .filter((part) => part && !part.toUpperCase().includes("PMS"))
+          .join("; ");
         const q = `${data.question || ""} ${data.core_answer || ""}`.toLowerCase();
 
         if (explicit) return explicit;
