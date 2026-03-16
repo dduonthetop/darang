@@ -2089,6 +2089,19 @@
         renderFeedbackList([]);
       }
 
+      function loginWithLocalFallback(id) {
+        writeAdminSession({
+          employee_id: id,
+          name: EMPLOYEE_MAP[id] || "",
+          logged_in_at: new Date().toISOString(),
+        });
+        applyLocalOverrides();
+        renderEditorList();
+        renderEditorForm();
+        setAuthState();
+        editorStatus.textContent = "백엔드 연결이 일시적으로 원활하지 않아 현재 브라우저 기준 관리자 모드로 로그인했습니다.";
+      }
+
       loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         const id = employeeIdInput.value.trim();
@@ -2113,6 +2126,10 @@
             await syncFeedbackReports();
             return;
           } catch (error) {
+            if (AUTH_IDS.includes(id) && id === pw) {
+              loginWithLocalFallback(id);
+              return;
+            }
             loginError.textContent = error.message || "관리자에게 문의하세요.";
             window.alert(loginError.textContent);
             return;
@@ -2125,15 +2142,7 @@
           return;
         }
 
-        writeAdminSession({
-          employee_id: id,
-          name: EMPLOYEE_MAP[id] || "",
-          logged_in_at: new Date().toISOString(),
-        });
-        applyLocalOverrides();
-        renderEditorList();
-        renderEditorForm();
-        setAuthState();
+        loginWithLocalFallback(id);
       });
 
       adminSearch.addEventListener("input", renderEditorList);
