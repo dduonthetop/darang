@@ -1023,7 +1023,10 @@
       function normalizeCategoryLabelValue(value, fallback = "") {
         const nextValue = String(value || "").trim();
         if (!nextValue) return fallback;
-        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        const normalized = CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        if (/[?�]/.test(normalized)) return fallback;
+        if (!/^[0-9A-Za-zㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-]+$/.test(normalized)) return fallback;
+        return normalized;
       }
 
       function normalizeCategoryLabelMap(payload) {
@@ -1035,7 +1038,8 @@
         Object.entries(payload).forEach(([categoryCode, value]) => {
           const rawValue = String(value || "").trim();
           if (!rawValue) return;
-          const normalizedValue = normalizeCategoryLabelValue(rawValue);
+          const fallback = DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode;
+          const normalizedValue = normalizeCategoryLabelValue(rawValue, fallback);
           if (normalizedValue !== rawValue) repaired = true;
           next[categoryCode] = normalizedValue;
         });

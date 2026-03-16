@@ -1204,7 +1204,27 @@
       function normalizeCategoryLabelValue(value, fallback = "") {
         const nextValue = String(value || "").trim();
         if (!nextValue) return fallback;
-        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        const normalized = CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+        if (/[?�]/.test(normalized)) return fallback;
+        if (!/^[0-9A-Za-zㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-]+$/.test(normalized)) return fallback;
+        return normalized;
+      }
+
+      function normalizeCategoryLabelMap(payload) {
+        const next = {};
+        let repaired = false;
+        if (!payload || typeof payload !== "object") {
+          return { labels: next, repaired };
+        }
+        Object.entries(payload).forEach(([categoryCode, value]) => {
+          const rawValue = String(value || "").trim();
+          if (!rawValue) return;
+          const fallback = DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode;
+          const normalizedValue = normalizeCategoryLabelValue(rawValue, fallback);
+          if (normalizedValue !== rawValue) repaired = true;
+          next[categoryCode] = normalizedValue;
+        });
+        return { labels: next, repaired };
       }
 
       function readCategoryLabelOverrides() {
@@ -1219,11 +1239,11 @@
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         const overrides = readCategoryLabelOverrides();
         if (!overrides || typeof overrides !== "object") return;
-        Object.entries(overrides).forEach(([categoryCode, value]) => {
-          const nextValue = normalizeCategoryLabelValue(value);
-          if (!nextValue) return;
-          CATEGORY_LABELS[categoryCode] = nextValue;
-        });
+        const normalized = normalizeCategoryLabelMap(overrides);
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS, ...normalized.labels };
+        if (normalized.repaired) {
+          localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(CATEGORY_LABELS));
+        }
       }
 
       function applyBackendExamples(payload) {
@@ -1238,11 +1258,11 @@
       function applyBackendCategoryLabels(payload) {
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         if (!payload || typeof payload !== "object") return;
-        Object.entries(payload).forEach(([categoryCode, value]) => {
-          const nextValue = normalizeCategoryLabelValue(value);
-          if (!nextValue) return;
-          CATEGORY_LABELS[categoryCode] = nextValue;
-        });
+        const normalized = normalizeCategoryLabelMap(payload);
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS, ...normalized.labels };
+        if (normalized.repaired) {
+          localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(CATEGORY_LABELS));
+        }
       }
 
       function sanitizeDataset(items) {

@@ -49,13 +49,22 @@ const CATEGORY_LABEL_ALIASES = {
   "철수/퇴장/계약 종료": "철수/연장/계약 종료",
 };
 
+function normalizeCategoryLabelValue(value, fallback = "") {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return fallback;
+  const normalized = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
+  if (/[?�]/.test(normalized)) return fallback;
+  if (!/^[0-9A-Za-zㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-]+$/.test(normalized)) return fallback;
+  return normalized;
+}
+
 function normalizeCategoryLabels(payload) {
   const next = { ...DEFAULT_CATEGORY_LABELS };
   if (!payload || typeof payload !== "object") return next;
   for (const [categoryCode, value] of Object.entries(payload)) {
-    const trimmed = String(value || "").trim();
-    if (!trimmed) continue;
-    next[categoryCode] = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
+    const normalized = normalizeCategoryLabelValue(value, DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode);
+    if (!normalized) continue;
+    next[categoryCode] = normalized;
   }
   return next;
 }
