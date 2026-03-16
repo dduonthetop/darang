@@ -1539,45 +1539,58 @@
       function scoreItem(question, item, categoryPrefix) {
         const qn = normalize(question);
         const qt = tokenize(question);
-        const full = [item.question, ...(item.paraphrases || []), ...(item.keywords || []), item.category, item.stage].join(" ");
-        const ft = tokenize(full);
-        const flags = intentFlags(question);
+        const questionNorm = normalize(item.question || "");
+        const paraphrases = (item.paraphrases || []).map(normalize);
+        const keywords = (item.keywords || []).map(normalize).filter(Boolean);
         const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
         const itemNorm = normalize(intentText);
+        const itemTokens = tokenize(intentText);
         const qTags = detectIntentTags(question);
         const itemTags = detectIntentTags(intentText);
+        const flags = intentFlags(question);
 
-        let score = overlap(qt, ft) * 0.72;
-        const questionNorm = normalize(item.question || "");
-        if (questionNorm === qn) score += 0.4;
-        if (questionNorm.includes(qn) || qn.includes(questionNorm)) score += 0.18;
+        let score = overlap(qt, itemTokens) * 0.58;
 
-        const para = (item.paraphrases || []).map(normalize);
-        if (para.includes(qn)) score += 0.32;
-        if (para.some((p) => p.includes(qn) || qn.includes(p))) score += 0.12;
+        if (questionNorm === qn) score += 1.0;
+        if (paraphrases.includes(qn)) score += 0.95;
 
-        if (categoryPrefix) {
-          if ((item.category || "").startsWith(categoryPrefix)) score += 0.14;
-          else score -= 0.03;
+        if (questionNorm && questionNorm !== qn && (questionNorm.includes(qn) || qn.includes(questionNorm))) {
+          score += 0.28;
+        }
+        if (paraphrases.some((p) => p && p !== qn && (p.includes(qn) || qn.includes(p)))) {
+          score += 0.24;
         }
 
-        // Prevent cross-topic leakage inside 8.7 (POS vs 쇼핑백).
+        const keywordHits = keywords.filter((keyword) => keyword && qn.includes(keyword)).length;
+        if (keywordHits) {
+          score += Math.min(0.26, keywordHits * 0.08);
+        }
+
+        if (categoryPrefix && (item.category || "").startsWith(categoryPrefix)) {
+          score += 0.03;
+        }
+
         if (flags.hasPos) {
-          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score += 0.26;
-          if (itemNorm.includes("쇼핑백")) score -= 0.22;
+          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score += 0.24;
+          if (itemNorm.includes("쇼핑백")) score -= 0.26;
         }
         if (flags.hasShoppingBag) {
-          if (itemNorm.includes("쇼핑백")) score += 0.26;
-          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score -= 0.22;
+          if (itemNorm.includes("쇼핑백")) score += 0.24;
+          if (/(^|\s)(pos|포스)(\s|$)|바코드|스캔/.test(itemNorm)) score -= 0.26;
         }
 
-        // General cross-category disambiguation:
-        // if question has clear intent tags, penalize items with disjoint tags.
-        if (qTags.size && itemTags.size) {
-          let overlapCount = 0;
-          qTags.forEach((t) => { if (itemTags.has(t)) overlapCount += 1; });
-          if (overlapCount === 0) score -= 0.18;
-          else score += Math.min(0.14, overlapCount * 0.07);
+        if (qTags.size) {
+          if (!itemTags.size) {
+            score -= 0.08;
+          } else {
+            let overlapCount = 0;
+            qTags.forEach((tag) => { if (itemTags.has(tag)) overlapCount += 1; });
+            if (overlapCount === 0) {
+              score -= 0.30;
+            } else {
+              score += Math.min(0.22, overlapCount * 0.11);
+            }
+          }
         }
 
         return score;
@@ -1597,9 +1610,8 @@
         };
       }
 
-      function findExactInScope(questionNorm, categoryPrefix) {
-        const scoped = DATA.filter((item) => itemMatchesCategory(item, categoryPrefix));
-        for (const item of scoped) {
+      function findExactMatch(questionNorm, pool) {
+        for (const item of pool) {
           if (normalize(item.question || "") === questionNorm) return item;
           const paras = (item.paraphrases || []).map((p) => normalize(p));
           if (paras.includes(questionNorm)) return item;
@@ -1628,42 +1640,7 @@
       function localAnswer(question, categoryPrefix) {
         const qn = normalize(question);
         const intentScopedData = getIntentScopedData(question, DATA);
-        const intentScopedByCategory = categoryPrefix
-          ? intentScopedData.filter((item) => itemMatchesCategory(item, categoryPrefix))
-          : intentScopedData;
-
-        const exactPool = intentScopedByCategory.length ? intentScopedByCategory : intentScopedData;
-        for (const item of exactPool) {
-          if (normalize(item.question || "") === qn) {
-            return {
-              faq_id: item.faq_id || "",
-              question: item.question || question,
-              category: item.category || "",
-              stage: item.stage || classifyStage(question),
-              core_answer: item.answer || "확인 가능한 답변 데이터가 없습니다.",
-              next_action: item.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
-              contact_channel: item.contact_channel || "",
-              confidence_type: item.confidence_type || "운영 사례형 답변",
-              manual_files: Array.isArray(item.manual_files) ? item.manual_files : []
-            };
-          }
-          const paras = (item.paraphrases || []).map((p) => normalize(p));
-          if (paras.includes(qn)) {
-            return {
-              faq_id: item.faq_id || "",
-              question: item.question || question,
-              category: item.category || "",
-              stage: item.stage || classifyStage(question),
-              core_answer: item.answer || "확인 가능한 답변 데이터가 없습니다.",
-              next_action: item.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
-              contact_channel: item.contact_channel || "",
-              confidence_type: item.confidence_type || "운영 사례형 답변",
-              manual_files: Array.isArray(item.manual_files) ? item.manual_files : []
-            };
-          }
-        }
-
-        const exact = findExactInScope(qn, categoryPrefix);
+        const exact = findExactMatch(qn, intentScopedData);
         if (exact) {
           return {
             faq_id: exact.faq_id || "",
@@ -1671,46 +1648,36 @@
             category: exact.category || "",
             stage: exact.stage || classifyStage(question),
             core_answer: exact.answer || "확인 가능한 답변 데이터가 없습니다.",
-            next_action: exact.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
+            next_action: exact.next_action || "필요한 경우 해당 바이어에게 추가로 확인하시면 됩니다.",
             contact_channel: exact.contact_channel || "",
             confidence_type: exact.confidence_type || "운영 사례형 답변",
             manual_files: Array.isArray(exact.manual_files) ? exact.manual_files : []
           };
         }
 
-        const scorePool = (categoryPrefix && intentScopedByCategory.length)
-          ? intentScopedByCategory
-          : intentScopedData;
-
-        const scored = scorePool
+        const globalScored = intentScopedData
           .map((item) => ({ item, score: scoreItem(question, item, categoryPrefix) }))
           .sort((a, b) => b.score - a.score);
 
-        let top = scored[0];
-        const globalScored = intentScopedData
-          .map((item) => ({ item, score: scoreItem(question, item, "") }))
-          .sort((a, b) => b.score - a.score);
-        const globalTop = globalScored[0];
+        let top = globalScored[0];
+        const second = globalScored[1];
 
-        if (categoryPrefix && top && globalTop && globalTop.item !== top.item) {
-          const scoreGap = globalTop.score - top.score;
-          if (scoreGap >= 0.08) {
-            top = globalTop;
+        if (second && top && top.score < 0.42 && (top.score - second.score) < 0.03) {
+          const topCategoryMatch = categoryPrefix && (top.item.category || "").startsWith(categoryPrefix);
+          const secondCategoryMatch = categoryPrefix && (second.item.category || "").startsWith(categoryPrefix);
+          if (!topCategoryMatch && secondCategoryMatch && second.score > 0.2) {
+            top = second;
           }
         }
 
-        if (!top || top.score < 0.14) {
-          top = globalTop;
-        }
-
-        if (!top || top.score < 0.12) return localFallback(question);
+        if (!top || top.score < 0.18) return localFallback(question);
 
         for (const rule of PRESET_RULES) {
           if (rule.test(qn)) {
             return {
               ...rule.answer,
               question,
-              category: categoryPrefix || ""
+              category: top.item.category || ""
             };
           }
         }
@@ -1721,7 +1688,7 @@
           category: top.item.category || "",
           stage: top.item.stage || classifyStage(question),
           core_answer: top.item.answer || "확인 가능한 답변 데이터가 없습니다.",
-          next_action: top.item.next_action || "필요한 경우 담당 바이어에게 추가로 확인하시면 됩니다.",
+          next_action: top.item.next_action || "필요한 경우 해당 바이어에게 추가로 확인하시면 됩니다.",
           contact_channel: top.item.contact_channel || "",
           confidence_type: top.item.confidence_type || "운영 사례형 답변",
           manual_files: Array.isArray(top.item.manual_files) ? top.item.manual_files : []
