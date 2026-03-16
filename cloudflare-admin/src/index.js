@@ -137,6 +137,14 @@ async function ensureSchema(env) {
         last_edited_at TEXT NOT NULL DEFAULT ''
       )
     `),
+    env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS feedback_reports (
+        id TEXT PRIMARY KEY,
+        complaint_text TEXT NOT NULL,
+        conversation_json TEXT NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    `),
   ]);
 
   try {
@@ -207,6 +215,18 @@ async function requireAuth(request, env) {
     name: session.display_name,
     token,
   };
+}
+
+async function getFeedbackReports(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT id, complaint_text, conversation_json, created_at FROM feedback_reports ORDER BY created_at DESC",
+  ).all();
+  return (results || []).map((row) => ({
+    id: row.id,
+    complaint_text: row.complaint_text,
+    conversation: JSON.parse(row.conversation_json || "[]"),
+    created_at: row.created_at,
+  }));
 }
 
 export default {
@@ -345,6 +365,29 @@ export default {
         const admin = await requireAuth(request, env);
         const state = await getFaqState(env);
         return withCors(request, json({ user: admin, meta: state.meta }));
+      }
+
+      if (request.method === "POST" && url.pathname === "/api/feedback") {
+        const body = await request.json();
+        const complaintText = String(body.complaint_text || "").trim();
+        const conversation = Array.isArray(body.conversation) ? body.conversation : [];
+        if (!complaintText) {
+          return withCors(request, json({ detail: "Complaint text is required" }, { status: 400 }));
+        }
+        const id = crypto.randomUUID();
+        const createdAt = new Date().toISOString();
+        await env.DB.prepare(
+          "INSERT INTO feedback_reports (id, complaint_text, conversation_json, created_at) VALUES (?, ?, ?, ?)",
+        )
+          .bind(id, complaintText, JSON.stringify(conversation), createdAt)
+          .run();
+        return withCors(request, json({ ok: true, id, created_at: createdAt }));
+      }
+
+      if (request.method === "GET" && url.pathname === "/api/admin/feedback") {
+        await requireAuth(request, env);
+        const items = await getFeedbackReports(env);
+        return withCors(request, json({ items }));
       }
 
       return withCors(request, json({ detail: "Not found" }, { status: 404 }));

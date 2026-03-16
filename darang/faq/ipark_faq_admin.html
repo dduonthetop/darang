@@ -476,6 +476,35 @@
         line-height: 1.6;
       }
 
+      .feedback-shell {
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.94);
+        padding: 18px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .feedback-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .feedback-item {
+        border: 1px solid rgba(210, 207, 205, 0.7);
+        border-radius: 18px;
+        padding: 14px;
+        background: rgba(251, 251, 251, 0.98);
+      }
+
+      .feedback-item pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        font: 12px/1.6 SUIT, sans-serif;
+        color: var(--muted);
+        margin: 10px 0 0;
+      }
+
       .editor-list {
         padding: 10px;
         display: grid;
@@ -699,6 +728,18 @@
             </div>
           </div>
         </div>
+
+        <div class="feedback-shell">
+          <div class="editor-head" style="margin:0;">
+            <div>
+              <h3 style="margin:0; font-size:20px;">불편사항 접수 내역</h3>
+              <p class="example-note">챗봇 답변 후 접수된 불만족 의견과 대화 로그를 확인할 수 있습니다.</p>
+            </div>
+          </div>
+          <div id="feedbackList" class="feedback-list">
+            <p class="toolbar-note">아직 접수된 불편사항이 없습니다.</p>
+          </div>
+        </div>
       </section>
     </main>
 
@@ -711,6 +752,7 @@
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
+      const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const DEFAULT_EXAMPLES_BY_CATEGORY = {
         "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
@@ -792,6 +834,7 @@
       ];
       const editorStatus = document.getElementById("editorStatus");
       const editorMeta = document.getElementById("editorMeta");
+      const feedbackList = document.getElementById("feedbackList");
 
       const CONFIDENCE_OPTIONS = [
         {
@@ -886,6 +929,14 @@
         localStorage.setItem(ADMIN_EXAMPLES_KEY, JSON.stringify(payload));
       }
 
+      function readFeedbackReports() {
+        try {
+          return JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || "[]");
+        } catch (err) {
+          return [];
+        }
+      }
+
       function loadExampleConfig() {
         EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
         const overrides = readExampleOverrides();
@@ -928,6 +979,48 @@
           hour: "2-digit",
           minute: "2-digit",
         });
+      }
+
+      function renderFeedbackList(items = readFeedbackReports()) {
+        if (!Array.isArray(items) || !items.length) {
+          feedbackList.innerHTML = "<p class='toolbar-note'>아직 접수된 불편사항이 없습니다.</p>";
+          return;
+        }
+        feedbackList.innerHTML = "";
+        items.forEach((item) => {
+          const wrap = document.createElement("div");
+          wrap.className = "feedback-item";
+          const title = document.createElement("strong");
+          title.textContent = item.complaint_text || "내용 없음";
+          wrap.appendChild(title);
+          const meta = document.createElement("p");
+          meta.className = "toolbar-note";
+          meta.textContent = `접수 시각: ${formatTimestamp(item.created_at)}`;
+          wrap.appendChild(meta);
+          const log = document.createElement("pre");
+          log.textContent = (Array.isArray(item.conversation) ? item.conversation : [])
+            .map((entry) => `[${entry.role || "bot"}] ${entry.text || ""}`)
+            .join("\n");
+          wrap.appendChild(log);
+          feedbackList.appendChild(wrap);
+        });
+      }
+
+      async function syncFeedbackReports() {
+        if (!isBackendMode()) {
+          renderFeedbackList(readFeedbackReports());
+          return;
+        }
+        try {
+          const response = await fetch(apiUrl("/api/admin/feedback"), {
+            headers: { "Authorization": `Bearer ${readBackendToken()}` },
+          });
+          if (!response.ok) return;
+          const payload = await response.json();
+          renderFeedbackList(Array.isArray(payload.items) ? payload.items : []);
+        } catch (error) {
+          renderFeedbackList([]);
+        }
       }
 
       function renderEditorMeta(meta = readAdminMeta()) {
@@ -1666,6 +1759,7 @@
         clearAdminSession();
         setAuthState();
         editorStatus.textContent = "";
+        renderFeedbackList([]);
       }
 
       loginForm.addEventListener("submit", async (event) => {
@@ -1689,6 +1783,7 @@
             renderEditorList();
             renderEditorForm();
             setAuthState();
+            await syncFeedbackReports();
             return;
           } catch (error) {
             loginError.textContent = error.message || "관리자에게 문의하세요.";
@@ -1741,6 +1836,9 @@
           loadExampleConfig();
           renderExampleEditor();
         }
+        if (event.key === FEEDBACK_STORAGE_KEY) {
+          renderFeedbackList(readFeedbackReports());
+        }
       });
 
       async function initPage() {
@@ -1758,6 +1856,7 @@
         renderEditorList();
         renderEditorForm();
         renderEditorMeta();
+        await syncFeedbackReports();
       }
 
       initPage();

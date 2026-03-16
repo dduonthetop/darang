@@ -831,8 +831,8 @@
             <div class="chat-fixed">
               <div class="chat-fixed-head">
                 <div>
-                  <p class="chat-fixed-greeting">안녕하세요. 브랜드 FAQ 사항에 답변해 드리는 챗봇입니다.</p>
-                  <p class="chat-fixed-title">질문 주제를 먼저 선택하거나, 아래 입력창에 바로 문의를 남겨 주세요.</p>
+                  <p class="chat-fixed-greeting">안녕하세요, 아이파크몰 브랜드 챗봇입니다. 궁금한 부분을 선택해주세요.</p>
+                  <p class="chat-fixed-title">대분류 카테고리를 선택하거나, 아래 입력창에 직접 질문을 입력해 주세요.</p>
                 </div>
                 <div class="fixed-badge">FAQ Live Response</div>
               </div>
@@ -967,6 +967,7 @@
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
+      const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const MANUAL_FALLBACKS = [
         {
@@ -1053,6 +1054,8 @@
 
       let categoryHint = "";
       let exampleSelectorEl = null;
+      let chatHistory = [];
+      let awaitingComplaintInput = false;
 
       function apiUrl(path) {
         return adminApiBase ? `${adminApiBase}${path}` : path;
@@ -1060,6 +1063,18 @@
 
       function isBackendMode() {
         return !!adminApiBase;
+      }
+
+      function readFeedbackReports() {
+        try {
+          return JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || "[]");
+        } catch (err) {
+          return [];
+        }
+      }
+
+      function saveFeedbackReports(items) {
+        localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(items));
       }
 
       function readBackendToken() {
@@ -1655,7 +1670,54 @@
         }
         chat.appendChild(div);
         chat.scrollTop = chat.scrollHeight;
+        chatHistory.push({
+          role,
+          text: String(text || ""),
+          created_at: new Date().toISOString(),
+        });
         return div;
+      }
+
+      function addFeedbackPrompt() {
+        const { wrap, row } = addOptionBubble("안내해 드린 내용으로 문제가 해결되셨을까요? [예/아니오] 버튼을 눌러주세요.");
+        ["예", "아니오"].forEach((label) => {
+          const btn = document.createElement("button");
+          btn.className = "option-btn";
+          btn.textContent = label;
+          btn.addEventListener("click", async () => {
+            wrap.remove();
+            if (label === "예") {
+              addBubble("감사합니다. 더 궁금한 사항은 언제든 다시 찾아주세요.");
+              return;
+            }
+            awaitingComplaintInput = true;
+            addBubble("어떤 부분이 불만족스러우셨는지 입력해 주세요.");
+          });
+          row.appendChild(btn);
+        });
+      }
+
+      async function submitComplaint(text) {
+        const payload = {
+          complaint_text: text,
+          conversation: chatHistory.slice(-20),
+        };
+        if (isBackendMode()) {
+          await fetch(apiUrl("/api/feedback"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          return;
+        }
+        const next = readFeedbackReports();
+        next.unshift({
+          id: `feedback_${Date.now()}`,
+          complaint_text: text,
+          conversation: payload.conversation,
+          created_at: new Date().toISOString(),
+        });
+        saveFeedbackReports(next);
       }
 
       function safeHref(path) {
@@ -1851,6 +1913,19 @@
 
         await syncLiveData();
 
+        if (awaitingComplaintInput) {
+          addBubble(question, "user");
+          qInput.value = "";
+          awaitingComplaintInput = false;
+          try {
+            await submitComplaint(question);
+            addBubble("해당 내용이 담당자에게 접수되었습니다. 소중한 의견을 반영하여 더 나은 서비스를 제공해드릴 수 있도록 하겠습니다.");
+          } catch (error) {
+            addBubble("불편사항 접수 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+          }
+          return;
+        }
+
         addBubble(question, "user");
         qInput.value = "";
 
@@ -1866,6 +1941,7 @@
         const ans = localAnswer(question, categoryHint);
         addBubble(formatAnswerShort(ans), "bot", true);
         renderManualAttachments(ans);
+        addFeedbackPrompt();
       }
 
       sendBtn.addEventListener("click", () => ask(qInput.value));
@@ -1960,6 +2036,9 @@
         if (event.key === ADMIN_EXAMPLES_KEY) {
           loadExampleConfig();
         }
+        if (event.key === FEEDBACK_STORAGE_KEY && !isBackendMode()) {
+          // feedback list is rendered in admin page only
+        }
       });
 
       async function initPage() {
@@ -1971,6 +2050,7 @@
         loadExampleConfig();
         renderCategorySelector();
         initAdminLink();
+        addBubble("안녕하세요, 아이파크몰 브랜드 챗봇입니다. 궁금한 부분을 선택해주세요.");
         await syncLiveData(true);
         window.setInterval(() => syncLiveData(false), 15000);
       }
