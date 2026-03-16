@@ -1,4 +1,4 @@
-window.LOCAL_FAQ_DATA = [
+﻿window.LOCAL_FAQ_DATA = [
   {
     "faq_id": "FAQ-001",
     "stage": "입점문의",

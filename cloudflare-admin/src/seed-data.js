@@ -1,4 +1,4 @@
-export const SEED_EMPLOYEES = [
+﻿export const SEED_EMPLOYEES = [
   {
     "employee_id": "001086",
     "display_name": "김*희"

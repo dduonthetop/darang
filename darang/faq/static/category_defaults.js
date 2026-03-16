@@ -1,4 +1,4 @@
-window.IPARK_CATEGORY_CONFIG = Object.freeze({
+﻿window.IPARK_CATEGORY_CONFIG = Object.freeze({
   labels: Object.freeze({
     "8.1": "기본 운영",
     "8.2": "출입 신청 및 인원 등록",

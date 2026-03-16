@@ -1,21 +1,12 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>아이파크몰 브랜드 챗봇</title>
-    <script>
-      (function () {
-        const current = new URL(window.location.href);
-        if (!current.searchParams.get("v")) {
-          current.searchParams.set("v", "20260316d");
-          window.location.replace(current.toString());
-        }
-      })();
-    </script>
-    <script src="./static/site_config.js?v=20260316d"></script>
-    <script src="./static/employee_auth.js?v=20260316d"></script>
-    <script src="./static/category_defaults.js?v=20260316d"></script>
+    <script src="./static/site_config.js?v=20260316e"></script>
+    <script src="./static/employee_auth.js?v=20260316e"></script>
+    <script src="./static/category_defaults.js?v=20260316e"></script>
     <style>
       @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
@@ -992,7 +983,6 @@
       const editorStatus = document.getElementById("editorStatus");
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? window.LOCAL_FAQ_DATA : [];
       const BASE_DATA = JSON.parse(JSON.stringify(DATA));
-      const BASE_DATA_BY_ID = new Map(BASE_DATA.map((item) => [item.faq_id, item]));
       let dataRevision = 0;
       const siteConfig = window.SITE_CONFIG || {};
       const DEFAULT_ADMIN_API_BASE = "https://ipark-faq-admin-api.dduonthetop.workers.dev";
@@ -1003,8 +993,6 @@
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
       const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
-      const CLIENT_STATE_VERSION_KEY = "ipark_faq_client_state_version";
-      const CLIENT_STATE_VERSION = "20260316-rollback-2";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
@@ -1052,7 +1040,7 @@
       ];
       const isGithubPages = window.location.hostname.endsWith("github.io");
       const adminApiBase = (siteConfig.adminApiBase || DEFAULT_ADMIN_API_BASE).replace(/\/$/, "");
-      const adminPageUrl = "./ipark_faq_admin.html?v=20260316c";
+      const adminPageUrl = "./ipark_faq_admin.html";
       const adminLoginUrl = siteConfig.adminLoginUrl || adminPageUrl;
       let selectedAdminIndex = 0;
 
@@ -1163,6 +1151,21 @@
         localStorage.removeItem(BACKEND_TOKEN_KEY);
       }
 
+      function backendAuthHeaders(extra = {}) {
+        const headers = { ...extra };
+        const token = readBackendToken();
+        if (token) {
+          headers["Authorization"] = `Bearer ${token}`;
+        }
+        const session = readAdminSession();
+        const employeeId = String(session?.employee_id || "").trim();
+        if (employeeId) {
+          headers["X-Employee-Id"] = employeeId;
+          headers["X-Employee-Password"] = employeeId;
+        }
+        return headers;
+      }
+
       function readAdminSession() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || "null");
@@ -1206,41 +1209,14 @@
         if (!overrides || typeof overrides !== "object") return;
         Object.entries(overrides).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
-          const fallbackExamples = DEFAULT_EXAMPLES_BY_CATEGORY[categoryCode] || [];
-          EXAMPLES_BY_CATEGORY[categoryCode] = values
-            .map((value, index) => normalizeExampleText(value, fallbackExamples[index] || ""))
-            .filter(Boolean);
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
         });
       }
 
       function normalizeCategoryLabelValue(value, fallback = "") {
         const nextValue = String(value || "").trim();
         if (!nextValue) return fallback;
-        const normalized = CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
-        return isCorruptedText(normalized) ? fallback : normalized;
-      }
-
-      function isCorruptedText(value) {
-        const text = String(value || "").trim();
-        if (!text) return false;
-        if (text.includes("??")) return true;
-        if (/[�]/.test(text)) return true;
-        const hangulCount = (text.match(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g) || []).length;
-        const questionCount = (text.match(/\?/g) || []).length;
-        const nonStandardCount = (text.match(/[^\u0000-\u007Fㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-:%]/g) || []).length;
-        return hangulCount === 0 && (questionCount >= 2 || nonStandardCount >= 2);
-      }
-
-      function normalizeExampleText(value, fallback = "") {
-        const text = String(value || "").trim();
-        if (!text) return fallback;
-        return isCorruptedText(text) ? fallback : text;
-      }
-
-      function normalizeTextField(value, fallback = "") {
-        const text = String(value || "").trim();
-        if (!text) return fallback;
-        return isCorruptedText(text) ? fallback : text;
+        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
       }
 
       function readCategoryLabelOverrides() {
@@ -1248,25 +1224,6 @@
           return JSON.parse(localStorage.getItem(ADMIN_CATEGORY_LABELS_KEY) || "null");
         } catch (err) {
           return null;
-        }
-      }
-
-      function resetLegacyClientStateIfNeeded() {
-        try {
-          const currentVersion = localStorage.getItem(CLIENT_STATE_VERSION_KEY) || "";
-          if (isBackendMode()) {
-            localStorage.removeItem(ADMIN_OVERRIDES_KEY);
-            localStorage.removeItem(ADMIN_EXAMPLES_KEY);
-            localStorage.removeItem(ADMIN_CATEGORY_LABELS_KEY);
-            localStorage.setItem(CLIENT_STATE_VERSION_KEY, CLIENT_STATE_VERSION);
-            return;
-          }
-          if (currentVersion === CLIENT_STATE_VERSION) return;
-          localStorage.removeItem(ADMIN_EXAMPLES_KEY);
-          localStorage.removeItem(ADMIN_CATEGORY_LABELS_KEY);
-          localStorage.setItem(CLIENT_STATE_VERSION_KEY, CLIENT_STATE_VERSION);
-        } catch (err) {
-          // ignore storage cleanup failures
         }
       }
 
@@ -1286,10 +1243,7 @@
         EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
         Object.entries(payload).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
-          const fallbackExamples = DEFAULT_EXAMPLES_BY_CATEGORY[categoryCode] || [];
-          EXAMPLES_BY_CATEGORY[categoryCode] = values
-            .map((value, index) => normalizeExampleText(value, fallbackExamples[index] || ""))
-            .filter(Boolean);
+          EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
         });
       }
 
@@ -1306,21 +1260,7 @@
       function sanitizeDataset(items) {
         if (!Array.isArray(items)) return [];
         return items.map((item) => {
-          const fallbackItem = BASE_DATA_BY_ID.get(item?.faq_id) || {};
           const next = { ...item };
-          next.category = normalizeTextField(item?.category, fallbackItem.category || "");
-          next.question = normalizeTextField(item?.question, fallbackItem.question || "");
-          next.answer = normalizeTextField(item?.answer, fallbackItem.answer || "");
-          next.next_action = normalizeTextField(item?.next_action, fallbackItem.next_action || "");
-          next.contact_channel = normalizeTextField(item?.contact_channel, fallbackItem.contact_channel || "");
-          next.confidence_type = normalizeTextField(item?.confidence_type, fallbackItem.confidence_type || "");
-          next.paraphrases = Array.isArray(item?.paraphrases)
-            ? item.paraphrases
-                .map((value, index) => normalizeTextField(value, Array.isArray(fallbackItem.paraphrases) ? fallbackItem.paraphrases[index] || "" : ""))
-                .filter(Boolean)
-            : Array.isArray(fallbackItem.paraphrases)
-              ? [...fallbackItem.paraphrases]
-              : [];
           if (Array.isArray(item?.manual_files)) {
             next.manual_files = item.manual_files
               .map((entry) => normalizeAttachment(entry, next))
@@ -1478,22 +1418,20 @@
       }
 
       async function saveEditorFormToBackend() {
-        const token = readBackendToken();
-        if (!token) {
+        if (!readAdminSession()) {
           editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
           return;
         }
         try {
           const response = await fetch(apiUrl("/api/admin/faqs"), {
             method: "PUT",
-            headers: {
+            headers: backendAuthHeaders({
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${token}`,
-            },
+            }),
             body: JSON.stringify({ items: DATA, category_labels: CATEGORY_LABELS, examples: EXAMPLES_BY_CATEGORY }),
           });
           if (!response.ok) {
-            if (response.status === 401) {
+            if (response.status === 401 || response.status === 403) {
               clearBackendToken();
               clearAdminSession();
               setAdminLinkState();
@@ -1516,20 +1454,25 @@
 
       async function validateBackendSession() {
         if (!isBackendMode()) return false;
-        const token = readBackendToken();
-        if (!token) return false;
-        const response = await fetch(apiUrl("/api/session"), {
-          headers: { "Authorization": `Bearer ${token}` },
-        });
-        if (!response.ok) {
+        if (!readAdminSession()) return false;
+        try {
+          const response = await fetch(apiUrl("/api/session"), {
+            headers: backendAuthHeaders(),
+          });
+          if (!response.ok) {
+            clearBackendToken();
+            clearAdminSession();
+            return false;
+          }
+          const payload = await response.json();
+          writeAdminSession(payload.user || { employee_id: "" });
+          if (payload.meta?.revision) dataRevision = Number(payload.meta.revision || 0);
+          return true;
+        } catch (error) {
           clearBackendToken();
           clearAdminSession();
           return false;
         }
-        const payload = await response.json();
-        writeAdminSession(payload.user || { employee_id: "" });
-        if (payload.meta?.revision) dataRevision = Number(payload.meta.revision || 0);
-        return true;
       }
 
       async function syncLiveData(force = false) {
@@ -2125,11 +2068,11 @@
       saveEditorBtn.addEventListener("click", saveEditorForm);
       resetEditorBtn.addEventListener("click", resetToBaseData);
       async function performLogout() {
-        if (isBackendMode() && readBackendToken()) {
+        if (isBackendMode() && readAdminSession()) {
           try {
             await fetch(apiUrl("/api/logout"), {
               method: "POST",
-              headers: { "Authorization": `Bearer ${readBackendToken()}` },
+              headers: backendAuthHeaders(),
             });
           } catch (err) {
             // no-op
@@ -2213,7 +2156,6 @@
       });
 
       async function initPage() {
-        resetLegacyClientStateIfNeeded();
         renderSyncStatusNote();
         if (isBackendMode()) {
           await validateBackendSession();
