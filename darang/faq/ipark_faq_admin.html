@@ -1167,6 +1167,18 @@
         return false;
       }
 
+      function getCategoryExampleQuestions(categoryCode) {
+        const seen = new Set();
+        return DATA
+          .filter((item) => itemMatchesSelectedCategory(item, categoryCode))
+          .map((item) => String(item.question || "").trim())
+          .filter((question) => {
+            if (!question || seen.has(question)) return false;
+            seen.add(question);
+            return true;
+          });
+      }
+
       function decodeAttachmentText(value = "") {
         if (!value) return "";
         try {
@@ -1340,24 +1352,26 @@
 
       function renderExampleEditor() {
         if (selectedCategoryCode === "ALL") {
-          exampleCategoryLabel.textContent = "대분류 카테고리를 먼저 선택하면 예시질문을 수정할 수 있습니다.";
+          exampleCategoryLabel.textContent = "대분류 카테고리를 선택하면 해당 카테고리의 question 항목이 자동으로 예시질문으로 노출됩니다.";
           exampleInputs.forEach((input) => {
             input.value = "";
             input.disabled = true;
+            input.placeholder = "카테고리를 선택하면 자동 노출 질문을 확인할 수 있습니다.";
           });
           saveExamplesBtn.disabled = true;
           resetExamplesBtn.disabled = true;
           return;
         }
 
-        const examples = EXAMPLES_BY_CATEGORY[selectedCategoryCode] || [];
-        exampleCategoryLabel.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리의 예시질문을 수정할 수 있습니다.`;
+        const examples = getCategoryExampleQuestions(selectedCategoryCode);
+        exampleCategoryLabel.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리의 question 항목 ${examples.length}개가 공개 화면의 예시질문으로 자동 노출됩니다.`;
         exampleInputs.forEach((input, index) => {
           input.value = examples[index] || "";
-          input.disabled = false;
+          input.disabled = true;
+          input.placeholder = "등록된 질문이 자동으로 노출됩니다.";
         });
-        saveExamplesBtn.disabled = false;
-        resetExamplesBtn.disabled = false;
+        saveExamplesBtn.disabled = true;
+        resetExamplesBtn.disabled = true;
       }
 
       function inferStageForCategory(categoryCode) {

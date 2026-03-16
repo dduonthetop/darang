@@ -1461,6 +1461,18 @@
         return false;
       }
 
+      function getCategoryExampleQuestions(categoryCode) {
+        const seen = new Set();
+        return DATA
+          .filter((item) => itemMatchesCategory(item, categoryCode))
+          .map((item) => String(item.question || "").trim())
+          .filter((question) => {
+            if (!question || seen.has(question)) return false;
+            seen.add(question);
+            return true;
+          });
+      }
+
       function overlap(a, b) {
         const sa = new Set(a);
         const sb = new Set(b);
@@ -1934,11 +1946,19 @@
       }
 
       function renderExampleSelector(categoryCode) {
-        const examples = EXAMPLES_BY_CATEGORY[categoryCode] || [];
+        const examples = getCategoryExampleQuestions(categoryCode);
         const { wrap } = addOptionBubble("예시 질문을 선택하거나 직접 입력해 주세요.");
         exampleSelectorEl = wrap;
         const row = exampleSelectorEl.querySelector(".row");
         row.innerHTML = "";
+
+        if (!examples.length) {
+          const empty = document.createElement("div");
+          empty.className = "option-title";
+          empty.textContent = "이 카테고리에 등록된 질문이 아직 없습니다.";
+          row.appendChild(empty);
+          return;
+        }
 
         examples.forEach((q) => {
           const btn = document.createElement("button");
