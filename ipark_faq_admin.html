@@ -792,6 +792,8 @@
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
       const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
+      const CLIENT_STATE_VERSION_KEY = "ipark_faq_client_state_version";
+      const CLIENT_STATE_VERSION = "20260316-rollback-2";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
@@ -1035,6 +1037,25 @@
 
       function saveCategoryLabelOverrides(payload) {
         localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(payload));
+      }
+
+      function resetLegacyClientStateIfNeeded() {
+        try {
+          const currentVersion = localStorage.getItem(CLIENT_STATE_VERSION_KEY) || "";
+          if (isBackendMode()) {
+            localStorage.removeItem(ADMIN_OVERRIDES_KEY);
+            localStorage.removeItem(ADMIN_EXAMPLES_KEY);
+            localStorage.removeItem(ADMIN_CATEGORY_LABELS_KEY);
+            localStorage.setItem(CLIENT_STATE_VERSION_KEY, CLIENT_STATE_VERSION);
+            return;
+          }
+          if (currentVersion === CLIENT_STATE_VERSION) return;
+          localStorage.removeItem(ADMIN_EXAMPLES_KEY);
+          localStorage.removeItem(ADMIN_CATEGORY_LABELS_KEY);
+          localStorage.setItem(CLIENT_STATE_VERSION_KEY, CLIENT_STATE_VERSION);
+        } catch (err) {
+          // ignore storage cleanup failures
+        }
       }
 
       function readFeedbackReports() {
@@ -2114,6 +2135,7 @@
       });
 
       async function initPage() {
+        resetLegacyClientStateIfNeeded();
         renderSyncModeNotice();
         if (isBackendMode()) {
           await validateBackendSession();
