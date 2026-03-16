@@ -1333,6 +1333,9 @@
             currentAttachments.splice(index, 1);
             current.manual_files = currentAttachments;
             renderAttachmentList(current);
+            saveEditorForm().catch((error) => {
+              editorStatus.textContent = error.message || "첨부 삭제 저장에 실패했습니다.";
+            });
           });
 
           row.appendChild(meta);
@@ -1674,7 +1677,7 @@
         window.alert("질문이 삭제되었습니다.");
       }
 
-      function handleAddUrl() {
+      async function handleAddUrl() {
         updateCurrentItemFromForm();
         const item = DATA[selectedAdminIndex];
         if (!item) {
@@ -1693,6 +1696,7 @@
         renderAttachmentList(item);
         attachmentUrlInput.value = "";
         attachmentLabelInput.value = "";
+        await saveEditorForm();
       }
 
       async function handleUploadManual() {
@@ -1716,12 +1720,16 @@
           renderAttachmentList(item);
           manualFileInput.value = "";
           manualFileLabelInput.value = "";
+          await saveEditorForm();
         } catch (error) {
           window.alert(error.message || "파일 업로드에 실패했습니다.");
         }
       }
 
-      async function saveEditorFormToBackend() {
+      async function saveEditorFormToBackend(options = {}) {
+        const silent = !!options.silent;
+        const statusMessage = options.statusMessage || "??μ씠 ?꾨즺?섏뿀?듬땲?? 怨듭슜 FAQ?먮룄 理쒖떊 ?댁슜??諛섏쁺?⑸땲??";
+        const alertMessage = options.alertMessage || "??λ릺?덉뒿?덈떎.";
         const token = readBackendToken();
         if (!token) {
           editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
