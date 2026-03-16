@@ -41,6 +41,23 @@ const DEFAULT_CATEGORY_LABELS = {
   "8.11": "철수/연장/계약 종료",
 };
 
+const CATEGORY_LABEL_ALIASES = {
+  "유선전화": "내선전화",
+  "정산 및 세정": "정산 및 행정",
+  "철수/퇴장/계약 종료": "철수/연장/계약 종료",
+};
+
+function normalizeCategoryLabels(payload) {
+  const next = { ...DEFAULT_CATEGORY_LABELS };
+  if (!payload || typeof payload !== "object") return next;
+  for (const [categoryCode, value] of Object.entries(payload)) {
+    const trimmed = String(value || "").trim();
+    if (!trimmed) continue;
+    next[categoryCode] = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
+  }
+  return next;
+}
+
 function manualUrl(filename) {
   return RAW_MANUAL_BASE + encodeURIComponent(filename);
 }
@@ -87,9 +104,9 @@ function normalizeFaqItem(item) {
     next.manual_files = POS_MANUALS;
     next.keywords = ["8.12", "POS", ...keywords.filter((k) => !["8.7", "POS", "비품/쇼핑백/내선전화/POS"].includes(k))];
   } else if (question === "내선전화 신청 절차, 설치 리드타임, 비용 부담 기준은?") {
-    next.category = "8.13 유선전화";
+    next.category = "8.13 내선전화";
     next.manual_files = PHONE_MANUALS;
-    next.keywords = ["8.13", "유선전화", ...keywords.filter((k) => !["8.7", "내선전화", "비품/쇼핑백/내선전화/POS"].includes(k))];
+    next.keywords = ["8.13", "내선전화", ...keywords.filter((k) => !["8.7", "유선전화", "내선전화", "비품/쇼핑백/내선전화/POS"].includes(k))];
   }
 
   return next;
@@ -205,10 +222,7 @@ async function getFaqState(env) {
     ...DEFAULT_EXAMPLES_BY_CATEGORY,
     ...(JSON.parse(row?.examples_json || "{}")),
   };
-  const category_labels = {
-    ...DEFAULT_CATEGORY_LABELS,
-    ...(JSON.parse(row?.category_labels_json || "{}")),
-  };
+  const category_labels = normalizeCategoryLabels(JSON.parse(row?.category_labels_json || "{}"));
   return {
     items,
     examples,
@@ -334,8 +348,8 @@ export default {
           ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
           : current.examples;
         const categoryLabels = body.category_labels && typeof body.category_labels === "object"
-          ? { ...DEFAULT_CATEGORY_LABELS, ...body.category_labels }
-          : current.category_labels;
+          ? normalizeCategoryLabels(body.category_labels)
+          : normalizeCategoryLabels(current.category_labels);
         const now = new Date().toISOString();
         const nextRevision = current.meta.revision + 1;
 
@@ -399,8 +413,8 @@ export default {
         const body = await request.json();
         const current = await getFaqState(env);
         const categoryLabels = body.category_labels && typeof body.category_labels === "object"
-          ? { ...DEFAULT_CATEGORY_LABELS, ...body.category_labels }
-          : current.category_labels;
+          ? normalizeCategoryLabels(body.category_labels)
+          : normalizeCategoryLabels(current.category_labels);
         const now = new Date().toISOString();
         const nextRevision = current.meta.revision + 1;
 

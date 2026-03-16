@@ -6,6 +6,7 @@
     <title>아이파크몰 브랜드 챗봇</title>
     <script src="./static/site_config.js"></script>
     <script src="./static/employee_auth.js"></script>
+    <script src="./static/category_defaults.js"></script>
     <style>
       @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
@@ -995,21 +996,31 @@
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
       const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
-      const DEFAULT_CATEGORY_LABELS = {
-        "8.1": "기본 운영",
-        "8.2": "출입 신청 및 인원 등록",
-        "8.3": "차량/주차/하역/동선",
-        "8.4": "반입/반출 및 보관",
-        "8.5": "매장 시설 및 공사",
-        "8.6": "매장 운영 및 서비스",
-        "8.7": "비품/쇼핑백",
-        "8.12": "POS",
-        "8.13": "내선전화",
-        "8.8": "인력 운영 및 교육",
-        "8.9": "정산 및 행정",
-        "8.10": "마케팅/사인물/콘텐츠",
-        "8.11": "철수/연장/계약 종료"
-      };
+      const SHARED_CATEGORY_CONFIG = window.IPARK_CATEGORY_CONFIG || {};
+      const DEFAULT_CATEGORY_LABELS = Object.freeze({
+        ...(SHARED_CATEGORY_CONFIG.labels || {
+          "8.1": "?? ??",
+          "8.2": "?? ?? ? ?? ??",
+          "8.3": "??/??/??/??",
+          "8.4": "??/?? ? ??",
+          "8.5": "?? ?? ? ??",
+          "8.6": "?? ?? ? ???",
+          "8.7": "??/???",
+          "8.8": "?? ?? ? ??",
+          "8.9": "?? ? ??",
+          "8.10": "???/???/???",
+          "8.11": "??/??/?? ??",
+          "8.12": "POS",
+          "8.13": "????"
+        })
+      });
+      const CATEGORY_LABEL_ALIASES = Object.freeze({
+        ...(SHARED_CATEGORY_CONFIG.aliases || {
+          "????": "????",
+          "?? ? ??": "?? ? ??",
+          "??/??/?? ??": "??/??/?? ??"
+        })
+      });
       const MANUAL_FALLBACKS = [
         {
           matchers: ["fnb", "pos"],
@@ -1187,6 +1198,12 @@
         });
       }
 
+      function normalizeCategoryLabelValue(value, fallback = "") {
+        const nextValue = String(value || "").trim();
+        if (!nextValue) return fallback;
+        return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
+      }
+
       function readCategoryLabelOverrides() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_CATEGORY_LABELS_KEY) || "null");
@@ -1200,7 +1217,7 @@
         const overrides = readCategoryLabelOverrides();
         if (!overrides || typeof overrides !== "object") return;
         Object.entries(overrides).forEach(([categoryCode, value]) => {
-          const nextValue = String(value || "").trim();
+          const nextValue = normalizeCategoryLabelValue(value);
           if (!nextValue) return;
           CATEGORY_LABELS[categoryCode] = nextValue;
         });
@@ -1219,7 +1236,7 @@
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         if (!payload || typeof payload !== "object") return;
         Object.entries(payload).forEach(([categoryCode, value]) => {
-          const nextValue = String(value || "").trim();
+          const nextValue = normalizeCategoryLabelValue(value);
           if (!nextValue) return;
           CATEGORY_LABELS[categoryCode] = nextValue;
         });
@@ -1332,7 +1349,7 @@
           btn.type = "button";
           btn.className = "editor-item";
           if (index === selectedAdminIndex) btn.classList.add("active");
-          btn.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(item.category || "-")}</small>`;
+          btn.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(categoryLabel(extractCategoryCode(item.category || "")) || item.category || "-")}</small>`;
           btn.addEventListener("click", () => {
             selectedAdminIndex = index;
             renderEditorList();

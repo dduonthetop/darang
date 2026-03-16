@@ -1177,7 +1177,7 @@ window.LOCAL_FAQ_DATA = [
     "next_action": "불출 및 신청 일정에 맞춰 비품·POS 요청을 접수하시고, 현장 수령 및 설치 여부를 확인하시면 됩니다.",
     "contact_channel": "전산/POS 02-2012-0200; KT 02-2012-2200; 담당 바이어",
     "confidence_type": "운영 사례형 답변",
-    "category": "8.13 유선전화",
+    "category": "8.13 내선전화",
     "keywords": [
       "8.13",
       "유선전화",

@@ -12,6 +12,7 @@ FILE_MAPPINGS = [
     (SOURCE_ROOT / "ipark_faq_admin.html", REPO_ROOT / "ipark_faq_admin.html"),
     (SOURCE_ROOT / "static" / "local_faq_data.js", REPO_ROOT / "static" / "local_faq_data.js"),
     (SOURCE_ROOT / "static" / "site_config.js", REPO_ROOT / "static" / "site_config.js"),
+    (SOURCE_ROOT / "static" / "category_defaults.js", REPO_ROOT / "static" / "category_defaults.js"),
     (SOURCE_ROOT / "static" / "employee_auth.js", REPO_ROOT / "static" / "employee_auth.js"),
 ]
 
