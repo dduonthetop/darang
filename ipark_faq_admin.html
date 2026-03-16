@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>브랜드 FAQ 관리자 화면</title>
-    <script src="./static/site_config.js"></script>
-    <script src="./static/employee_auth.js"></script>
-    <script src="./static/category_defaults.js"></script>
-    <script src="./static/local_faq_data.js"></script>
+    <script>
+      (function () {
+        const current = new URL(window.location.href);
+        if (!current.searchParams.get("v")) {
+          current.searchParams.set("v", "20260316d");
+          window.location.replace(current.toString());
+        }
+      })();
+    </script>
+    <script src="./static/site_config.js?v=20260316d"></script>
+    <script src="./static/employee_auth.js?v=20260316d"></script>
+    <script src="./static/category_defaults.js?v=20260316d"></script>
+    <script src="./static/local_faq_data.js?v=20260316d"></script>
     <style>
       @import url("https://cdn.jsdelivr.net/gh/sunn-us/SUIT/fonts/static/woff2/SUIT.css");
       @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&display=swap");
