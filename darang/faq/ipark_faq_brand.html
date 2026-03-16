@@ -984,6 +984,7 @@
       const BASE_DATA = JSON.parse(JSON.stringify(DATA));
       let dataRevision = 0;
       const siteConfig = window.SITE_CONFIG || {};
+      const DEFAULT_ADMIN_API_BASE = "https://ipark-faq-admin-api.dduonthetop.workers.dev";
       const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
       const EMPLOYEE_MAP = window.ADMIN_EMPLOYEE_MAP || {};
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
@@ -1027,7 +1028,7 @@
         },
       ];
       const isGithubPages = window.location.hostname.endsWith("github.io");
-      const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
+      const adminApiBase = (siteConfig.adminApiBase || DEFAULT_ADMIN_API_BASE).replace(/\/$/, "");
       const adminPageUrl = "./ipark_faq_admin.html";
       const adminLoginUrl = siteConfig.adminLoginUrl || adminPageUrl;
       let selectedAdminIndex = 0;

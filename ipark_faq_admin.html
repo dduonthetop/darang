@@ -784,7 +784,8 @@
       const AUTH_IDS = Array.isArray(window.ADMIN_EMPLOYEE_IDS) ? window.ADMIN_EMPLOYEE_IDS : [];
       const EMPLOYEE_MAP = window.ADMIN_EMPLOYEE_MAP || {};
       const siteConfig = window.SITE_CONFIG || {};
-      const adminApiBase = (siteConfig.adminApiBase || "").replace(/\/$/, "");
+      const DEFAULT_ADMIN_API_BASE = "https://ipark-faq-admin-api.dduonthetop.workers.dev";
+      const adminApiBase = (siteConfig.adminApiBase || DEFAULT_ADMIN_API_BASE).replace(/\/$/, "");
       const ADMIN_SESSION_KEY = "ipark_faq_admin_session";
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
