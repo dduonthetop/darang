@@ -2,6 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $RepoPath = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $RepoPath
+$publishSyncScript = Join-Path $RepoPath "darang\faq\scripts\sync_publish_assets.py"
 
 $gitCmd = Get-Command git -ErrorAction SilentlyContinue
 if ($gitCmd) {
@@ -99,6 +100,10 @@ function Try-BootstrapRemote {
 
 while ($true) {
   try {
+    if (Test-Path $publishSyncScript) {
+      python $publishSyncScript | Out-Null
+    }
+
     $origin = (& $git remote get-url origin 2>$null)
     if (-not $origin) {
       Try-BootstrapRemote | Out-Null
