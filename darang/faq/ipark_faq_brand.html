@@ -990,8 +990,25 @@
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
+      const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
+      const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
+      const DEFAULT_CATEGORY_LABELS = {
+        "8.1": "기본 운영",
+        "8.2": "출입 신청 및 인원 등록",
+        "8.3": "차량/주차/하역/동선",
+        "8.4": "반입/반출 및 보관",
+        "8.5": "매장 시설 및 공사",
+        "8.6": "매장 운영 및 서비스",
+        "8.7": "비품/쇼핑백",
+        "8.12": "POS",
+        "8.13": "내선전화",
+        "8.8": "인력 운영 및 교육",
+        "8.9": "정산 및 행정",
+        "8.10": "마케팅/사인물/콘텐츠",
+        "8.11": "철수/연장/계약 종료"
+      };
       const MANUAL_FALLBACKS = [
         {
           matchers: ["fnb", "pos"],
@@ -1015,21 +1032,14 @@
       const adminLoginUrl = siteConfig.adminLoginUrl || adminPageUrl;
       let selectedAdminIndex = 0;
 
-      const CATEGORIES = [
-        { code: "8.1", label: "기본 운영" },
-        { code: "8.2", label: "출입 신청 및 인원 등록" },
-        { code: "8.3", label: "차량/주차/하역/동선" },
-        { code: "8.4", label: "반입/반출 및 보관" },
-        { code: "8.5", label: "매장 시설 및 공사" },
-        { code: "8.6", label: "매장 운영 및 서비스" },
-        { code: "8.7", label: "비품/쇼핑백" },
-        { code: "8.12", label: "POS" },
-        { code: "8.13", label: "내선전화" },
-        { code: "8.8", label: "인력 운영 및 교육" },
-        { code: "8.9", label: "정산 및 행정" },
-        { code: "8.10", label: "마케팅/사인물/콘텐츠" },
-        { code: "8.11", label: "철수/연장/계약 종료" }
-      ];
+      let CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+
+      function getCategoryOptions() {
+        return CATEGORY_ORDER.map((code) => ({
+          code,
+          label: CATEGORY_LABELS[code] || DEFAULT_CATEGORY_LABELS[code] || code,
+        }));
+      }
 
       const DEFAULT_EXAMPLES_BY_CATEGORY = {
         "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
@@ -1176,12 +1186,41 @@
         });
       }
 
+      function readCategoryLabelOverrides() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_CATEGORY_LABELS_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function loadCategoryLabelConfig() {
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+        const overrides = readCategoryLabelOverrides();
+        if (!overrides || typeof overrides !== "object") return;
+        Object.entries(overrides).forEach(([categoryCode, value]) => {
+          const nextValue = String(value || "").trim();
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
+        });
+      }
+
       function applyBackendExamples(payload) {
         if (!payload || typeof payload !== "object") return;
         EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
         Object.entries(payload).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
           EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
+      }
+
+      function applyBackendCategoryLabels(payload) {
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+        if (!payload || typeof payload !== "object") return;
+        Object.entries(payload).forEach(([categoryCode, value]) => {
+          const nextValue = String(value || "").trim();
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
         });
       }
 
@@ -1358,7 +1397,7 @@
               "Content-Type": "application/json",
               "Authorization": `Bearer ${token}`,
             },
-            body: JSON.stringify({ items: DATA }),
+            body: JSON.stringify({ items: DATA, category_labels: CATEGORY_LABELS, examples: EXAMPLES_BY_CATEGORY }),
           });
           if (!response.ok) {
             if (response.status === 401) {
@@ -1411,6 +1450,10 @@
           if (Array.isArray(payload.items) && payload.items.length) {
             DATA = payload.items;
             dataRevision = nextRevision;
+          }
+          if (payload.category_labels && typeof payload.category_labels === "object") {
+            applyBackendCategoryLabels(payload.category_labels);
+            renderCategorySelector();
           }
           if (payload.examples && typeof payload.examples === "object") {
             applyBackendExamples(payload.examples);
@@ -1931,7 +1974,7 @@
       function renderCategorySelector() {
         categoryRow.innerHTML = "";
 
-        CATEGORIES.forEach((c) => {
+        getCategoryOptions().forEach((c) => {
           const btn = document.createElement("button");
           btn.className = "option-btn";
           btn.textContent = c.label;
@@ -2100,6 +2143,10 @@
         if (event.key === ADMIN_EXAMPLES_KEY) {
           loadExampleConfig();
         }
+        if (event.key === ADMIN_CATEGORY_LABELS_KEY) {
+          loadCategoryLabelConfig();
+          renderCategorySelector();
+        }
         if (event.key === FEEDBACK_STORAGE_KEY && !isBackendMode()) {
           // feedback list is rendered in admin page only
         }
@@ -2112,6 +2159,7 @@
         } else {
           applyLocalOverrides();
         }
+        loadCategoryLabelConfig();
         loadExampleConfig();
         renderCategorySelector();
         initAdminLink();

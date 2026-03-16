@@ -686,6 +686,14 @@
               <button id="resetExamplesBtn" type="button" class="ghost-btn">기본값으로 되돌리기</button>
             </div>
           </div>
+          <div class="field" style="margin-top:0;">
+            <label for="categoryLabelInput">대분류 카테고리명</label>
+            <div class="editor-actions">
+              <input id="categoryLabelInput" type="text" style="flex:1 1 280px;" />
+              <button id="saveCategoryLabelBtn" type="button" class="primary-btn">카테고리명 저장</button>
+              <button id="resetCategoryLabelBtn" type="button" class="ghost-btn">기본 이름 복원</button>
+            </div>
+          </div>
           <p id="exampleCategoryLabel" class="toolbar-note">카테고리를 선택하면 예시질문을 수정할 수 있습니다.</p>
           <div class="example-grid">
             <div class="field" style="margin-top:0;">
@@ -781,8 +789,25 @@
       const ADMIN_OVERRIDES_KEY = "ipark_faq_admin_overrides";
       const ADMIN_META_KEY = "ipark_faq_admin_meta";
       const ADMIN_EXAMPLES_KEY = "ipark_faq_category_examples";
+      const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
+      const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
+      const DEFAULT_CATEGORY_LABELS = {
+        "8.1": "기본 운영",
+        "8.2": "출입 신청 및 인원 등록",
+        "8.3": "차량/주차/하역/동선",
+        "8.4": "반입/반출 및 보관",
+        "8.5": "매장 시설 및 공사",
+        "8.6": "매장 운영 및 서비스",
+        "8.7": "비품/쇼핑백",
+        "8.12": "POS",
+        "8.13": "유선전화",
+        "8.8": "인력 운영 및 교육",
+        "8.9": "정산 및 세정",
+        "8.10": "마케팅/사인물 콘텐츠",
+        "8.11": "철수/퇴장/계약 종료",
+      };
       const DEFAULT_EXAMPLES_BY_CATEGORY = {
         "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
         "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
@@ -856,6 +881,9 @@
       const deleteQuestionBtn = document.getElementById("deleteQuestionBtn");
       const saveExamplesBtn = document.getElementById("saveExamplesBtn");
       const resetExamplesBtn = document.getElementById("resetExamplesBtn");
+      const categoryLabelInput = document.getElementById("categoryLabelInput");
+      const saveCategoryLabelBtn = document.getElementById("saveCategoryLabelBtn");
+      const resetCategoryLabelBtn = document.getElementById("resetCategoryLabelBtn");
       const exampleCategoryLabel = document.getElementById("exampleCategoryLabel");
       const exampleInputs = [
         document.getElementById("exampleQuestion1"),
@@ -882,22 +910,13 @@
         },
       ];
 
-      const CATEGORY_OPTIONS = [
-        { code: "ALL", label: "전체" },
-        { code: "8.1", label: "기본 운영" },
-        { code: "8.2", label: "출입 신청 및 인원 등록" },
-        { code: "8.3", label: "차량/주차/하역/동선" },
-        { code: "8.4", label: "반입/반출 및 보관" },
-        { code: "8.5", label: "매장 시설 및 공사" },
-        { code: "8.6", label: "매장 운영 및 서비스" },
-        { code: "8.7", label: "비품/쇼핑백" },
-        { code: "8.12", label: "POS" },
-        { code: "8.13", label: "유선전화" },
-        { code: "8.8", label: "인력 운영 및 교육" },
-        { code: "8.9", label: "정산 및 세정" },
-        { code: "8.10", label: "마케팅/사인물 콘텐츠" },
-        { code: "8.11", label: "철수/퇴장/계약 종료" },
-      ];
+      let CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+
+      function getCategoryOptions() {
+        return [{ code: "ALL", label: "전체" }].concat(
+          CATEGORY_ORDER.map((code) => ({ code, label: CATEGORY_LABELS[code] || DEFAULT_CATEGORY_LABELS[code] || code })),
+        );
+      }
 
       function apiUrl(path) {
         return adminApiBase ? `${adminApiBase}${path}` : path;
@@ -987,6 +1006,18 @@
         localStorage.setItem(ADMIN_EXAMPLES_KEY, JSON.stringify(payload));
       }
 
+      function readCategoryLabelOverrides() {
+        try {
+          return JSON.parse(localStorage.getItem(ADMIN_CATEGORY_LABELS_KEY) || "null");
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function saveCategoryLabelOverrides(payload) {
+        localStorage.setItem(ADMIN_CATEGORY_LABELS_KEY, JSON.stringify(payload));
+      }
+
       function readFeedbackReports() {
         try {
           return JSON.parse(localStorage.getItem(FEEDBACK_STORAGE_KEY) || "[]");
@@ -1005,12 +1036,33 @@
         });
       }
 
+      function loadCategoryLabelConfig() {
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+        const overrides = readCategoryLabelOverrides();
+        if (!overrides || typeof overrides !== "object") return;
+        Object.entries(overrides).forEach(([categoryCode, value]) => {
+          const nextValue = String(value || "").trim();
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
+        });
+      }
+
       function applyBackendExamples(payload) {
         if (!payload || typeof payload !== "object") return;
         EXAMPLES_BY_CATEGORY = JSON.parse(JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY));
         Object.entries(payload).forEach(([categoryCode, values]) => {
           if (!Array.isArray(values)) return;
           EXAMPLES_BY_CATEGORY[categoryCode] = values.map((value) => String(value || "").trim()).filter(Boolean);
+        });
+      }
+
+      function applyBackendCategoryLabels(payload) {
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
+        if (!payload || typeof payload !== "object") return;
+        Object.entries(payload).forEach(([categoryCode, value]) => {
+          const nextValue = String(value || "").trim();
+          if (!nextValue) return;
+          CATEGORY_LABELS[categoryCode] = nextValue;
         });
       }
 
@@ -1347,12 +1399,16 @@
       }
 
       function categoryLabel(code) {
-        return CATEGORY_OPTIONS.find((option) => option.code === code)?.label || code || "미지정";
+        return getCategoryOptions().find((option) => option.code === code)?.label || code || "미지정";
       }
 
       function renderExampleEditor() {
         if (selectedCategoryCode === "ALL") {
           exampleCategoryLabel.textContent = "대분류 카테고리를 선택하면 해당 카테고리의 question 항목이 자동으로 예시질문으로 노출됩니다.";
+          categoryLabelInput.value = "";
+          categoryLabelInput.disabled = true;
+          saveCategoryLabelBtn.disabled = true;
+          resetCategoryLabelBtn.disabled = true;
           exampleInputs.forEach((input) => {
             input.value = "";
             input.disabled = true;
@@ -1364,6 +1420,10 @@
         }
 
         const examples = getCategoryExampleQuestions(selectedCategoryCode);
+        categoryLabelInput.value = categoryLabel(selectedCategoryCode);
+        categoryLabelInput.disabled = false;
+        saveCategoryLabelBtn.disabled = false;
+        resetCategoryLabelBtn.disabled = false;
         exampleCategoryLabel.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리의 question 항목 ${examples.length}개가 공개 화면의 예시질문으로 자동 노출됩니다.`;
         exampleInputs.forEach((input, index) => {
           input.value = examples[index] || "";
@@ -1406,7 +1466,7 @@
 
       function renderCategoryToolbar() {
         categoryScroll.innerHTML = "";
-        CATEGORY_OPTIONS.forEach((option) => {
+        getCategoryOptions().forEach((option) => {
           const button = document.createElement("button");
           button.type = "button";
           button.className = "category-chip";
@@ -1672,7 +1732,7 @@
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`,
           },
-          body: JSON.stringify({ items: DATA, examples: EXAMPLES_BY_CATEGORY }),
+          body: JSON.stringify({ items: DATA, examples: EXAMPLES_BY_CATEGORY, category_labels: CATEGORY_LABELS }),
         });
         if (!response.ok) {
           if (response.status === 401) {
@@ -1730,6 +1790,88 @@
         if (payload.meta) writeAdminMeta(payload.meta);
         renderExampleEditor();
         renderEditorMeta(payload.meta);
+      }
+
+      async function saveCategoryLabelsToBackend() {
+        const token = readBackendToken();
+        if (!token) {
+          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+          return;
+        }
+        const response = await fetch(apiUrl("/api/admin/category-labels"), {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ category_labels: CATEGORY_LABELS }),
+        });
+        if (!response.ok) {
+          if (response.status === 401) {
+            clearBackendToken();
+            clearAdminSession();
+            setAuthState();
+            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          throw new Error("카테고리명 저장에 실패했습니다.");
+        }
+        const payload = await response.json();
+        if (payload.category_labels && typeof payload.category_labels === "object") {
+          applyBackendCategoryLabels(payload.category_labels);
+        }
+        if (payload.meta) writeAdminMeta(payload.meta);
+        renderCategoryToolbar();
+        renderExampleEditor();
+        renderEditorMeta(payload.meta);
+      }
+
+      async function saveCategoryLabel() {
+        if (selectedCategoryCode === "ALL") {
+          window.alert("카테고리를 먼저 선택해 주세요.");
+          return;
+        }
+        const nextLabel = categoryLabelInput.value.trim();
+        if (!nextLabel) {
+          window.alert("카테고리명을 입력해 주세요.");
+          return;
+        }
+        CATEGORY_LABELS[selectedCategoryCode] = nextLabel;
+        if (isBackendMode()) {
+          try {
+            await saveCategoryLabelsToBackend();
+            editorStatus.textContent = `${nextLabel} 카테고리명이 저장되었습니다.`;
+            window.alert("카테고리명이 저장되었습니다.");
+          } catch (error) {
+            editorStatus.textContent = error.message || "카테고리명 저장에 실패했습니다.";
+          }
+          return;
+        }
+        saveCategoryLabelOverrides(CATEGORY_LABELS);
+        renderCategoryToolbar();
+        renderExampleEditor();
+        editorStatus.textContent = `${nextLabel} 카테고리명이 저장되었습니다.`;
+        window.alert("카테고리명이 저장되었습니다.");
+      }
+
+      async function resetCategoryLabel() {
+        if (selectedCategoryCode === "ALL") {
+          window.alert("카테고리를 먼저 선택해 주세요.");
+          return;
+        }
+        CATEGORY_LABELS[selectedCategoryCode] = DEFAULT_CATEGORY_LABELS[selectedCategoryCode] || selectedCategoryCode;
+        if (isBackendMode()) {
+          try {
+            await saveCategoryLabelsToBackend();
+            editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리명을 기본값으로 복원했습니다.`;
+          } catch (error) {
+            editorStatus.textContent = error.message || "카테고리명 저장에 실패했습니다.";
+          }
+          return;
+        }
+        saveCategoryLabelOverrides(CATEGORY_LABELS);
+        renderCategoryToolbar();
+        renderExampleEditor();
+        editorStatus.textContent = `${categoryLabel(selectedCategoryCode)} 카테고리명을 기본값으로 복원했습니다.`;
       }
 
       async function saveEditorForm() {
@@ -1806,6 +1948,10 @@
           if (Array.isArray(payload.items) && payload.items.length) {
             DATA = payload.items;
             dataRevision = nextRevision;
+          }
+          if (payload.category_labels && typeof payload.category_labels === "object") {
+            applyBackendCategoryLabels(payload.category_labels);
+            renderCategoryToolbar();
           }
           if (payload.examples && typeof payload.examples === "object") {
             applyBackendExamples(payload.examples);
@@ -1893,6 +2039,8 @@
       deleteQuestionBtn.addEventListener("click", handleDeleteQuestion);
       saveExamplesBtn.addEventListener("click", saveCategoryExamples);
       resetExamplesBtn.addEventListener("click", resetCategoryExamples);
+      saveCategoryLabelBtn.addEventListener("click", saveCategoryLabel);
+      resetCategoryLabelBtn.addEventListener("click", resetCategoryLabel);
       logoutBtn.addEventListener("click", handleLogout);
 
       window.addEventListener("storage", (event) => {
@@ -1908,6 +2056,11 @@
           loadExampleConfig();
           renderExampleEditor();
         }
+        if (event.key === ADMIN_CATEGORY_LABELS_KEY) {
+          loadCategoryLabelConfig();
+          renderCategoryToolbar();
+          renderExampleEditor();
+        }
         if (event.key === FEEDBACK_STORAGE_KEY) {
           renderFeedbackList(readFeedbackReports());
         }
@@ -1921,6 +2074,7 @@
         } else {
           applyLocalOverrides();
         }
+        loadCategoryLabelConfig();
         renderConfidenceOptions();
         loadExampleConfig();
         renderCategoryToolbar();

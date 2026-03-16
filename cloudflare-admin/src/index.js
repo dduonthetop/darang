@@ -25,6 +25,22 @@ const DEFAULT_EXAMPLES_BY_CATEGORY = {
   "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"],
 };
 
+const DEFAULT_CATEGORY_LABELS = {
+  "8.1": "기본 운영",
+  "8.2": "출입 신청 및 인원 등록",
+  "8.3": "차량/주차/하역/동선",
+  "8.4": "반입/반출 및 보관",
+  "8.5": "매장 시설 및 공사",
+  "8.6": "매장 운영 및 서비스",
+  "8.7": "비품/쇼핑백",
+  "8.12": "POS",
+  "8.13": "내선전화",
+  "8.8": "인력 운영 및 교육",
+  "8.9": "정산 및 행정",
+  "8.10": "마케팅/사인물/콘텐츠",
+  "8.11": "철수/연장/계약 종료",
+};
+
 function manualUrl(filename) {
   return RAW_MANUAL_BASE + encodeURIComponent(filename);
 }
@@ -131,6 +147,7 @@ async function ensureSchema(env) {
         id INTEGER PRIMARY KEY CHECK (id = 1),
         faqs_json TEXT NOT NULL,
         examples_json TEXT NOT NULL DEFAULT '{}',
+        category_labels_json TEXT NOT NULL DEFAULT '{}',
         revision INTEGER NOT NULL DEFAULT 0,
         last_editor_id TEXT NOT NULL DEFAULT '',
         last_editor_name TEXT NOT NULL DEFAULT '',
@@ -152,6 +169,11 @@ async function ensureSchema(env) {
   } catch (error) {
     // column already exists
   }
+  try {
+    await env.DB.prepare("ALTER TABLE faq_state ADD COLUMN category_labels_json TEXT NOT NULL DEFAULT '{}'").run();
+  } catch (error) {
+    // column already exists
+  }
 
   const employeeCount = await env.DB.prepare("SELECT COUNT(*) AS count FROM employees").first();
   if (!employeeCount?.count) {
@@ -167,25 +189,30 @@ async function ensureSchema(env) {
   const state = await env.DB.prepare("SELECT id FROM faq_state WHERE id = 1").first();
   if (!state) {
     await env.DB.prepare(
-      "INSERT INTO faq_state (id, faqs_json, examples_json, revision, last_editor_id, last_editor_name, last_edited_at) VALUES (1, ?, ?, 0, '', '', '')",
+      "INSERT INTO faq_state (id, faqs_json, examples_json, category_labels_json, revision, last_editor_id, last_editor_name, last_edited_at) VALUES (1, ?, ?, ?, 0, '', '', '')",
     )
-      .bind(JSON.stringify(SEED_FAQS), JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY))
+      .bind(JSON.stringify(SEED_FAQS), JSON.stringify(DEFAULT_EXAMPLES_BY_CATEGORY), JSON.stringify(DEFAULT_CATEGORY_LABELS))
       .run();
   }
 }
 
 async function getFaqState(env) {
   const row = await env.DB.prepare(
-    "SELECT faqs_json, examples_json, revision, last_editor_id, last_editor_name, last_edited_at FROM faq_state WHERE id = 1",
+    "SELECT faqs_json, examples_json, category_labels_json, revision, last_editor_id, last_editor_name, last_edited_at FROM faq_state WHERE id = 1",
   ).first();
   const items = normalizeFaqItems(JSON.parse(row?.faqs_json || "[]"));
   const examples = {
     ...DEFAULT_EXAMPLES_BY_CATEGORY,
     ...(JSON.parse(row?.examples_json || "{}")),
   };
+  const category_labels = {
+    ...DEFAULT_CATEGORY_LABELS,
+    ...(JSON.parse(row?.category_labels_json || "{}")),
+  };
   return {
     items,
     examples,
+    category_labels,
     meta: {
       revision: Number(row?.revision || 0),
       last_editor_id: row?.last_editor_id || "",
@@ -246,6 +273,7 @@ export default {
           json({
             items: state.items,
             examples: state.examples,
+            category_labels: state.category_labels,
             meta: { revision: state.meta.revision },
           }),
         );
@@ -305,13 +333,16 @@ export default {
         const examples = body.examples && typeof body.examples === "object"
           ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
           : current.examples;
+        const categoryLabels = body.category_labels && typeof body.category_labels === "object"
+          ? { ...DEFAULT_CATEGORY_LABELS, ...body.category_labels }
+          : current.category_labels;
         const now = new Date().toISOString();
         const nextRevision = current.meta.revision + 1;
 
         await env.DB.prepare(
-          "UPDATE faq_state SET faqs_json = ?, examples_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
+          "UPDATE faq_state SET faqs_json = ?, examples_json = ?, category_labels_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
         )
-          .bind(JSON.stringify(items), JSON.stringify(examples), nextRevision, admin.employee_id, admin.name, now)
+          .bind(JSON.stringify(items), JSON.stringify(examples), JSON.stringify(categoryLabels), nextRevision, admin.employee_id, admin.name, now)
           .run();
 
         return withCors(
@@ -320,6 +351,7 @@ export default {
             ok: true,
             items,
             examples,
+            category_labels: categoryLabels,
             meta: {
               revision: nextRevision,
               last_editor_id: admin.employee_id,
@@ -351,6 +383,38 @@ export default {
           json({
             ok: true,
             examples,
+            category_labels: current.category_labels,
+            meta: {
+              revision: nextRevision,
+              last_editor_id: admin.employee_id,
+              last_editor_name: admin.name,
+              last_edited_at: now,
+            },
+          }),
+        );
+      }
+
+      if (request.method === "PUT" && url.pathname === "/api/admin/category-labels") {
+        const admin = await requireAuth(request, env);
+        const body = await request.json();
+        const current = await getFaqState(env);
+        const categoryLabels = body.category_labels && typeof body.category_labels === "object"
+          ? { ...DEFAULT_CATEGORY_LABELS, ...body.category_labels }
+          : current.category_labels;
+        const now = new Date().toISOString();
+        const nextRevision = current.meta.revision + 1;
+
+        await env.DB.prepare(
+          "UPDATE faq_state SET category_labels_json = ?, revision = ?, last_editor_id = ?, last_editor_name = ?, last_edited_at = ? WHERE id = 1",
+        )
+          .bind(JSON.stringify(categoryLabels), nextRevision, admin.employee_id, admin.name, now)
+          .run();
+
+        return withCors(
+          request,
+          json({
+            ok: true,
+            category_labels: categoryLabels,
             meta: {
               revision: nextRevision,
               last_editor_id: admin.employee_id,
@@ -364,7 +428,7 @@ export default {
       if (request.method === "GET" && url.pathname === "/api/session") {
         const admin = await requireAuth(request, env);
         const state = await getFaqState(env);
-        return withCors(request, json({ user: admin, meta: state.meta }));
+        return withCors(request, json({ user: admin, meta: state.meta, category_labels: state.category_labels }));
       }
 
       if (request.method === "POST" && url.pathname === "/api/feedback") {
