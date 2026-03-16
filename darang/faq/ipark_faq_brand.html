@@ -227,6 +227,27 @@
         letter-spacing: -0.01em;
       }
 
+      .sync-note {
+        margin: 0 4px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(240, 50, 35, 0.18);
+        background: rgba(240, 50, 35, 0.08);
+        color: var(--text);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .sync-note strong {
+        display: block;
+        margin-bottom: 4px;
+      }
+
+      .sync-note.shared {
+        border-color: rgba(93, 137, 179, 0.22);
+        background: rgba(93, 137, 179, 0.09);
+      }
+
       .chat-shell {
         border-radius: 32px;
         padding: 14px;
@@ -850,6 +871,7 @@
           </section>
         </section>
       </section>
+      <div id="syncStatusNote" class="sync-note hidden"></div>
       <p class="page-note">문의 : 김민 주임, 황다경 주임</p>
     </main>
 
@@ -938,6 +960,7 @@
       const adminLoginLink = document.getElementById("adminLoginLink");
       const adminUserBadge = document.getElementById("adminUserBadge");
       const topLogoutBtn = document.getElementById("topLogoutBtn");
+      const syncStatusNote = document.getElementById("syncStatusNote");
       const loginModal = document.getElementById("loginModal");
       const editorModal = document.getElementById("editorModal");
       const closeLoginModal = document.getElementById("closeLoginModal");
@@ -1063,6 +1086,23 @@
 
       function isBackendMode() {
         return !!adminApiBase;
+      }
+
+      function renderSyncStatusNote() {
+        if (isBackendMode()) {
+          syncStatusNote.className = "sync-note shared";
+          syncStatusNote.innerHTML = `
+            <strong>공용 저장 모드</strong>
+            불편사항 접수와 FAQ 수정 내용이 모든 관리자 페이지에서 함께 반영됩니다.
+          `;
+          return;
+        }
+
+        syncStatusNote.className = "sync-note";
+        syncStatusNote.innerHTML = `
+          <strong>현재는 브라우저별 임시 저장 모드입니다.</strong>
+          지금 접수되는 불편사항은 이 브라우저에만 저장됩니다. 다른 브라우저 관리자 페이지에서 보이지 않는 이유는 공용 백엔드 주소가 아직 연결되지 않았기 때문입니다.
+        `;
       }
 
       function readFeedbackReports() {
@@ -2042,6 +2082,7 @@
       });
 
       async function initPage() {
+        renderSyncStatusNote();
         if (isBackendMode()) {
           await validateBackendSession();
         } else {

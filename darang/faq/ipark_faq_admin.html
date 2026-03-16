@@ -505,6 +505,33 @@
         margin: 10px 0 0;
       }
 
+      .sync-banner {
+        display: grid;
+        gap: 6px;
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(240, 50, 35, 0.18);
+        background: rgba(240, 50, 35, 0.08);
+        color: var(--text);
+      }
+
+      .sync-banner strong {
+        font-size: 14px;
+      }
+
+      .sync-banner p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .sync-banner.shared {
+        border-color: rgba(93, 137, 179, 0.22);
+        background: rgba(93, 137, 179, 0.09);
+      }
+
       .editor-list {
         padding: 10px;
         display: grid;
@@ -590,6 +617,7 @@
           <h1>브랜드 FAQ 관리자 화면</h1>
           <p class="sub">로그인 후 FAQ 질문, 답변, 다음 액션, 문의 채널을 한 페이지에서 수정할 수 있습니다.</p>
         </div>
+          <div id="syncModeBanner" class="sync-banner hidden"></div>
         <div class="hero-actions">
           <span id="sessionBadge" class="session-badge"></span>
           <button id="logoutBtn" class="ghost-btn logout-btn" type="button">로그아웃</button>
@@ -736,6 +764,7 @@
               <p class="example-note">챗봇 답변 후 접수된 불만족 의견과 대화 로그를 확인할 수 있습니다.</p>
             </div>
           </div>
+          <div id="feedbackScopeNote" class="sync-banner hidden"></div>
           <div id="feedbackList" class="feedback-list">
             <p class="toolbar-note">아직 접수된 불편사항이 없습니다.</p>
           </div>
@@ -798,6 +827,8 @@
       const editorPanel = document.getElementById("editorPanel");
       const sessionBadge = document.getElementById("sessionBadge");
       const logoutBtn = document.getElementById("logoutBtn");
+      const syncModeBanner = document.getElementById("syncModeBanner");
+      const feedbackScopeNote = document.getElementById("feedbackScopeNote");
       const loginForm = document.getElementById("loginForm");
       const employeeIdInput = document.getElementById("employeeIdInput");
       const employeePwInput = document.getElementById("employeePwInput");
@@ -874,6 +905,33 @@
 
       function isBackendMode() {
         return !!adminApiBase;
+      }
+
+      function renderSyncModeNotice() {
+        if (isBackendMode()) {
+          syncModeBanner.className = "sync-banner shared";
+          syncModeBanner.innerHTML = `
+            <strong>공용 저장 모드가 연결되어 있습니다.</strong>
+            <p>불편사항 접수 내역과 FAQ 수정 내용이 모든 관리자 페이지에서 동일하게 보입니다.</p>
+          `;
+          feedbackScopeNote.className = "sync-banner shared";
+          feedbackScopeNote.innerHTML = `
+            <strong>공용 접수 내역</strong>
+            <p>여기에 표시되는 불편사항은 다른 브라우저와 다른 기기에서 접수된 내용도 함께 포함됩니다.</p>
+          `;
+          return;
+        }
+
+        syncModeBanner.className = "sync-banner";
+        syncModeBanner.innerHTML = `
+          <strong>현재는 브라우저별 임시 저장 모드입니다.</strong>
+          <p>지금 이 관리자 페이지에서 보이는 접수 내역은 이 브라우저에 저장된 내용만 불러옵니다. 다른 브라우저에서 접수한 불편사항이 여기서 보이지 않는 이유도 이 설정 때문입니다.</p>
+        `;
+        feedbackScopeNote.className = "sync-banner";
+        feedbackScopeNote.innerHTML = `
+          <strong>브라우저 한정 접수 내역</strong>
+          <p>Cloudflare 백엔드 주소가 연결되지 않아 현재 브라우저의 localStorage만 조회하고 있습니다. 공용 반영을 위해서는 static/site_config.js에 배포된 API 주소가 필요합니다.</p>
+        `;
       }
 
       function readBackendToken() {
@@ -1842,6 +1900,7 @@
       });
 
       async function initPage() {
+        renderSyncModeNotice();
         if (isBackendMode()) {
           await validateBackendSession();
           await syncLiveData(true);
