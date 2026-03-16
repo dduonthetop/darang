@@ -798,26 +798,26 @@
       const SHARED_CATEGORY_CONFIG = window.IPARK_CATEGORY_CONFIG || {};
       const DEFAULT_CATEGORY_LABELS = Object.freeze({
         ...(SHARED_CATEGORY_CONFIG.labels || {
-          "8.1": "?? ??",
-          "8.2": "?? ?? ? ?? ??",
-          "8.3": "??/??/??/??",
-          "8.4": "??/?? ? ??",
-          "8.5": "?? ?? ? ??",
-          "8.6": "?? ?? ? ???",
-          "8.7": "??/???",
-          "8.8": "?? ?? ? ??",
-          "8.9": "?? ? ??",
-          "8.10": "???/???/???",
-          "8.11": "??/??/?? ??",
+          "8.1": "기본 운영",
+          "8.2": "출입 신청 및 인원 등록",
+          "8.3": "차량/주차/하역/동선",
+          "8.4": "반입/반출 및 보관",
+          "8.5": "매장 시설 및 공사",
+          "8.6": "매장 운영 및 서비스",
+          "8.7": "비품/쇼핑백",
+          "8.8": "인력 운영 및 교육",
+          "8.9": "정산 및 행정",
+          "8.10": "마케팅/사인물/콘텐츠",
+          "8.11": "철수/연장/계약 종료",
           "8.12": "POS",
-          "8.13": "????"
+          "8.13": "내선전화"
         })
       });
       const CATEGORY_LABEL_ALIASES = Object.freeze({
         ...(SHARED_CATEGORY_CONFIG.aliases || {
-          "????": "????",
-          "?? ? ??": "?? ? ??",
-          "??/??/?? ??": "??/??/?? ??"
+          "유선전화": "내선전화",
+          "정산 및 세정": "정산 및 행정",
+          "철수/퇴장/계약 종료": "철수/연장/계약 종료"
         })
       });
       const MANUAL_FALLBACKS = [
@@ -1009,6 +1009,22 @@
         return CATEGORY_LABEL_ALIASES[nextValue] || nextValue;
       }
 
+      function normalizeCategoryLabelMap(payload) {
+        const next = {};
+        let repaired = false;
+        if (!payload || typeof payload !== "object") {
+          return { labels: next, repaired };
+        }
+        Object.entries(payload).forEach(([categoryCode, value]) => {
+          const rawValue = String(value || "").trim();
+          if (!rawValue) return;
+          const normalizedValue = normalizeCategoryLabelValue(rawValue);
+          if (normalizedValue !== rawValue) repaired = true;
+          next[categoryCode] = normalizedValue;
+        });
+        return { labels: next, repaired };
+      }
+
       function readCategoryLabelOverrides() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_CATEGORY_LABELS_KEY) || "null");
@@ -1043,11 +1059,13 @@
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
         const overrides = readCategoryLabelOverrides();
         if (!overrides || typeof overrides !== "object") return;
-        Object.entries(overrides).forEach(([categoryCode, value]) => {
-          const nextValue = normalizeCategoryLabelValue(value);
-          if (!nextValue) return;
-          CATEGORY_LABELS[categoryCode] = nextValue;
+        const normalized = normalizeCategoryLabelMap(overrides);
+        Object.entries(normalized.labels).forEach(([categoryCode, value]) => {
+          CATEGORY_LABELS[categoryCode] = value;
         });
+        if (normalized.repaired) {
+          saveCategoryLabelOverrides(CATEGORY_LABELS);
+        }
       }
 
       function applyBackendExamples(payload) {
@@ -1061,12 +1079,11 @@
 
       function applyBackendCategoryLabels(payload) {
         CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS };
-        if (!payload || typeof payload !== "object") return;
-        Object.entries(payload).forEach(([categoryCode, value]) => {
-          const nextValue = normalizeCategoryLabelValue(value);
-          if (!nextValue) return;
-          CATEGORY_LABELS[categoryCode] = nextValue;
+        const normalized = normalizeCategoryLabelMap(payload);
+        Object.entries(normalized.labels).forEach(([categoryCode, value]) => {
+          CATEGORY_LABELS[categoryCode] = value;
         });
+        return normalized.repaired;
       }
 
       function readAdminMeta() {
@@ -1803,10 +1820,11 @@
         renderEditorMeta(payload.meta);
       }
 
-      async function saveCategoryLabelsToBackend() {
+      async function saveCategoryLabelsToBackend(options = {}) {
+        const silent = !!options.silent;
         const token = readBackendToken();
         if (!token) {
-          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+          if (!silent) editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
           return;
         }
         const response = await fetch(apiUrl("/api/admin/category-labels"), {
@@ -1831,9 +1849,24 @@
           applyBackendCategoryLabels(payload.category_labels);
         }
         if (payload.meta) writeAdminMeta(payload.meta);
-        renderCategoryToolbar();
-        renderExampleEditor();
-        renderEditorMeta(payload.meta);
+        if (!silent) {
+          renderCategoryToolbar();
+          renderExampleEditor();
+          renderEditorMeta(payload.meta);
+        }
+      }
+
+      async function autoHealCategoryLabelsIfNeeded(payload) {
+        if (!isBackendMode() || !readBackendToken()) return false;
+        const normalized = normalizeCategoryLabelMap(payload);
+        if (!normalized.repaired) return false;
+        CATEGORY_LABELS = { ...DEFAULT_CATEGORY_LABELS, ...normalized.labels };
+        try {
+          await saveCategoryLabelsToBackend({ silent: true });
+          return true;
+        } catch (error) {
+          return false;
+        }
       }
 
       async function saveCategoryLabel() {
@@ -1961,7 +1994,10 @@
             dataRevision = nextRevision;
           }
           if (payload.category_labels && typeof payload.category_labels === "object") {
-            applyBackendCategoryLabels(payload.category_labels);
+            const repaired = applyBackendCategoryLabels(payload.category_labels);
+            if (repaired) {
+              await autoHealCategoryLabelsIfNeeded(payload.category_labels);
+            }
             renderCategoryToolbar();
           }
           if (payload.examples && typeof payload.examples === "object") {
