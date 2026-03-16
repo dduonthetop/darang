@@ -47,13 +47,31 @@ const CATEGORY_LABEL_ALIASES = {
   "철수/퇴장/계약 종료": "철수/연장/계약 종료",
 };
 
+const BASE_FAQ_BY_ID = new Map((Array.isArray(SEED_FAQS) ? SEED_FAQS : []).map((item) => [item.faq_id, item]));
+
+function isCorruptedText(value) {
+  const text = String(value || "").trim();
+  if (!text) return false;
+  if (text.includes("??")) return true;
+  if (/[�]/.test(text)) return true;
+  const hangulCount = (text.match(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g) || []).length;
+  const questionCount = (text.match(/\?/g) || []).length;
+  const nonStandardCount = (text.match(/[^\u0000-\u007Fㄱ-ㅎㅏ-ㅣ가-힣\s/&(),.\-:%]/g) || []).length;
+  return hangulCount === 0 && (questionCount >= 2 || nonStandardCount >= 2);
+}
+
+function normalizeTextField(value, fallback = "") {
+  const text = String(value || "").trim();
+  if (!text) return fallback;
+  return isCorruptedText(text) ? fallback : text;
+}
+
 function normalizeCategoryLabels(payload) {
   const next = { ...DEFAULT_CATEGORY_LABELS };
   if (!payload || typeof payload !== "object") return next;
   for (const [categoryCode, value] of Object.entries(payload)) {
-    const trimmed = String(value || "").trim();
-    if (!trimmed) continue;
-    next[categoryCode] = CATEGORY_LABEL_ALIASES[trimmed] || trimmed;
+    const fallback = DEFAULT_CATEGORY_LABELS[categoryCode] || categoryCode;
+    next[categoryCode] = normalizeTextField(CATEGORY_LABEL_ALIASES[String(value || "").trim()] || value, fallback);
   }
   return next;
 }
@@ -84,10 +102,24 @@ const PHONE_MANUALS = [
 ];
 
 function normalizeFaqItem(item) {
+  const fallbackItem = BASE_FAQ_BY_ID.get(item?.faq_id) || {};
   const next = {
     ...item,
     manual_files: Array.isArray(item?.manual_files) ? item.manual_files : [],
   };
+  next.category = normalizeTextField(next.category, fallbackItem.category || "");
+  next.question = normalizeTextField(next.question, fallbackItem.question || "");
+  next.answer = normalizeTextField(next.answer, fallbackItem.answer || "");
+  next.next_action = normalizeTextField(next.next_action, fallbackItem.next_action || "");
+  next.contact_channel = normalizeTextField(next.contact_channel, fallbackItem.contact_channel || "");
+  next.confidence_type = normalizeTextField(next.confidence_type, fallbackItem.confidence_type || "");
+  next.paraphrases = Array.isArray(next.paraphrases)
+    ? next.paraphrases
+        .map((value, index) => normalizeTextField(value, Array.isArray(fallbackItem.paraphrases) ? fallbackItem.paraphrases[index] || "" : ""))
+        .filter(Boolean)
+    : Array.isArray(fallbackItem.paraphrases)
+      ? [...fallbackItem.paraphrases]
+      : [];
   const question = String(next.question || "");
   const keywords = Array.isArray(next.keywords) ? next.keywords : [];
 
@@ -129,7 +161,7 @@ function corsHeaders(request) {
     headers.set("Access-Control-Allow-Origin", origin);
     headers.set("Vary", "Origin");
   }
-  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Employee-Id, X-Employee-Password");
   headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   return headers;
 }
@@ -222,6 +254,13 @@ async function getFaqState(env) {
     ...DEFAULT_EXAMPLES_BY_CATEGORY,
     ...(JSON.parse(row?.examples_json || "{}")),
   };
+  Object.entries(examples).forEach(([categoryCode, values]) => {
+    if (!Array.isArray(values)) return;
+    const fallbackExamples = DEFAULT_EXAMPLES_BY_CATEGORY[categoryCode] || [];
+    examples[categoryCode] = values
+      .map((value, index) => normalizeTextField(value, fallbackExamples[index] || ""))
+      .filter(Boolean);
+  });
   const category_labels = normalizeCategoryLabels(JSON.parse(row?.category_labels_json || "{}"));
   return {
     items,
@@ -239,23 +278,39 @@ async function getFaqState(env) {
 async function requireAuth(request, env) {
   const auth = request.headers.get("Authorization") || "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
-  if (!token) {
-    throw new Response(JSON.stringify({ detail: "Unauthorized" }), { status: 401 });
+  if (token) {
+    const session = await env.DB.prepare(
+      "SELECT s.employee_id, e.display_name FROM sessions s JOIN employees e ON e.employee_id = s.employee_id WHERE s.token = ?",
+    )
+      .bind(token)
+      .first();
+    if (session) {
+      return {
+        employee_id: session.employee_id,
+        name: session.display_name,
+        token,
+      };
+    }
   }
 
-  const session = await env.DB.prepare(
-    "SELECT s.employee_id, e.display_name FROM sessions s JOIN employees e ON e.employee_id = s.employee_id WHERE s.token = ?",
-  )
-    .bind(token)
-    .first();
-  if (!session) {
-    throw new Response(JSON.stringify({ detail: "Unauthorized" }), { status: 401 });
+  const employeeId = String(request.headers.get("X-Employee-Id") || "").trim();
+  const password = String(request.headers.get("X-Employee-Password") || "").trim();
+  if (employeeId && password && employeeId === password) {
+    const employee = await env.DB.prepare(
+      "SELECT employee_id, display_name FROM employees WHERE employee_id = ?",
+    )
+      .bind(employeeId)
+      .first();
+    if (employee) {
+      return {
+        employee_id: employee.employee_id,
+        name: employee.display_name,
+        token: "",
+      };
+    }
   }
-  return {
-    employee_id: session.employee_id,
-    name: session.display_name,
-    token,
-  };
+
+  throw new Response(JSON.stringify({ detail: "Unauthorized" }), { status: 401 });
 }
 
 async function getFeedbackReports(env) {

@@ -1214,6 +1214,7 @@
       function isCorruptedText(value) {
         const text = String(value || "").trim();
         if (!text) return false;
+        if (text.includes("??")) return true;
         if (/[�]/.test(text)) return true;
         const hangulCount = (text.match(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g) || []).length;
         const questionCount = (text.match(/\?/g) || []).length;

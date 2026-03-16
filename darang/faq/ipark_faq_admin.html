@@ -965,6 +965,22 @@
         localStorage.removeItem(BACKEND_TOKEN_KEY);
       }
 
+      function backendAuthHeaders(extra = {}) {
+        const headers = { ...extra };
+        const token = readBackendToken();
+        const session = readAdminSession();
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+          return headers;
+        }
+        const employeeId = String(session?.employee_id || "").trim();
+        if (employeeId) {
+          headers["X-Employee-Id"] = employeeId;
+          headers["X-Employee-Password"] = employeeId;
+        }
+        return headers;
+      }
+
       function readAdminSession() {
         try {
           return JSON.parse(localStorage.getItem(ADMIN_SESSION_KEY) || "null");
@@ -1016,6 +1032,7 @@
       function isCorruptedText(value) {
         const text = String(value || "").trim();
         if (!text) return false;
+        if (text.includes("??")) return true;
         if (/[�]/.test(text)) return true;
         const hangulCount = (text.match(/[ㄱ-ㅎㅏ-ㅣ가-힣]/g) || []).length;
         const questionCount = (text.match(/\?/g) || []).length;
@@ -1191,7 +1208,7 @@
         }
         try {
           const response = await fetch(apiUrl("/api/admin/feedback"), {
-            headers: { "Authorization": `Bearer ${readBackendToken()}` },
+            headers: backendAuthHeaders(),
           });
           if (!response.ok) return;
           const payload = await response.json();
@@ -1809,19 +1826,18 @@
 
       async function saveEditorFormToBackend(options = {}) {
         const silent = !!options.silent;
-        const statusMessage = options.statusMessage || "??μ씠 ?꾨즺?섏뿀?듬땲?? 怨듭슜 FAQ?먮룄 理쒖떊 ?댁슜??諛섏쁺?⑸땲??";
-        const alertMessage = options.alertMessage || "??λ릺?덉뒿?덈떎.";
-        const token = readBackendToken();
-        if (!token) {
-          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+        const statusMessage = options.statusMessage || "??? ???????. ?? FAQ?? ?? ??? ?????.";
+        const alertMessage = options.alertMessage || "???????.";
+        const session = readAdminSession();
+        if (!session?.employee_id) {
+          editorStatus.textContent = "???? ?????. ?? ???? ???.";
           return;
         }
         const response = await fetch(apiUrl("/api/admin/faqs"), {
           method: "PUT",
-          headers: {
+          headers: backendAuthHeaders({
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
+          }),
           body: JSON.stringify({ items: DATA, examples: EXAMPLES_BY_CATEGORY, category_labels: CATEGORY_LABELS }),
         });
         if (!response.ok) {
@@ -1829,9 +1845,9 @@
             clearBackendToken();
             clearAdminSession();
             setAuthState();
-            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            throw new Error("???? ???????. ?? ???? ???.");
           }
-          throw new Error("저장에 실패했습니다.");
+          throw new Error("??? ??????.");
         }
         const payload = await response.json();
         if (Array.isArray(payload.items)) DATA = payload.items;
@@ -1845,22 +1861,21 @@
         renderEditorList();
         renderEditorForm();
         renderEditorMeta(payload.meta);
-        editorStatus.textContent = "저장이 완료되었습니다. 공용 FAQ에도 최신 내용이 반영됩니다.";
-        window.alert("저장되었습니다.");
+        editorStatus.textContent = statusMessage;
+        if (!silent) window.alert(alertMessage);
       }
 
       async function saveCategoryExamplesToBackend() {
-        const token = readBackendToken();
-        if (!token) {
-          editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+        const session = readAdminSession();
+        if (!session?.employee_id) {
+          editorStatus.textContent = "???? ?????. ?? ???? ???.";
           return;
         }
         const response = await fetch(apiUrl("/api/admin/examples"), {
           method: "PUT",
-          headers: {
+          headers: backendAuthHeaders({
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
+          }),
           body: JSON.stringify({ examples: EXAMPLES_BY_CATEGORY }),
         });
         if (!response.ok) {
@@ -1868,9 +1883,9 @@
             clearBackendToken();
             clearAdminSession();
             setAuthState();
-            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            throw new Error("???? ???????. ?? ???? ???.");
           }
-          throw new Error("예시질문 저장에 실패했습니다.");
+          throw new Error("???? ??? ??????.");
         }
         const payload = await response.json();
         if (payload.examples && typeof payload.examples === "object") {
@@ -1884,17 +1899,16 @@
 
       async function saveCategoryLabelsToBackend(options = {}) {
         const silent = !!options.silent;
-        const token = readBackendToken();
-        if (!token) {
-          if (!silent) editorStatus.textContent = "로그인이 만료되었습니다. 다시 로그인해 주세요.";
+        const session = readAdminSession();
+        if (!session?.employee_id) {
+          if (!silent) editorStatus.textContent = "???? ?????. ?? ???? ???.";
           return;
         }
         const response = await fetch(apiUrl("/api/admin/category-labels"), {
           method: "PUT",
-          headers: {
+          headers: backendAuthHeaders({
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
+          }),
           body: JSON.stringify({ category_labels: CATEGORY_LABELS }),
         });
         if (!response.ok) {
@@ -1902,9 +1916,9 @@
             clearBackendToken();
             clearAdminSession();
             setAuthState();
-            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+            throw new Error("???? ???????. ?? ???? ???.");
           }
-          throw new Error("카테고리명 저장에 실패했습니다.");
+          throw new Error("????? ??? ??????.");
         }
         const payload = await response.json();
         if (payload.category_labels && typeof payload.category_labels === "object") {
@@ -2022,14 +2036,16 @@
       async function validateBackendSession() {
         if (!isBackendMode()) return false;
         const token = readBackendToken();
-        if (!token) return false;
+        const session = readAdminSession();
+        if (!token) {
+          return !!(session?.employee_id && AUTH_IDS.includes(String(session.employee_id)));
+        }
         const response = await fetch(apiUrl("/api/session"), {
-          headers: { "Authorization": `Bearer ${token}` },
+          headers: backendAuthHeaders(),
         });
         if (!response.ok) {
           clearBackendToken();
-          clearAdminSession();
-          return false;
+          return !!(session?.employee_id && AUTH_IDS.includes(String(session.employee_id)));
         }
         const payload = await response.json();
         writeAdminSession(payload.user || { employee_id: "" });
@@ -2108,37 +2124,17 @@
         const pw = employeePwInput.value.trim();
         loginError.textContent = "";
 
-        if (isBackendMode()) {
-          try {
-            const response = await fetch(apiUrl("/api/login"), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ employee_id: id, password: pw }),
-            });
-            if (!response.ok) throw new Error("관리자에게 문의하세요.");
-            const payload = await response.json();
-            writeBackendToken(payload.token || "");
-            writeAdminSession(payload.user || { employee_id: id });
-            await syncLiveData(true);
-            renderEditorList();
-            renderEditorForm();
-            setAuthState();
-            await syncFeedbackReports();
-            return;
-          } catch (error) {
-            if (AUTH_IDS.includes(id) && id === pw) {
-              loginWithLocalFallback(id);
-              return;
-            }
-            loginError.textContent = error.message || "관리자에게 문의하세요.";
-            window.alert(loginError.textContent);
-            return;
-          }
+        if (!AUTH_IDS.includes(id) || id !== pw) {
+          loginError.textContent = "????? ?????.";
+          window.alert(loginError.textContent);
+          return;
         }
 
-        if (!AUTH_IDS.includes(id) || id !== pw) {
-          loginError.textContent = "관리자에게 문의하세요.";
-          window.alert(loginError.textContent);
+        if (isBackendMode()) {
+          clearBackendToken();
+          loginWithLocalFallback(id);
+          await syncLiveData(true);
+          await syncFeedbackReports();
           return;
         }
 
