@@ -2,18 +2,9 @@ from __future__ import annotations
 
 import os
 import subprocess
-from pathlib import Path
 from typing import Dict, List
 
-
-BASE_DIR = Path(__file__).resolve().parent
-REPO_ROOT = BASE_DIR.parent.parent
-SYNC_PATHS = [
-    REPO_ROOT / "static" / "local_faq_data.js",
-    BASE_DIR / "static" / "local_faq_data.js",
-    BASE_DIR / "ipark_faq_dataset.csv",
-    BASE_DIR / "faq_admin_meta.json",
-]
+from .publish_assets import GITHUB_SYNC_PATHS, REPO_ROOT
 
 
 def _run_git(args: List[str]) -> subprocess.CompletedProcess[str]:
@@ -38,7 +29,7 @@ def auto_sync_github(editor: Dict[str, str]) -> Dict[str, str]:
         if current.returncode != 0 or not current.stdout.strip():
             _run_git(["config", key, value])
 
-    add_args = ["add", *[str(path.relative_to(REPO_ROOT)).replace("\\", "/") for path in SYNC_PATHS if path.exists()]]
+    add_args = ["add", *[str(path.relative_to(REPO_ROOT)).replace("\\", "/") for path in GITHUB_SYNC_PATHS if path.exists()]]
     add_result = _run_git(add_args)
     if add_result.returncode != 0:
         return {"status": "error", "message": add_result.stderr.strip() or add_result.stdout.strip() or "git add failed"}

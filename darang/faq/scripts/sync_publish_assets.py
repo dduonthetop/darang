@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 import shutil
+import sys
 from pathlib import Path
 
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
-SOURCE_ROOT = REPO_ROOT / "darang" / "faq"
+SCRIPT_DIR = Path(__file__).resolve().parent
+REPO_ROOT = SCRIPT_DIR.parents[2]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
-FILE_MAPPINGS = [
-    (SOURCE_ROOT / "ipark_faq_brand.html", REPO_ROOT / "ipark_faq_brand.html"),
-    (SOURCE_ROOT / "ipark_faq_admin.html", REPO_ROOT / "ipark_faq_admin.html"),
-    (SOURCE_ROOT / "static" / "local_faq_data.js", REPO_ROOT / "static" / "local_faq_data.js"),
-    (SOURCE_ROOT / "static" / "site_config.js", REPO_ROOT / "static" / "site_config.js"),
-    (SOURCE_ROOT / "static" / "category_defaults.js", REPO_ROOT / "static" / "category_defaults.js"),
-    (SOURCE_ROOT / "static" / "employee_auth.js", REPO_ROOT / "static" / "employee_auth.js"),
-]
+from darang.faq.publish_assets import PUBLISH_FILE_MAPPINGS  # noqa: E402
 
 
 def sync_file(source: Path, target: Path) -> None:
@@ -25,7 +21,7 @@ def sync_file(source: Path, target: Path) -> None:
 
 
 def main() -> None:
-    for source, target in FILE_MAPPINGS:
+    for source, target in PUBLISH_FILE_MAPPINGS:
         sync_file(source, target)
         print(f"synced: {source.relative_to(REPO_ROOT)} -> {target.relative_to(REPO_ROOT)}")
 

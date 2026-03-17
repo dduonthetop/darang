@@ -8,6 +8,7 @@ from typing import Any, Dict, List
 
 from .faq_loader import FAQItem, load_faq_items
 from .github_sync import auto_sync_github
+from .publish_assets import STATIC_DATA_TARGETS
 
 BASE_DIR = Path(__file__).resolve().parent
 CSV_HEADERS = [
@@ -30,10 +31,6 @@ CSV_HEADERS = [
     "last_editor_id",
     "last_editor_name",
     "last_edited_at",
-]
-STATIC_DATA_TARGETS = [
-    BASE_DIR / "static" / "local_faq_data.js",
-    BASE_DIR.parent.parent / "static" / "local_faq_data.js",
 ]
 ADMIN_META_PATH = BASE_DIR / "faq_admin_meta.json"
 

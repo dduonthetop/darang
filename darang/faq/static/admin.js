@@ -37,6 +37,12 @@ const sessionInfo = document.getElementById("sessionInfo");
 const revisionInfo = document.getElementById("revisionInfo");
 const githubSyncInfo = document.getElementById("githubSyncInfo");
 const itemAudit = document.getElementById("itemAudit");
+const ROUTES = {
+  login: "/admin/login",
+  faqs: "/admin/api/faqs",
+  session: "/admin/api/session",
+  logout: "/admin/api/logout",
+};
 
 function normalize(text) {
   return (text || "").toLowerCase().trim();
@@ -57,6 +63,22 @@ function markDirty(flag = true) {
 
 function selectedItem() {
   return state.items[state.selectedIndex] || null;
+}
+
+function redirectToLogin() {
+  window.location.href = ROUTES.login;
+}
+
+function handleUnauthorized(response) {
+  if (response.status !== 401) return false;
+  redirectToLogin();
+  return true;
+}
+
+function updateSelection(nextIndex) {
+  state.selectedIndex = nextIndex;
+  renderList();
+  renderEditor();
 }
 
 function emptyItem() {
@@ -119,11 +141,7 @@ function renderList() {
       <p class="faq-item-title">${escapeHtml(item.question || "질문을 입력해 주세요")}</p>
       <p class="faq-item-meta">${escapeHtml(item.category || "카테고리 없음")} · ${escapeHtml(item.stage || "-")}</p>
     `;
-    button.addEventListener("click", () => {
-      state.selectedIndex = index;
-      renderList();
-      renderEditor();
-    });
+    button.addEventListener("click", () => updateSelection(index));
     faqList.appendChild(button);
   });
 
@@ -181,12 +199,9 @@ function bindInputs() {
 }
 
 async function loadDataset() {
-  const response = await fetch("/admin/api/faqs");
+  const response = await fetch(ROUTES.faqs);
   if (!response.ok) {
-    if (response.status === 401) {
-      window.location.href = "/admin/login";
-      return;
-    }
+    if (handleUnauthorized(response)) return;
     throw new Error("FAQ 목록을 불러오지 못했습니다.");
   }
   const data = await response.json();
@@ -202,16 +217,13 @@ async function saveDataset() {
   saveBtn.disabled = true;
   saveBtn.textContent = "저장 중...";
   try {
-    const response = await fetch("/admin/api/faqs", {
+    const response = await fetch(ROUTES.faqs, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items: state.items }),
     });
     if (!response.ok) {
-      if (response.status === 401) {
-        window.location.href = "/admin/login";
-        return;
-      }
+      if (handleUnauthorized(response)) return;
       const error = await response.json().catch(() => ({}));
       throw new Error(error.detail || "저장에 실패했습니다.");
     }
@@ -257,9 +269,9 @@ function renderMeta(meta) {
 }
 
 async function loadSession() {
-  const response = await fetch("/admin/api/session");
+  const response = await fetch(ROUTES.session);
   if (!response.ok) {
-    window.location.href = "/admin/login";
+    redirectToLogin();
     return;
   }
   const data = await response.json();
@@ -284,16 +296,14 @@ reloadBtn.addEventListener("click", async () => {
 saveBtn.addEventListener("click", saveDataset);
 
 logoutBtn.addEventListener("click", async () => {
-  await fetch("/admin/api/logout", { method: "POST" });
-  window.location.href = "/admin/login";
+  await fetch(ROUTES.logout, { method: "POST" });
+  redirectToLogin();
 });
 
 newBtn.addEventListener("click", () => {
   state.items.unshift(emptyItem());
-  state.selectedIndex = 0;
   markDirty(true);
-  renderList();
-  renderEditor();
+  updateSelection(0);
   document.getElementById("question").focus();
 });
 
@@ -304,10 +314,8 @@ deleteBtn.addEventListener("click", () => {
     return;
   }
   state.items.splice(state.selectedIndex, 1);
-  state.selectedIndex = state.items.length ? 0 : -1;
   markDirty(true);
-  renderList();
-  renderEditor();
+  updateSelection(state.items.length ? 0 : -1);
 });
 
 window.addEventListener("beforeunload", (event) => {
