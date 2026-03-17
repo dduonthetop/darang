@@ -1493,8 +1493,11 @@
           const nextRevision = Number(payload.meta?.revision || 0);
           if (!force && nextRevision === dataRevision) return;
           if (Array.isArray(payload.items) && payload.items.length) {
-            DATA = payload.items;
+            DATA = sanitizeDataset(payload.items);
             dataRevision = nextRevision;
+            if (categoryHint) {
+              renderExampleSelector(categoryHint);
+            }
           }
           if (payload.category_labels && typeof payload.category_labels === "object") {
             applyBackendCategoryLabels(payload.category_labels);
@@ -1537,10 +1540,17 @@
         return tags;
       }
 
+      function getItemCategoryCode(item) {
+        const explicit = String(item?.category_code || "").trim();
+        if (explicit) return explicit;
+        const category = String(item?.category || "").trim();
+        const match = category.match(/^(\d+(?:\.\d+)*)\s+/);
+        return match ? match[1] : "";
+      }
+
       function itemMatchesCategory(item, categoryCode) {
         if (!categoryCode) return true;
-        const category = item.category || "";
-        if (category.startsWith(categoryCode)) return true;
+        if (getItemCategoryCode(item) === categoryCode) return true;
         const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
         const tags = detectIntentTags(intentText);
         if (categoryCode === "13") return tags.has("pos");
@@ -1610,7 +1620,7 @@
           score += Math.min(0.26, keywordHits * 0.08);
         }
 
-        if (categoryPrefix && (item.category || "").startsWith(categoryPrefix)) {
+        if (categoryPrefix && getItemCategoryCode(item) === categoryPrefix) {
           score += 0.03;
         }
 
@@ -1707,8 +1717,8 @@
         const second = globalScored[1];
 
         if (second && top && top.score < 0.42 && (top.score - second.score) < 0.03) {
-          const topCategoryMatch = categoryPrefix && (top.item.category || "").startsWith(categoryPrefix);
-          const secondCategoryMatch = categoryPrefix && (second.item.category || "").startsWith(categoryPrefix);
+          const topCategoryMatch = categoryPrefix && getItemCategoryCode(top.item) === categoryPrefix;
+          const secondCategoryMatch = categoryPrefix && getItemCategoryCode(second.item) === categoryPrefix;
           if (!topCategoryMatch && secondCategoryMatch && second.score > 0.2) {
             top = second;
           }
