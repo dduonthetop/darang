@@ -1312,7 +1312,11 @@
       function initAdminLink() {
         adminLoginLink.addEventListener("click", (event) => {
           event.preventDefault();
-          window.location.href = adminPageUrl;
+          if (isLoggedIn()) {
+            window.location.href = adminPageUrl;
+            return;
+          }
+          openLoginModal();
         });
         setAdminLinkState();
       }
@@ -2089,31 +2093,6 @@
         event.preventDefault();
         const id = employeeIdInput.value.trim();
         const pw = employeePwInput.value.trim();
-        if (isBackendMode()) {
-          try {
-            const response = await fetch(apiUrl("/api/login"), {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ employee_id: id, password: pw }),
-            });
-            if (!response.ok) {
-              throw new Error("관리자에게 문의하세요.");
-            }
-            const payload = await response.json();
-            writeBackendToken(payload.token || "");
-            writeAdminSession(payload.user || { employee_id: id });
-            setAdminLinkState();
-            closeLogin();
-            await syncLiveData(true);
-            greetLoggedInUser(payload.user || { employee_id: id });
-            openEditorModal();
-            return;
-          } catch (error) {
-            loginError.textContent = error.message || "관리자에게 문의하세요.";
-            window.alert(loginError.textContent);
-            return;
-          }
-        }
         if (!AUTH_IDS.includes(id) || id !== pw) {
           loginError.textContent = "관리자에게 문의하세요.";
           window.alert("관리자에게 문의하세요.");
@@ -2124,11 +2103,11 @@
           name: EMPLOYEE_MAP[id] || "",
           logged_in_at: new Date().toISOString(),
         };
+        clearBackendToken();
         writeAdminSession(session);
         setAdminLinkState();
         closeLogin();
-        greetLoggedInUser(session);
-        openEditorModal();
+        window.location.href = adminLoginUrl;
       });
       [loginModal, editorModal].forEach((modal) => {
         modal.addEventListener("click", (event) => {
