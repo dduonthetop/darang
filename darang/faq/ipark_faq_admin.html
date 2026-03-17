@@ -1243,8 +1243,9 @@
 
       function itemMatchesSelectedCategory(item, categoryCode) {
         if (categoryCode === "ALL") return true;
-        const category = item.category || "";
-        if (category.startsWith(categoryCode)) return true;
+        const category = String(item?.category || "").trim();
+        const extractedCode = extractCategoryCode(category);
+        if (category === categoryCode || extractedCode === categoryCode || category.startsWith(categoryCode)) return true;
         const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
         const tags = detectCategoryIntentTags(intentText);
         if (categoryCode === "8.12") return tags.has("pos");
@@ -1439,6 +1440,11 @@
         return getCategoryOptions().find((option) => option.code === code)?.label || code || "미지정";
       }
 
+      function extractCategoryCode(category = "") {
+        const match = String(category || "").trim().match(/^(\d+(?:\.\d+)?)/);
+        return match ? match[1] : "";
+      }
+
       function renderExampleEditor() {
         if (selectedCategoryCode === "ALL") {
           exampleCategoryLabel.textContent = "대분류 카테고리를 선택하면 해당 카테고리의 question 항목이 자동으로 예시질문으로 노출됩니다.";
@@ -1472,7 +1478,7 @@
       }
 
       function inferStageForCategory(categoryCode) {
-        const sample = DATA.find((item) => (item.category || "").startsWith(categoryCode));
+        const sample = DATA.find((item) => itemMatchesSelectedCategory(item, categoryCode));
         return sample?.stage || "";
       }
 
@@ -1537,9 +1543,9 @@
         categoryStatus.textContent =
           selectedCategoryCode === "ALL"
             ? "전체 카테고리에서 FAQ를 검색하고 수정할 수 있습니다."
-            : `${scopeLabel} 카테고리 안에서 FAQ를 검색하거나 새 질문을 추가할 수 있습니다.`;
+            : `${scopeLabel} 카테고리 안에서 FAQ ${items.length}건을 검색하거나 새 질문을 추가할 수 있습니다.`;
         if (!items.length) {
-          editorList.innerHTML = "<div class='status-note'>검색 결과가 없습니다.</div>";
+          editorList.innerHTML = "<div class='status-note' style='padding:16px;'>검색 결과가 없습니다.</div>";
           return;
         }
         if (!items.some(({ index }) => index === selectedAdminIndex)) {
