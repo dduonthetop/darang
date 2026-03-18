@@ -1288,6 +1288,25 @@
         return sanitizeDataset(JSON.parse(JSON.stringify(BASE_DATA)));
       }
 
+      function hasFullFaqCoverage(items) {
+        const fallbackIds = new Set(
+          getFallbackData()
+            .map((item) => String(item.faq_id || "").trim())
+            .filter(Boolean)
+        );
+        const nextIds = new Set(
+          (Array.isArray(items) ? items : [])
+            .map((item) => String(item?.faq_id || "").trim())
+            .filter(Boolean)
+        );
+        if (!fallbackIds.size) return false;
+        if (nextIds.size !== fallbackIds.size) return false;
+        for (const faqId of fallbackIds) {
+          if (!nextIds.has(faqId)) return false;
+        }
+        return true;
+      }
+
       function applyLocalOverrides() {
         if (isBackendMode()) return;
         const overrides = loadOverrides();
@@ -1508,7 +1527,8 @@
           if (Array.isArray(payload.items) && payload.items.length) {
             const nextItems = sanitizeDataset(payload.items);
             const compatibleCategoryCount = getCompatibleCategoryCount(nextItems);
-            if (compatibleCategoryCount > 0) {
+            const hasFullCoverage = hasFullFaqCoverage(nextItems);
+            if (compatibleCategoryCount === CATEGORY_ORDER.length && hasFullCoverage) {
               DATA = nextItems;
               dataRevision = nextRevision;
             } else {
