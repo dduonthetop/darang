@@ -1516,7 +1516,8 @@
         }
       }
 
-      async function syncLiveData(force = false) {
+      async function syncLiveData(force = false, options = {}) {
+        const shouldRefreshExamples = options.refreshExamples !== false;
         try {
           const publicPath = isBackendMode() ? "/api/public-faqs" : "/admin/api/public-faqs";
           const res = await fetch(apiUrl(publicPath), { cache: "no-store" });
@@ -1530,11 +1531,11 @@
             const hasFullCoverage = hasFullFaqCoverage(nextItems);
             if (compatibleCategoryCount === CATEGORY_ORDER.length && hasFullCoverage) {
               DATA = nextItems;
-              dataRevision = nextRevision;
             } else {
               DATA = getFallbackData();
             }
-            if (categoryHint) {
+            dataRevision = nextRevision;
+            if (shouldRefreshExamples && categoryHint) {
               renderExampleSelector(categoryHint);
             }
           }
@@ -2079,7 +2080,7 @@
         const question = (text || "").trim();
         if (!question) return;
 
-        await syncLiveData();
+        await syncLiveData(false, { refreshExamples: false });
 
         if (awaitingComplaintInput) {
           addBubble(question, "user");
