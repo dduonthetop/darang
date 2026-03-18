@@ -1275,6 +1275,19 @@
         });
       }
 
+      function getCompatibleCategoryCount(items) {
+        const codes = new Set(
+          (Array.isArray(items) ? items : [])
+            .map((item) => getItemCategoryCode(item))
+            .filter(Boolean)
+        );
+        return CATEGORY_ORDER.filter((code) => codes.has(code)).length;
+      }
+
+      function getFallbackData() {
+        return sanitizeDataset(JSON.parse(JSON.stringify(BASE_DATA)));
+      }
+
       function applyLocalOverrides() {
         if (isBackendMode()) return;
         const overrides = loadOverrides();
@@ -1493,8 +1506,14 @@
           const nextRevision = Number(payload.meta?.revision || 0);
           if (!force && nextRevision === dataRevision) return;
           if (Array.isArray(payload.items) && payload.items.length) {
-            DATA = sanitizeDataset(payload.items);
-            dataRevision = nextRevision;
+            const nextItems = sanitizeDataset(payload.items);
+            const compatibleCategoryCount = getCompatibleCategoryCount(nextItems);
+            if (compatibleCategoryCount > 0) {
+              DATA = nextItems;
+              dataRevision = nextRevision;
+            } else {
+              DATA = getFallbackData();
+            }
             if (categoryHint) {
               renderExampleSelector(categoryHint);
             }
