@@ -794,30 +794,34 @@
       const ADMIN_CATEGORY_LABELS_KEY = "ipark_faq_category_labels";
       const FEEDBACK_STORAGE_KEY = "ipark_faq_feedback_reports";
       const BACKEND_TOKEN_KEY = "ipark_faq_backend_token";
-      const CATEGORY_ORDER = ["8.1", "8.2", "8.3", "8.4", "8.5", "8.6", "8.7", "8.12", "8.13", "8.8", "8.9", "8.10", "8.11"];
+      const CATEGORY_ORDER = ["1", "3", "4", "5", "6", "7", "8", "13", "14", "9", "10", "2", "12", "15"];
       const SHARED_CATEGORY_CONFIG = window.IPARK_CATEGORY_CONFIG || {};
       const DEFAULT_CATEGORY_LABELS = Object.freeze({
         ...(SHARED_CATEGORY_CONFIG.labels || {
-          "8.1": "기본 운영",
-          "8.2": "출입 신청 및 인원 등록",
-          "8.3": "차량/주차/하역/동선",
-          "8.4": "반입/반출 및 보관",
-          "8.5": "매장 시설 및 공사",
-          "8.6": "매장 운영 및 서비스",
-          "8.7": "비품/쇼핑백",
-          "8.8": "인력 운영 및 교육",
-          "8.9": "정산 및 행정",
-          "8.10": "마케팅/사인물/콘텐츠",
-          "8.11": "철수/연장/계약 종료",
-          "8.12": "POS",
-          "8.13": "내선전화"
+          "1": "기본 운영",
+          "2": "마케팅/사인물/콘텐츠",
+          "3": "출입 신청 및 인원 등록",
+          "4": "차량/주차/하역/동선",
+          "5": "반입/반출 및 보관",
+          "6": "시설 및 인테리어 공사",
+          "7": "매장 운영 및 서비스",
+          "8": "비품/쇼핑백",
+          "9": "인력 운영 및 교육",
+          "10": "정산 및 행정",
+          "12": "철수/연장/계약 종료",
+          "13": "POS",
+          "14": "내선전화",
+          "15": "F&B"
         })
       });
       const CATEGORY_LABEL_ALIASES = Object.freeze({
         ...(SHARED_CATEGORY_CONFIG.aliases || {
           "유선전화": "내선전화",
           "정산 및 세정": "정산 및 행정",
-          "철수/퇴장/계약 종료": "철수/연장/계약 종료"
+          "철수/퇴장/계약 종료": "철수/연장/계약 종료",
+          "매장 시설 및 공사": "시설 및 인테리어 공사",
+          "시설 및 공사": "시설 및 인테리어 공사",
+          "F&B, 식음료매장": "F&B"
         })
       });
       const MANUAL_FALLBACKS = [
@@ -839,19 +843,20 @@
       ];
 
       const DEFAULT_EXAMPLES_BY_CATEGORY = {
-        "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
-        "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
-        "8.3": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
-        "8.4": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],
-        "8.5": ["추가 전력 사용은 어떻게 신청하나요?", "공사 가능 시간은 언제인가요?"],
-        "8.6": ["고객 컴플레인은 어디로 접수하나요?", "매장 운영 중 민원은 어떻게 접수하나요?"],
-        "8.7": ["쇼핑백은 어디서 받나요?", "쇼핑백 수령 위치가 어디인가요?"],
-        "8.12": ["POS는 기본 제공되나요?", "POS 장애 발생 시 어디로 연락하나요?"],
-        "8.13": ["내선전화 신청은 어떻게 하나요?", "내선전화 설치 리드타임은 얼마나 걸리나요?"],
-        "8.8": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
-        "8.9": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
-        "8.10": ["오프라인 제작물 사이즈 문의드려요.", "DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
-        "8.11": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"]
+        "1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
+        "2": ["오프라인 제작물 사이즈 문의드려요.", "DID 송출은 어떻게 요청하나요?", "몰 광고물은 언제까지 요청해야 하나요?"],
+        "3": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
+        "4": ["브랜드 지원 주차 기준은 어떻게 되나요?", "하역장 진입 차량 제한이 있나요?"],
+        "5": ["택배 수령은 어디서 가능한가요?", "임시 보관 공간도 제공되나요?"],
+        "6": ["추가 전력 사용은 어떻게 신청하나요?", "공사 가능 시간은 언제인가요?"],
+        "7": ["고객 컴플레인은 어디로 접수하나요?", "매장 운영 중 민원은 어떻게 접수하나요?"],
+        "8": ["쇼핑백은 어디서 받나요?", "쇼핑백 수령 위치가 어디인가요?"],
+        "9": ["필수 이수 교육이 있나요?", "모바일 출입증 발급도 가능한가요?"],
+        "10": ["정산은 언제 입금되나요?", "세금계산서는 어떻게 처리되나요?"],
+        "12": ["영업 철수는 언제 가능한가요?", "계약 연장은 언제 협의하나요?"],
+        "13": ["POS는 기본 제공되나요?", "POS 장애 발생 시 어디로 연락하나요?"],
+        "14": ["내선전화 신청은 어떻게 하나요?", "내선전화 설치 리드타임은 얼마나 걸리나요?"],
+        "15": ["F&B 영업시간이 어떻게 되나요?", "F&B 포스키 등록은 어떻게 하나요?"]
       };
 
       let DATA = Array.isArray(window.LOCAL_FAQ_DATA) ? JSON.parse(JSON.stringify(window.LOCAL_FAQ_DATA)) : [];
@@ -1214,6 +1219,38 @@
         });
       }
 
+      function getCompatibleCategoryCount(items) {
+        const codes = new Set(
+          (Array.isArray(items) ? items : [])
+            .map((item) => getItemCategoryCode(item))
+            .filter(Boolean)
+        );
+        return CATEGORY_ORDER.filter((code) => codes.has(code)).length;
+      }
+
+      function getFallbackData() {
+        return sanitizeDataset(JSON.parse(JSON.stringify(BASE_DATA)));
+      }
+
+      function hasFullFaqCoverage(items) {
+        const fallbackIds = new Set(
+          getFallbackData()
+            .map((item) => String(item.faq_id || "").trim())
+            .filter(Boolean)
+        );
+        const nextIds = new Set(
+          (Array.isArray(items) ? items : [])
+            .map((item) => String(item?.faq_id || "").trim())
+            .filter(Boolean)
+        );
+        if (!fallbackIds.size) return false;
+        if (nextIds.size !== fallbackIds.size) return false;
+        for (const faqId of fallbackIds) {
+          if (!nextIds.has(faqId)) return false;
+        }
+        return true;
+      }
+
       function applyLocalOverrides() {
         if (isBackendMode()) return;
         const overrides = loadOverrides();
@@ -1241,16 +1278,21 @@
         return tags;
       }
 
+      function getItemCategoryCode(item) {
+        const explicit = String(item?.category_code || "").trim();
+        if (explicit) return explicit;
+        const category = String(item?.category || "").trim();
+        return extractCategoryCode(category);
+      }
+
       function itemMatchesSelectedCategory(item, categoryCode) {
         if (categoryCode === "ALL") return true;
-        const category = String(item?.category || "").trim();
-        const extractedCode = extractCategoryCode(category);
-        if (category === categoryCode || extractedCode === categoryCode || category.startsWith(categoryCode)) return true;
+        if (getItemCategoryCode(item) === categoryCode) return true;
         const intentText = [item.question, ...(item.paraphrases || []), ...(item.keywords || [])].join(" ");
         const tags = detectCategoryIntentTags(intentText);
-        if (categoryCode === "8.12") return tags.has("pos");
-        if (categoryCode === "8.13") return tags.has("phone");
-        if (categoryCode === "8.7") return tags.has("shoppingbag");
+        if (categoryCode === "13") return tags.has("pos");
+        if (categoryCode === "14") return tags.has("phone");
+        if (categoryCode === "8") return tags.has("shoppingbag");
         return false;
       }
 
@@ -1441,7 +1483,7 @@
       }
 
       function extractCategoryCode(category = "") {
-        const match = String(category || "").trim().match(/^(\d+(?:\.\d+)?)/);
+        const match = String(category || "").trim().match(/^(\d+(?:\.\d+)*)/);
         return match ? match[1] : "";
       }
 
@@ -1491,7 +1533,9 @@
       function createNewItem(categoryCode) {
         return {
           faq_id: buildFaqId(categoryCode),
-          category: categoryCode,
+          category_code: categoryCode,
+          category_label: categoryLabel(categoryCode),
+          category: [categoryCode, categoryLabel(categoryCode)].filter(Boolean).join(" "),
           question: "새 질문을 입력해 주세요.",
           answer: "답변 내용을 입력해 주세요.",
           next_action: "추가로 필요한 안내가 있다면 여기에 입력해 주세요.",
@@ -1557,7 +1601,7 @@
           button.type = "button";
           button.className = "editor-item";
           if (index === selectedAdminIndex) button.classList.add("active");
-          button.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(categoryLabel(extractCategoryCode(item.category || "")) || item.category || "-")}</small>`;
+          button.innerHTML = `${escapeHtml(item.question || "질문 없음")}<small>${escapeHtml(categoryLabel(getItemCategoryCode(item)) || item.category || "-")}</small>`;
           button.addEventListener("click", () => {
             selectedAdminIndex = index;
             renderEditorList();
@@ -1993,8 +2037,18 @@
           const nextRevision = Number(payload.meta?.revision || 0);
           if (!force && nextRevision === dataRevision) return;
           if (Array.isArray(payload.items) && payload.items.length) {
-            DATA = payload.items;
+            const nextItems = sanitizeDataset(payload.items);
+            const compatibleCategoryCount = getCompatibleCategoryCount(nextItems);
+            const hasFullCoverage = hasFullFaqCoverage(nextItems);
+            if (compatibleCategoryCount === CATEGORY_ORDER.length && hasFullCoverage) {
+              DATA = nextItems;
+            } else {
+              DATA = getFallbackData();
+            }
             dataRevision = nextRevision;
+            renderEditorList();
+            renderEditorForm();
+            renderExampleEditor();
           }
           if (payload.category_labels && typeof payload.category_labels === "object") {
             applyBackendCategoryLabels(payload.category_labels);
