@@ -1355,6 +1355,7 @@
           const brokenUrl = /%3F/i.test(entry.url);
           return {
             type: entry.type || ((fallback?.url || entry.url).startsWith("http") ? "url" : "file"),
+            key: typeof entry.key === "string" ? entry.key : "",
             label: fallback && (brokenLabel || !decodedLabel) ? fallback.label : decodedLabel,
             url: fallback && brokenUrl ? fallback.url : entry.url,
           };
@@ -1402,16 +1403,22 @@
           removeBtn.type = "button";
           removeBtn.className = "ghost-btn";
           removeBtn.textContent = "삭제";
-          removeBtn.addEventListener("click", () => {
+          removeBtn.addEventListener("click", async () => {
             updateCurrentItemFromForm();
             const current = DATA[selectedAdminIndex];
             const currentAttachments = ensureCurrentAttachments(current);
-            currentAttachments.splice(index, 1);
+            const [removedAttachment] = currentAttachments.splice(index, 1);
             current.manual_files = currentAttachments;
             renderAttachmentList(current);
-            saveEditorForm().catch((error) => {
+            try {
+              await deleteManualFromBackend(removedAttachment);
+              await saveEditorForm();
+            } catch (error) {
+              currentAttachments.splice(index, 0, removedAttachment);
+              current.manual_files = currentAttachments;
+              renderAttachmentList(current);
               editorStatus.textContent = error.message || "첨부 삭제 저장에 실패했습니다.";
-            });
+            }
           });
 
           row.appendChild(meta);
@@ -1427,13 +1434,46 @@
         manualFileLabelInput.value = "";
       }
 
-      function readFileAsDataUrl(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(String(reader.result || ""));
-          reader.onerror = () => reject(new Error("파일을 읽지 못했습니다."));
-          reader.readAsDataURL(file);
+      async function uploadManualToBackend(item, file, label) {
+        if (!isBackendMode()) {
+          throw new Error("파일 업로드는 공용 저장 모드에서만 사용할 수 있습니다. URL 첨부를 이용해 주세요.");
+        }
+        if (!readAdminSession()) {
+          throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+        }
+        const form = new FormData();
+        form.append("file", file);
+        form.append("label", label);
+        form.append("faq_id", item?.faq_id || "");
+        const response = await fetch(apiUrl("/api/admin/manual-upload"), {
+          method: "POST",
+          headers: backendAuthHeaders(),
+          body: form,
         });
+        if (!response.ok) {
+          if (response.status === 401 || response.status === 403) {
+            clearBackendToken();
+            clearAdminSession();
+            setAuthState();
+            throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.detail || "파일 업로드에 실패했습니다.");
+        }
+        const payload = await response.json();
+        return normalizeAttachment(payload.attachment, item);
+      }
+
+      async function deleteManualFromBackend(attachment) {
+        if (!isBackendMode() || !attachment?.key) return;
+        const response = await fetch(`${apiUrl("/api/admin/manual-upload")}?key=${encodeURIComponent(attachment.key)}`, {
+          method: "DELETE",
+          headers: backendAuthHeaders(),
+        });
+        if (!response.ok && response.status !== 404) {
+          const payload = await response.json().catch(() => ({}));
+          throw new Error(payload.detail || "업로드된 매뉴얼 삭제에 실패했습니다.");
+        }
       }
 
       function isLoggedIn() {
@@ -1795,15 +1835,20 @@
           return;
         }
         try {
-          const dataUrl = await readFileAsDataUrl(file);
           const label = manualFileLabelInput.value.trim() || file.name || "업로드 파일";
+          const attachment = await uploadManualToBackend(item, file, label);
           const attachments = ensureCurrentAttachments(item);
-          attachments.push({ type: "file", label, url: dataUrl });
+          attachments.push(attachment);
           item.manual_files = attachments;
           renderAttachmentList(item);
           manualFileInput.value = "";
           manualFileLabelInput.value = "";
-          await saveEditorForm();
+          try {
+            await saveEditorForm();
+          } catch (error) {
+            await deleteManualFromBackend(attachment).catch(() => {});
+            throw error;
+          }
         } catch (error) {
           window.alert(error.message || "파일 업로드에 실패했습니다.");
         }

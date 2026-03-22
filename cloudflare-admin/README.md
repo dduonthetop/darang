@@ -15,10 +15,12 @@ This Worker provides shared FAQ persistence for the GitHub Pages site.
    `npm install`
 2. Create a D1 database:
    `npx wrangler d1 create ipark-faq-admin-db`
-3. Put the returned `database_id` into `wrangler.toml`
-4. Deploy:
+3. Create an R2 bucket for uploaded manuals:
+   `npx wrangler r2 bucket create ipark-faq-manuals`
+4. Put the returned `database_id` into `wrangler.toml`
+5. Deploy:
    `npx wrangler deploy`
-5. Put the Worker URL into:
+6. Put the Worker URL into:
    [site_config.js](/c:/chatbotpj/darang_bundle_latest/site_config.js)
 
 Example:
@@ -34,3 +36,4 @@ window.SITE_CONFIG = window.SITE_CONFIG || {
 
 - On first request, the Worker seeds D1 from bundled employee IDs and FAQ data.
 - GitHub Pages stays static; shared persistence happens through this API.
+- Manual file uploads are stored in R2 and exposed through the Worker at `/api/manuals/...`.
