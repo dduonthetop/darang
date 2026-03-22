@@ -2068,6 +2068,9 @@
       }
 
       function renderExampleSelector(categoryCode) {
+        if (exampleSelectorEl && exampleSelectorEl.isConnected) {
+          exampleSelectorEl.remove();
+        }
         const examples = getCategoryExampleQuestions(categoryCode);
         const { wrap } = addOptionBubble("예시 질문을 선택하거나 직접 입력해 주세요.");
         exampleSelectorEl = wrap;
