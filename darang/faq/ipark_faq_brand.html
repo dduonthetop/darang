@@ -1983,7 +1983,12 @@
       }
 
       function toConversational(text) {
-        let t = (text || "").replace(/\s+/g, " ").trim();
+        let t = String(text || "")
+          .replace(/\r\n?/g, "\n")
+          .split("\n")
+          .map((line) => line.replace(/\s+/g, " ").trim())
+          .filter(Boolean)
+          .join("\n");
         if (!t) return "";
 
         t = t
@@ -2002,13 +2007,25 @@
         return t;
       }
 
+      function addSentenceLineBreaks(text) {
+        return String(text || "")
+          .split("\n")
+          .map((line) => line.replace(/(?<!\d)([.!?])\s+(?=[가-힣A-Za-z("'“‘「『])/g, "$1\n"))
+          .join("\n")
+          .replace(/\n{3,}/g, "\n\n")
+          .trim();
+      }
+
       function formatAnswerShort(data) {
         const lines = [];
         const core = toConversational(data.core_answer || "답변을 찾지 못했습니다.");
-        lines.push(`문의하신 내용 안내드립니다. ${core}`);
+        lines.push("문의하신 내용 안내드립니다.");
+        if (core) {
+          lines.push(addSentenceLineBreaks(core));
+        }
 
         if (data.next_action) {
-          lines.push(`다음으로 ${toConversational(data.next_action)}`);
+          lines.push(addSentenceLineBreaks(`다음으로 ${toConversational(data.next_action)}`));
         }
         const contact = resolveContactChannel(data);
         lines.push(`추가 문의는 ${contact} 채널로 부탁드립니다.`);
