@@ -9,13 +9,6 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 const RAW_MANUAL_BASE = "https://raw.githubusercontent.com/dduonthetop/darang/main/darang/faq/references/manual/";
-const MAX_MANUAL_UPLOAD_BYTES = 10 * 1024 * 1024;
-const ALLOWED_MANUAL_EXTENSIONS = new Set(["pdf", "png", "jpg", "jpeg"]);
-const ALLOWED_MANUAL_CONTENT_TYPES = new Set([
-  "application/pdf",
-  "image/png",
-  "image/jpeg",
-]);
 const DEFAULT_EXAMPLES_BY_CATEGORY = {
   "8.1": ["매장 운영시간이 어떻게 되나요?", "연장 영업 기준이 있나요?"],
   "8.2": ["출입 신청은 어떤 시스템으로 접수하나요?", "야간 작업 인원 등록은 어떻게 하나요?"],
@@ -85,60 +78,6 @@ function normalizeCategoryLabels(payload) {
 
 function manualUrl(filename) {
   return RAW_MANUAL_BASE + encodeURIComponent(filename);
-}
-
-function sanitizePathSegment(value, fallback = "manual") {
-  const next = String(value || "")
-    .trim()
-    .replace(/[\\/:*?"<>|]+/g, "-")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-  return next || fallback;
-}
-
-function getFileExtension(filename = "") {
-  const match = String(filename || "").trim().match(/\.([a-z0-9]+)$/i);
-  return match ? match[1].toLowerCase() : "";
-}
-
-function isAllowedManualUpload(file) {
-  const extension = getFileExtension(file?.name || "");
-  const contentType = String(file?.type || "").trim().toLowerCase();
-  if (!ALLOWED_MANUAL_EXTENSIONS.has(extension)) return false;
-  if (!contentType) return extension === "pdf";
-  return ALLOWED_MANUAL_CONTENT_TYPES.has(contentType);
-}
-
-function buildManualKey(faqId, filename) {
-  const safeFaqId = sanitizePathSegment(faqId || "manual");
-  const safeFilename = sanitizePathSegment(filename || "manual");
-  return `manuals/${safeFaqId}/${Date.now()}-${safeFilename}`;
-}
-
-function encodeObjectKey(key) {
-  return String(key || "")
-    .split("/")
-    .map((part) => encodeURIComponent(part))
-    .join("/");
-}
-
-function decodeObjectKey(encodedKey = "") {
-  return String(encodedKey || "")
-    .split("/")
-    .map((part) => decodeURIComponent(part))
-    .join("/");
-}
-
-function manualObjectUrl(request, key) {
-  return new URL(`/api/manuals/${encodeObjectKey(key)}`, request.url).toString();
-}
-
-function manualContentDisposition(filename) {
-  const safe = String(filename || "manual")
-    .replace(/["\\]/g, "")
-    .trim();
-  return `inline; filename*=UTF-8''${encodeURIComponent(safe || "manual")}`;
 }
 
 const POS_MANUALS = [
@@ -223,7 +162,7 @@ function corsHeaders(request) {
     headers.set("Vary", "Origin");
   }
   headers.set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Employee-Id, X-Employee-Password");
-  headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  headers.set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   return headers;
 }
 
@@ -235,12 +174,6 @@ function withCors(request, response) {
     statusText: response.statusText,
     headers,
   });
-}
-
-function ensureManualBucket(env) {
-  if (!env.MANUALS) {
-    throw new Error("R2 manual bucket is not configured.");
-  }
 }
 
 async function ensureSchema(env) {
@@ -415,24 +348,6 @@ export default {
         );
       }
 
-      if (request.method === "GET" && url.pathname.startsWith("/api/manuals/")) {
-        ensureManualBucket(env);
-        const encodedKey = url.pathname.replace(/^\/api\/manuals\//, "");
-        const key = decodeObjectKey(encodedKey);
-        if (!key) {
-          return withCors(request, json({ detail: "Manual key is required." }, { status: 400 }));
-        }
-        const object = await env.MANUALS.get(key);
-        if (!object) {
-          return withCors(request, json({ detail: "Manual not found." }, { status: 404 }));
-        }
-        const headers = new Headers();
-        object.writeHttpMetadata(headers);
-        headers.set("etag", object.httpEtag);
-        headers.set("Content-Disposition", manualContentDisposition(key.split("/").pop() || "manual"));
-        return withCors(request, new Response(object.body, { headers }));
-      }
-
       if (request.method === "POST" && url.pathname === "/api/login") {
         const body = await request.json();
         const employeeId = String(body.employee_id || "").trim();
@@ -477,58 +392,6 @@ export default {
         const admin = await requireAuth(request, env);
         const state = await getFaqState(env);
         return withCors(request, json({ ...state, user: admin }));
-      }
-
-      if (request.method === "POST" && url.pathname === "/api/admin/manual-upload") {
-        await requireAuth(request, env);
-        ensureManualBucket(env);
-        const form = await request.formData();
-        const file = form.get("file");
-        if (!(file instanceof File)) {
-          return withCors(request, json({ detail: "Manual file is required." }, { status: 400 }));
-        }
-        if (!file.size) {
-          return withCors(request, json({ detail: "빈 파일은 업로드할 수 없습니다." }, { status: 400 }));
-        }
-        if (file.size > MAX_MANUAL_UPLOAD_BYTES) {
-          return withCors(request, json({ detail: "매뉴얼 파일은 10MB 이하만 업로드할 수 있습니다." }, { status: 400 }));
-        }
-        if (!isAllowedManualUpload(file)) {
-          return withCors(request, json({ detail: "PDF, PNG, JPG, JPEG 파일만 업로드할 수 있습니다." }, { status: 400 }));
-        }
-
-        const faqId = sanitizePathSegment(form.get("faq_id"), "manual");
-        const key = buildManualKey(faqId, file.name || "manual");
-        await env.MANUALS.put(key, await file.arrayBuffer(), {
-          httpMetadata: {
-            contentType: String(file.type || "").trim().toLowerCase() || "application/octet-stream",
-          },
-        });
-
-        const label = normalizeTextField(form.get("label"), file.name || "업로드 파일");
-        return withCors(
-          request,
-          json({
-            ok: true,
-            attachment: {
-              type: "file",
-              key,
-              label,
-              url: manualObjectUrl(request, key),
-            },
-          }),
-        );
-      }
-
-      if (request.method === "DELETE" && url.pathname === "/api/admin/manual-upload") {
-        await requireAuth(request, env);
-        ensureManualBucket(env);
-        const key = decodeObjectKey(url.searchParams.get("key") || "");
-        if (!key) {
-          return withCors(request, json({ detail: "Manual key is required." }, { status: 400 }));
-        }
-        await env.MANUALS.delete(key);
-        return withCors(request, json({ ok: true, key }));
       }
 
       if (request.method === "PUT" && url.pathname === "/api/admin/faqs") {

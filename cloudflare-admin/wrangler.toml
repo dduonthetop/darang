@@ -7,7 +7,3 @@ workers_dev = true
 binding = "DB"
 database_name = "ipark-faq-admin-db"
 database_id = "10a2eebc-b838-4c27-8243-24b9fd35f963"
-
-[[r2_buckets]]
-binding = "MANUALS"
-bucket_name = "ipark-faq-manuals"
