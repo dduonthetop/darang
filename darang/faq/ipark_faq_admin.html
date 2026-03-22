@@ -1411,8 +1411,8 @@
             current.manual_files = currentAttachments;
             renderAttachmentList(current);
             try {
-              await deleteManualFromBackend(removedAttachment);
               await saveEditorForm();
+              await deleteManualFromBackend(removedAttachment);
             } catch (error) {
               currentAttachments.splice(index, 0, removedAttachment);
               current.manual_files = currentAttachments;
