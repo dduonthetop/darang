@@ -626,7 +626,7 @@
         </div>
       </section>
 
-      <section id="authPanel" class="auth-panel">
+      <section id="authPanel" class="auth-panel hidden">
         <h2 class="panel-title">관리자 로그인</h2>
         <p class="panel-copy">사번을 아이디와 비밀번호에 동일하게 입력하면 편집 화면으로 들어갑니다.</p>
         <form id="loginForm" class="form-grid">
@@ -2005,7 +2005,8 @@
         editorStatus.textContent = "기본 데이터로 되돌렸습니다.";
       }
 
-      async function validateBackendSession() {
+      async function validateBackendSession(options = {}) {
+        const preserveLocalSession = options.preserveLocalSession === true;
         if (!isBackendMode()) return false;
         if (!readAdminSession()) return false;
         try {
@@ -2014,7 +2015,9 @@
           });
           if (!response.ok) {
             clearBackendToken();
-            clearAdminSession();
+            if (!preserveLocalSession) {
+              clearAdminSession();
+            }
             return false;
           }
           const payload = await response.json();
@@ -2026,7 +2029,9 @@
           return true;
         } catch (error) {
           clearBackendToken();
-          clearAdminSession();
+          if (!preserveLocalSession) {
+            clearAdminSession();
+          }
           return false;
         }
       }
@@ -2164,8 +2169,15 @@
 
       async function initPage() {
         renderSyncModeNotice();
+        const hasStoredSession = isLoggedIn();
+        if (hasStoredSession) {
+          setAuthState();
+        }
         if (isBackendMode()) {
-          await validateBackendSession();
+          const backendReady = await validateBackendSession({ preserveLocalSession: hasStoredSession });
+          if (!backendReady && hasStoredSession) {
+            editorStatus.textContent = "공용 저장 모드 연결을 확인하지 못해 현재 브라우저 기준으로 계속 편집합니다.";
+          }
           await syncLiveData(true);
         } else {
           applyLocalOverrides();
