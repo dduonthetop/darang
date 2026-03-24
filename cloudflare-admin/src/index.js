@@ -399,6 +399,20 @@ export default {
         const body = await request.json();
         const items = normalizeFaqItems(Array.isArray(body.items) ? body.items : []);
         const current = await getFaqState(env);
+        const expectedRevision = Number(body.expected_revision);
+        if (Number.isFinite(expectedRevision) && expectedRevision !== current.meta.revision) {
+          return withCors(
+            request,
+            json(
+              {
+                detail: "다른 브라우저에서 먼저 변경되어 저장할 수 없습니다. 최신 데이터를 다시 불러온 뒤 수정해 주세요.",
+                code: "REVISION_CONFLICT",
+                meta: current.meta,
+              },
+              { status: 409 },
+            ),
+          );
+        }
         const examples = body.examples && typeof body.examples === "object"
           ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
           : current.examples;
@@ -435,6 +449,20 @@ export default {
         const admin = await requireAuth(request, env);
         const body = await request.json();
         const current = await getFaqState(env);
+        const expectedRevision = Number(body.expected_revision);
+        if (Number.isFinite(expectedRevision) && expectedRevision !== current.meta.revision) {
+          return withCors(
+            request,
+            json(
+              {
+                detail: "다른 브라우저에서 먼저 변경되어 저장할 수 없습니다. 최신 데이터를 다시 불러온 뒤 수정해 주세요.",
+                code: "REVISION_CONFLICT",
+                meta: current.meta,
+              },
+              { status: 409 },
+            ),
+          );
+        }
         const examples = body.examples && typeof body.examples === "object"
           ? { ...DEFAULT_EXAMPLES_BY_CATEGORY, ...body.examples }
           : current.examples;
@@ -467,6 +495,20 @@ export default {
         const admin = await requireAuth(request, env);
         const body = await request.json();
         const current = await getFaqState(env);
+        const expectedRevision = Number(body.expected_revision);
+        if (Number.isFinite(expectedRevision) && expectedRevision !== current.meta.revision) {
+          return withCors(
+            request,
+            json(
+              {
+                detail: "다른 브라우저에서 먼저 변경되어 저장할 수 없습니다. 최신 데이터를 다시 불러온 뒤 수정해 주세요.",
+                code: "REVISION_CONFLICT",
+                meta: current.meta,
+              },
+              { status: 409 },
+            ),
+          );
+        }
         const categoryLabels = body.category_labels && typeof body.category_labels === "object"
           ? normalizeCategoryLabels(body.category_labels)
           : normalizeCategoryLabels(current.category_labels);

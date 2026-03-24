@@ -1118,6 +1118,10 @@
         localStorage.setItem(ADMIN_META_KEY, JSON.stringify(meta));
       }
 
+      function currentExpectedRevision() {
+        return Number(readAdminMeta()?.revision || dataRevision || 0);
+      }
+
       function formatTimestamp(value) {
         if (!value) return "";
         const date = new Date(value);
@@ -1828,7 +1832,12 @@
           headers: backendAuthHeaders({
             "Content-Type": "application/json",
           }),
-          body: JSON.stringify({ items: DATA, examples: EXAMPLES_BY_CATEGORY, category_labels: CATEGORY_LABELS }),
+          body: JSON.stringify({
+            items: DATA,
+            examples: EXAMPLES_BY_CATEGORY,
+            category_labels: CATEGORY_LABELS,
+            expected_revision: currentExpectedRevision(),
+          }),
         });
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
@@ -1836,6 +1845,17 @@
             clearAdminSession();
             setAuthState();
             throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          if (response.status === 409) {
+            const payload = await response.json().catch(() => ({}));
+            if (payload?.meta) {
+              writeAdminMeta(payload.meta);
+            }
+            await syncLiveData(true);
+            renderEditorList();
+            renderEditorForm();
+            renderEditorMeta(payload?.meta);
+            throw new Error(payload?.detail || "다른 브라우저에서 먼저 변경되어 최신 데이터를 다시 불러왔습니다. 내용을 확인 후 다시 저장해 주세요.");
           }
           throw new Error("저장에 실패했습니다.");
         }
@@ -1865,7 +1885,7 @@
           headers: backendAuthHeaders({
             "Content-Type": "application/json",
           }),
-          body: JSON.stringify({ examples: EXAMPLES_BY_CATEGORY }),
+          body: JSON.stringify({ examples: EXAMPLES_BY_CATEGORY, expected_revision: currentExpectedRevision() }),
         });
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
@@ -1873,6 +1893,15 @@
             clearAdminSession();
             setAuthState();
             throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          if (response.status === 409) {
+            const payload = await response.json().catch(() => ({}));
+            if (payload?.meta) writeAdminMeta(payload.meta);
+            await syncLiveData(true);
+            renderEditorList();
+            renderEditorForm();
+            renderEditorMeta(payload?.meta);
+            throw new Error(payload?.detail || "다른 브라우저에서 먼저 변경되어 최신 데이터를 다시 불러왔습니다. 내용을 확인 후 다시 저장해 주세요.");
           }
           throw new Error("예시질문 저장에 실패했습니다.");
         }
@@ -1896,7 +1925,7 @@
           headers: backendAuthHeaders({
             "Content-Type": "application/json",
           }),
-          body: JSON.stringify({ category_labels: CATEGORY_LABELS }),
+          body: JSON.stringify({ category_labels: CATEGORY_LABELS, expected_revision: currentExpectedRevision() }),
         });
         if (!response.ok) {
           if (response.status === 401 || response.status === 403) {
@@ -1904,6 +1933,15 @@
             clearAdminSession();
             setAuthState();
             throw new Error("로그인이 만료되었습니다. 다시 로그인해 주세요.");
+          }
+          if (response.status === 409) {
+            const payload = await response.json().catch(() => ({}));
+            if (payload?.meta) writeAdminMeta(payload.meta);
+            await syncLiveData(true);
+            renderEditorList();
+            renderEditorForm();
+            renderEditorMeta(payload?.meta);
+            throw new Error(payload?.detail || "다른 브라우저에서 먼저 변경되어 최신 데이터를 다시 불러왔습니다. 내용을 확인 후 다시 저장해 주세요.");
           }
           throw new Error("카테고리명 저장에 실패했습니다.");
         }
